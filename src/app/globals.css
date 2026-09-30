@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* MKAN Concept Luxury Design Tokens */
+@theme {
+  --color-plum-950: #1a060e;
+  --color-plum-900: #220811;
+  --color-plum-850: #2b0b17;
+  --color-plum-800: #36101e;
+  --color-cream: #f5eee6;
+  --color-cream-light: #faf1e8;
+  --color-cream-soft: #eae0d5;
+  --color-gold: #ddb78a;
+  --color-gold-light: #ead0b3;
+  --color-gold-dark: #b88e5e;
+  --color-ink: #220811;
+
+  --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--color-plum-950);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--color-plum-950);
+}
+
+/* Custom text selection styling */
+::selection {
+  background-color: var(--color-gold);
+  color: var(--color-plum-950);
+}
+
+/* Custom minimal luxury scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1a060e;
+}
+::-webkit-scrollbar-thumb {
+  background: #36101e;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ddb78a;
+}
+
+/* Base interactive transitions */
+a, button {
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

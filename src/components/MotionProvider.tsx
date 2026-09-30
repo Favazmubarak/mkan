@@ -1,0 +1,100 @@
+"use client";
+
+import { useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+export function MotionProvider({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (prefersReducedMotion) return;
+
+    const mm = gsap.matchMedia();
+
+    // Desktop luxury motion choreography (>= 1024px)
+    mm.add("(min-width: 1024px)", () => {
+      // 1. Hero load reveal sequence
+      const heroTimeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+      heroTimeline
+        .fromTo(
+          "#home p, #home h1, #home .max-w-md, #home .flex-wrap",
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 1, stagger: 0.15, delay: 0.2 }
+        )
+        .fromTo(
+          "#home .flex.items-end",
+          { opacity: 0, y: 15 },
+          { opacity: 1, y: 0, duration: 0.8 },
+          "-=0.5"
+        );
+
+      // 2. Expertise cards staggered entrance
+      gsap.fromTo(
+        "#services .grid > *",
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.12,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: "#services",
+            start: "top 75%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+
+      // 3. Method steps sequence
+      gsap.fromTo(
+        "#method .grid > *",
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: "#method",
+            start: "top 75%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+
+      // 4. Selected Experiences cards stagger
+      gsap.fromTo(
+        "#experiences .grid > *",
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: "#experiences",
+            start: "top 75%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    });
+
+    return () => {
+      mm.revert();
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
+  return <>{children}</>;
+}
