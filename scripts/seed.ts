@@ -11,9 +11,16 @@ dotenv.config({ path: ".env.local" });
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/mkan_concept";
 
 async function runSeed() {
+  const adminEmail = process.env.ADMIN_DEFAULT_EMAIL || "admin@mkanconcept.ae";
+  const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD;
+
+  if (!adminPassword || adminPassword.length < 12) {
+    throw new Error("Set ADMIN_DEFAULT_PASSWORD to a value with at least 12 characters before seeding.");
+  }
+
   console.log("--------------------------------------------------");
   console.log("🌱 Starting MKAN Concept Database Seeding...");
-  console.log(`Connecting to: ${MONGODB_URI}`);
+  console.log("Connecting to MongoDB...");
 
   await mongoose.connect(MONGODB_URI);
   console.log("✓ Connected to MongoDB.");
@@ -21,8 +28,6 @@ async function runSeed() {
   const db = mongoose.connection;
 
   // 1. Seed Admin User
-  const adminEmail = process.env.ADMIN_DEFAULT_EMAIL || "admin@mkanconcept.ae";
-  const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD || "Mkan@Luxury2026";
   const passwordHash = await bcrypt.hash(adminPassword, 12);
 
   const adminColl = db.collection("adminusers");
@@ -43,7 +48,14 @@ async function runSeed() {
     },
     { upsert: true }
   );
-  console.log(`✓ Admin user seeded: ${adminEmail}`);
+  const seededAdmin = await adminColl.findOne(
+    { email: adminEmail.toLowerCase() },
+    { projection: { _id: 1 } }
+  );
+  if (seededAdmin) {
+    await db.collection("adminsessions").deleteMany({ userId: seededAdmin._id });
+  }
+  console.log(`✓ Admin user seeded: ${adminEmail}; existing sessions revoked.`);
 
   // 2. Seed Site Sections (Draft & Published initialized with seed content)
   const sectionsColl = db.collection("sitesections");
@@ -117,9 +129,6 @@ async function runSeed() {
 
   console.log("--------------------------------------------------");
   console.log("🎉 Seeding Completed Successfully!");
-  console.log("Default Admin Credentials:");
-  console.log(`Email:    ${adminEmail}`);
-  console.log(`Password: ${adminPassword}`);
   console.log("--------------------------------------------------");
 
   await mongoose.disconnect();

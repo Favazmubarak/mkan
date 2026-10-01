@@ -6,8 +6,17 @@ import Link from "next/link";
 import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 
+type ExperienceItem = (typeof homeContent.experiences.items)[number] & {
+  imageUrl?: string;
+  altText?: string;
+};
+
+type ExperiencesData = Omit<typeof homeContent.experiences, "items"> & {
+  items: readonly ExperienceItem[];
+};
+
 interface ExperiencesProps {
-  data?: typeof homeContent.experiences;
+  data?: ExperiencesData;
   assets?: typeof defaultAssets;
 }
 
@@ -15,7 +24,9 @@ export function Experiences({ data = homeContent.experiences, assets = defaultAs
   const experiences = data;
   const [activeFilter, setActiveFilter] = useState("all");
 
-  const getImageSrc = (key: string) => {
+  const getImageSrc = (key: string, imageUrl?: string) => {
+    if (imageUrl) return imageUrl;
+
     switch (key) {
       case "ramadanFair":
         return assets.experiences?.ramadanFair?.src || assets.heroBg.src;
@@ -102,8 +113,8 @@ export function Experiences({ data = homeContent.experiences, assets = defaultAs
               {/* Background Image with Ambient Zoom */}
               <div className="absolute inset-0 z-0 overflow-hidden">
                 <Image
-                  src={getImageSrc(item.imageKey)}
-                  alt={item.title}
+                  src={getImageSrc(item.imageKey, item.imageUrl)}
+                  alt={item.altText || item.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover object-center transition-transform duration-700 group-hover:scale-105"

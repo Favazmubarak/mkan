@@ -8,6 +8,24 @@ export interface ContactFormState {
   errors?: Record<string, string>;
 }
 
+function readTextField(formData: FormData, name: string): string {
+  const value = formData.get(name);
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character];
+  });
+}
+
 /**
  * Handles contact inquiries using Resend (the modern industry standard for Next.js).
  * - Honeypot spam defense
@@ -21,7 +39,7 @@ export async function submitContactInquiry(
 ): Promise<ContactFormState> {
   try {
     // 1. Honeypot check (Spam bot trap)
-    const honeypot = formData.get("bot_field") as string;
+    const honeypot = readTextField(formData, "bot_field");
     if (honeypot) {
       return {
         success: true,
@@ -30,25 +48,28 @@ export async function submitContactInquiry(
     }
 
     // 2. Extract and sanitize inputs
-    const name = (formData.get("name") as string)?.trim();
-    const company = (formData.get("company") as string)?.trim() || "Private Client";
-    const email = (formData.get("email") as string)?.trim();
-    const message = (formData.get("message") as string)?.trim();
+    const name = readTextField(formData, "name");
+    const company = readTextField(formData, "company") || "Private Client";
+    const email = readTextField(formData, "email");
+    const message = readTextField(formData, "message");
 
     // 3. Validation
     const errors: Record<string, string> = {};
 
-    if (!name || name.length < 2) {
-      errors.name = "Please provide your full name (at least 2 characters).";
+    if (name.length < 2 || name.length > 200) {
+      errors.name = "Please provide a name between 2 and 200 characters.";
+    }
+    if (company.length > 200) {
+      errors.company = "Company name must be 200 characters or fewer.";
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
+    if (!email || email.length > 320 || !emailRegex.test(email)) {
       errors.email = "Please provide a valid email address.";
     }
 
-    if (!message || message.length < 10) {
-      errors.message = "Please include a message describing your inquiry (at least 10 characters).";
+    if (message.length < 10 || message.length > 10000) {
+      errors.message = "Please provide a message between 10 and 10,000 characters.";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -76,6 +97,10 @@ export async function submitContactInquiry(
     }
 
     const recipientEmail = process.env.CONTACT_EMAIL_TO || "favazkoppath10@gmail.com";
+    const safeName = escapeHtml(name);
+    const safeCompany = escapeHtml(company);
+    const safeEmail = escapeHtml(email);
+    const safeMessage = escapeHtml(message);
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -103,19 +128,19 @@ export async function submitContactInquiry(
             <div class="content">
               <div class="field">
                 <div class="label">Sender Name</div>
-                <div class="value">${name}</div>
+                <div class="value">${safeName}</div>
               </div>
               <div class="field">
                 <div class="label">Company / Affiliation</div>
-                <div class="value">${company}</div>
+                <div class="value">${safeCompany}</div>
               </div>
               <div class="field">
                 <div class="label">Email Address</div>
-                <div class="value"><a href="mailto:${email}" style="color: #A37B52; text-decoration: none;">${email}</a></div>
+                <div class="value"><a href="mailto:${safeEmail}" style="color: #A37B52; text-decoration: none;">${safeEmail}</a></div>
               </div>
               <div class="field">
                 <div class="label">Inquiry Message</div>
-                <div class="message-box">${message}</div>
+                <div class="message-box">${safeMessage}</div>
               </div>
             </div>
             <div class="footer">
@@ -135,7 +160,7 @@ export async function submitContactInquiry(
         from: `MKAN Concept <${senderEmail}>`,
         to: [recipientEmail],
         replyTo: email,
-        subject: `[New Inquiry] ${name} — MKAN Concept`,
+        subject: `[New Inquiry] ${name.replace(/[\r\n]/g, " ")} — MKAN Concept`,
         html: emailHtml,
       });
 

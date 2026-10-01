@@ -27,15 +27,6 @@ export async function getLiveSiteContent(locale: string = "en") {
     const mediaOverrides = await MediaAsset.find({}).lean();
     const dbProjects = await Project.find({ locale }).sort({ sortOrder: 1 }).lean();
 
-    if (!sections || sections.length === 0) {
-      return {
-        site: defaultSite,
-        home: defaultHome,
-        assets: defaultAssets,
-        isFromDatabase: false,
-      };
-    }
-
     // Construct dynamic home & site objects merged with defaults
     const siteData = { ...defaultSite };
     const homeData = { ...defaultHome };
@@ -53,14 +44,18 @@ export async function getLiveSiteContent(locale: string = "en") {
 
     // If database has projects, replace default experience items
     if (dbProjects && dbProjects.length > 0) {
-      const formattedProjects = dbProjects.map((p) => ({
-        id: p.slug,
-        title: p.title,
-        subtitle: p.subtitle,
-        category: p.category,
-        imageKey: p.imageKey || "ramadanFair",
-        href: "#contact",
-      }));
+      const formattedProjects = dbProjects
+        .filter((project) => project.featuredOnHome)
+        .map((p) => ({
+          id: p.slug,
+          title: p.title,
+          subtitle: p.subtitle,
+          category: p.category,
+          imageKey: p.imageKey || "ramadanFair",
+          imageUrl: p.imageUrl || undefined,
+          altText: p.altText || p.title,
+          href: "#contact",
+        }));
 
       homeData.experiences = {
         ...homeData.experiences,

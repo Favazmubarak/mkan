@@ -31,14 +31,31 @@ export interface MediaActionResponse {
  * - If image exceeds 4K dimensions (>2880px), scales proportionally with lanczos3 interpolation
  * - Encodes to optimized WebP at quality 90 with smart subsampling for pristine luxury quality
  * - Generates micro blur placeholder for zero-CLS image loading
- * - Falls back to local disk storage if Cloudflare R2 credentials are not set
+ * - Uses local disk storage only during development when Cloudflare R2 is not configured
  */
 export async function uploadMediaAction(
   formData: FormData
 ): Promise<MediaActionResponse> {
   try {
     await requireAdmin();
-    await connectToDatabase();
+    const db = await connectToDatabase();
+    if (!db) {
+      return { success: false, message: "Media uploads require an available MongoDB connection." };
+    }
+
+    const hasR2Configuration = Boolean(
+      process.env.R2_BUCKET_NAME &&
+      process.env.R2_ACCESS_KEY_ID &&
+      process.env.R2_SECRET_ACCESS_KEY &&
+      process.env.R2_ENDPOINT &&
+      process.env.R2_PUBLIC_DOMAIN
+    );
+    if (process.env.NODE_ENV === "production" && !hasR2Configuration) {
+      return {
+        success: false,
+        message: "Configure Cloudflare R2 storage before uploading media in production.",
+      };
+    }
 
     const file = formData.get("file") as File | null;
     const slotKey = (formData.get("slotKey") as string)?.trim();
@@ -148,7 +165,7 @@ export async function uploadMediaAction(
       finalUrl = `${process.env.R2_PUBLIC_DOMAIN.replace(/\/$/, "")}/uploads/${randomName}`;
       storageProvider = "r2";
     } else {
-      // Local storage fallback into /public/uploads/
+      // Development-only fallback into /public/uploads/
       const uploadsDir = path.join(process.cwd(), "public", "uploads");
       await fs.mkdir(uploadsDir, { recursive: true });
       const filePath = path.join(uploadsDir, randomName);

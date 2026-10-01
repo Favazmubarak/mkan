@@ -17,12 +17,9 @@ export function proxy(request: NextRequest) {
 
     const sessionCookie = request.cookies.get("mkan_admin_session");
 
-    // Allow access to login page
+    // Keep the login page public. The protected route-group layout performs
+    // the authoritative session check for every studio page.
     if (pathname === "/admin/login") {
-      if (sessionCookie && sessionCookie.value) {
-        // If already logged in, redirect to admin dashboard
-        return NextResponse.redirect(new URL("/admin", request.url));
-      }
       return response;
     }
 
