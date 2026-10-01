@@ -3,8 +3,8 @@ import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 
 interface HeroProps {
-  data?: any;
-  assets?: any;
+  data?: typeof homeContent.hero;
+  assets?: typeof defaultAssets;
 }
 
 export function Hero({ data = homeContent.hero, assets = defaultAssets }: HeroProps) {
@@ -23,7 +23,7 @@ export function Hero({ data = homeContent.hero, assets = defaultAssets }: HeroPr
         className="object-cover object-center"
         sizes="100vw"
         quality={90}
-        {...(heroBg.blurDataURL
+        {...(("blurDataURL" in heroBg && typeof heroBg.blurDataURL === "string")
           ? { placeholder: "blur" as const, blurDataURL: heroBg.blurDataURL }
           : {})}
       />
@@ -43,7 +43,7 @@ export function Hero({ data = homeContent.hero, assets = defaultAssets }: HeroPr
 
           {/* Main heading */}
           <h1 className="font-display text-[2.8rem] leading-[1.05] font-normal text-cream sm:text-[3.5rem] lg:text-[4.5rem]">
-            {(Array.isArray(hero.headingLines) ? hero.headingLines : [hero.headingLines]).map((line: string, i: number, arr: any[]) => (
+            {(Array.isArray(hero.headingLines) ? hero.headingLines : [hero.headingLines]).map((line, i, arr) => (
               <span key={i}>
                 {line}
                 {i < arr.length - 1 && <br />}

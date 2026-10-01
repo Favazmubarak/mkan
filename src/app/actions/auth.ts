@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { authenticateAdmin, logoutAdmin } from "@/lib/auth";
+import { getClientIdentity } from "@/lib/rate-limit";
 
 export interface AuthState {
   success: boolean;
@@ -13,16 +14,17 @@ export async function loginAdminAction(
   prevState: AuthState | null,
   formData: FormData
 ): Promise<AuthState> {
-  const email = (formData.get("email") as string)?.trim();
-  const password = (formData.get("password") as string)?.trim();
+  const emailField = formData.get("email");
+  const passwordField = formData.get("password");
+  const email = typeof emailField === "string" ? emailField.trim() : "";
+  const password = typeof passwordField === "string" ? passwordField : "";
 
-  if (!email || !password) {
-    return { success: false, error: "Email and password are required." };
+  if (!email || !password || email.length > 254 || Buffer.byteLength(password, "utf8") > 72) {
+    return { success: false, error: "Invalid email or password." };
   }
 
   const reqHeaders = await headers();
-  const ipAddress =
-    reqHeaders.get("x-forwarded-for") || reqHeaders.get("x-real-ip") || "";
+  const ipAddress = getClientIdentity(reqHeaders);
   const userAgent = reqHeaders.get("user-agent") || "";
 
   const result = await authenticateAdmin(email, password, ipAddress, userAgent);

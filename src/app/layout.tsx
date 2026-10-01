@@ -62,30 +62,6 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: site.name,
-  legalName: site.legalName,
-  url: site.domain,
-  logo: `${site.domain}/images/mkan-logo.svg`,
-  description: site.description,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "Wasl 51",
-    addressLocality: "Dubai",
-    addressCountry: "AE",
-  },
-  contactPoint: {
-    "@type": "ContactPoint",
-    telephone: site.contact.phone,
-    contactType: "customer service",
-    email: site.contact.email,
-    availableLanguage: ["English", "Arabic"],
-  },
-  sameAs: [site.contact.instagramUrl, site.contact.linkedinUrl],
-};
-
 export default function RootLayout({
   children,
 }: {
@@ -97,12 +73,6 @@ export default function RootLayout({
       dir={site.dir}
       className={`${displayFont.variable} ${bodyFont.variable} ${adminFont.variable}`}
     >
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
       <body className="bg-plum-950 font-sans text-cream antialiased selection:bg-gold selection:text-plum-950">
         <SmoothScroll>
           <MotionProvider>{children}</MotionProvider>

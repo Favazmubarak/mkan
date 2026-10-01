@@ -4,8 +4,8 @@ import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 
 interface ImpactBannerProps {
-  data?: any;
-  assets?: any;
+  data?: typeof homeContent.impactBanner;
+  assets?: typeof defaultAssets;
 }
 
 export function ImpactBanner({ data = homeContent.impactBanner, assets = defaultAssets }: ImpactBannerProps) {
@@ -21,7 +21,7 @@ export function ImpactBanner({ data = homeContent.impactBanner, assets = default
         fill
         sizes="100vw"
         className="object-cover object-center"
-        {...(impactBg.blurDataURL
+        {...(("blurDataURL" in impactBg && typeof impactBg.blurDataURL === "string")
           ? { placeholder: "blur" as const, blurDataURL: impactBg.blurDataURL }
           : {})}
       />

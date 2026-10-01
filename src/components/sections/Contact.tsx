@@ -5,9 +5,9 @@ import { site as defaultSite } from "@/content/site";
 import { ContactForm } from "@/components/ContactForm";
 
 interface ContactProps {
-  data?: any;
-  site?: any;
-  assets?: any;
+  data?: typeof homeContent.contact;
+  site?: typeof defaultSite;
+  assets?: typeof defaultAssets;
 }
 
 export function Contact({ data = homeContent.contact, site = defaultSite, assets = defaultAssets }: ContactProps) {
@@ -102,7 +102,7 @@ export function Contact({ data = homeContent.contact, site = defaultSite, assets
                 alt="Architectural Arch"
                 fill
                 className="object-cover object-center"
-                {...(contactArch.blurDataURL
+                {...(("blurDataURL" in contactArch && typeof contactArch.blurDataURL === "string")
                   ? { placeholder: "blur" as const, blurDataURL: contactArch.blurDataURL }
                   : {})}
               />

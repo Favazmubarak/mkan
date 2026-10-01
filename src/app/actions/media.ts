@@ -17,11 +17,23 @@ const ALLOWED_MIME_TYPES = [
   "image/tiff",
 ];
 const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 MB limit
+const SLOT_KEY_PATTERN = /^[a-zA-Z0-9_.-]{1,120}$/;
+
+function isValidSlotKey(value: unknown): value is string {
+  return typeof value === "string" && SLOT_KEY_PATTERN.test(value);
+}
 
 export interface MediaActionResponse {
   success: boolean;
   message: string;
-  asset?: any;
+  asset?: {
+    slotKey: string;
+    url: string;
+    altText: string;
+    width: number;
+    height: number;
+    fileSize: number;
+  };
 }
 
 /**
@@ -57,16 +69,22 @@ export async function uploadMediaAction(
       };
     }
 
-    const file = formData.get("file") as File | null;
-    const slotKey = (formData.get("slotKey") as string)?.trim();
-    const altText = (formData.get("altText") as string)?.trim() || "";
+    const fileEntry = formData.get("file");
+    const slotEntry = formData.get("slotKey");
+    const altEntry = formData.get("altText");
+    const file = typeof File !== "undefined" && fileEntry instanceof File ? fileEntry : null;
+    const slotKey = typeof slotEntry === "string" ? slotEntry.trim() : "";
+    const altText = typeof altEntry === "string" ? altEntry.trim() : "";
 
     if (!file || !(file instanceof File) || file.size === 0) {
       return { success: false, message: "Please select an image file to upload." };
     }
 
-    if (!slotKey) {
-      return { success: false, message: "Target asset slot is required." };
+    if (!isValidSlotKey(slotKey)) {
+      return { success: false, message: "Choose a valid target asset slot." };
+    }
+    if (altText.length > 300) {
+      return { success: false, message: "Image alt text must be 300 characters or fewer." };
     }
 
     if (file.size > MAX_FILE_SIZE) {
@@ -208,11 +226,11 @@ export async function uploadMediaAction(
         fileSize: savedAsset.fileSize,
       },
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[Media Upload Error]", error);
     return {
       success: false,
-      message: error.message || "Failed to process and upload image.",
+      message: "Failed to process and upload image.",
     };
   }
 }
@@ -225,7 +243,11 @@ export async function resetSlotToDefaultAction(
 ): Promise<MediaActionResponse> {
   try {
     await requireAdmin();
-    await connectToDatabase();
+    if (!isValidSlotKey(slotKey)) {
+      return { success: false, message: "Choose a valid target asset slot." };
+    }
+    const db = await connectToDatabase();
+    if (!db) return { success: false, message: "Media storage is temporarily unavailable." };
 
     await MediaAsset.findOneAndDelete({ slotKey });
     revalidatePath("/");
@@ -234,11 +256,11 @@ export async function resetSlotToDefaultAction(
       success: true,
       message: `Slot "${slotKey}" has been restored to default theme imagery.`,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[Media Reset Error]", error);
     return {
       success: false,
-      message: error.message || "Failed to restore default asset.",
+      message: error instanceof Error ? error.message : "Failed to restore default asset.",
     };
   }
 }
@@ -252,7 +274,11 @@ export async function updateMediaAltAction(
 ): Promise<MediaActionResponse> {
   try {
     await requireAdmin();
-    await connectToDatabase();
+    if (!isValidSlotKey(slotKey) || typeof altText !== "string" || altText.length > 300) {
+      return { success: false, message: "Provide a valid media slot and alt text under 300 characters." };
+    }
+    const db = await connectToDatabase();
+    if (!db) return { success: false, message: "Media storage is temporarily unavailable." };
 
     await MediaAsset.findOneAndUpdate(
       { slotKey },
@@ -266,11 +292,11 @@ export async function updateMediaAltAction(
       success: true,
       message: "Alt text updated successfully.",
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[Media Alt Update Error]", error);
     return {
       success: false,
-      message: error.message || "Failed to update alt text.",
+      message: error instanceof Error ? error.message : "Failed to update alt text.",
     };
   }
 }

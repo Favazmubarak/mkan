@@ -6,11 +6,14 @@ dotenv.config({ path: ".env.local" });
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/mkan_concept";
 
 async function resetPassword() {
-  const email = (process.argv[2] || process.env.ADMIN_DEFAULT_EMAIL || "admin@mkanconcept.ae").toLowerCase();
+  const email = (process.argv[2] || process.env.ADMIN_DEFAULT_EMAIL || "admin@mkanconcept.ae").trim().toLowerCase();
   const newPassword = process.env.ADMIN_DEFAULT_PASSWORD;
 
-  if (!newPassword || newPassword.length < 12) {
-    throw new Error("Set ADMIN_DEFAULT_PASSWORD to a value with at least 12 characters in .env.local or the process environment.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+    throw new Error("Provide a valid admin email address.");
+  }
+  if (!newPassword || newPassword.length < 12 || Buffer.byteLength(newPassword, "utf8") > 72) {
+    throw new Error("Set ADMIN_DEFAULT_PASSWORD to a password with at least 12 characters and no more than 72 UTF-8 bytes.");
   }
 
   console.log(`Resetting admin password for: ${email}`);

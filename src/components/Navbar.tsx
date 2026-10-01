@@ -1,7 +1,7 @@
 "use client";
 
 import { site as defaultSite } from "@/content/site";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface NavbarProps {
   site?: typeof defaultSite;
@@ -10,6 +10,8 @@ interface NavbarProps {
 export function Navbar({ site = defaultSite }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   // Prevent background scrolling when mobile menu is open
   useEffect(() => {
@@ -20,6 +22,51 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
     }
     return () => {
       document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  // Keep keyboard focus inside the modal navigation while it is open.
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const dialog = mobileMenuRef.current;
+    const trigger = menuTriggerRef.current;
+    if (!dialog) return;
+    const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const getFocusableElements = () =>
+      Array.from(dialog.querySelectorAll<HTMLElement>(focusableSelector));
+
+    getFocusableElements()[0]?.focus();
+
+    const handleDialogKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMobileOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = getFocusableElements();
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleDialogKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleDialogKeyDown);
+      if (trigger?.isConnected) trigger.focus();
     };
   }, [mobileOpen]);
 
@@ -53,6 +100,11 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
     if (href === "#home" || href === "#" || href === "/") {
       window.scrollTo({ top: 0, behavior: "smooth" });
       window.history.pushState(null, "", " ");
+      const home = document.getElementById("home");
+      if (home) {
+        home.setAttribute("tabindex", "-1");
+        window.setTimeout(() => home.focus({ preventScroll: true }), 0);
+      }
       return;
     }
 
@@ -61,6 +113,8 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
       window.history.pushState(null, "", href);
+      element.setAttribute("tabindex", "-1");
+      window.setTimeout(() => element.focus({ preventScroll: true }), 0);
     }
   };
 
@@ -74,7 +128,7 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
         <a
           href="#home"
           onClick={(e) => handleScrollTo(e, "#home")}
-          className="flex items-center gap-3 shrink-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
+          className="flex items-center gap-3 shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
           aria-label="MKAN Concept Home"
         >
           <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gold text-plum-950 font-display text-xl sm:text-2xl font-bold tracking-tighter shadow-md">
@@ -91,17 +145,17 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
         </a>
 
         {/* Desktop Navigation Links — Centered */}
-        <ul className="hidden items-center gap-7 lg:flex xl:gap-9" role="menubar">
+        <ul className="hidden items-center gap-7 lg:flex xl:gap-9">
           {site.nav.map((item) => {
             const targetSection = item.href.replace("#", "");
             const isActive = activeSection === targetSection;
 
             return (
-              <li key={item.label} role="none">
+              <li key={item.label}>
                 <a
                   href={item.href}
+                  aria-current={isActive ? "location" : undefined}
                   onClick={(e) => handleScrollTo(e, item.href)}
-                  role="menuitem"
                   className="group relative inline-block py-1 text-[0.72rem] font-sans font-medium tracking-[0.22em] uppercase text-cream/80 transition-colors duration-300 hover:text-cream focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
                 >
                   {/* Scaling text */}
@@ -143,9 +197,11 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
         <button
           type="button"
           className="lg:hidden text-cream p-2 -mr-2 transition-colors hover:text-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
+          ref={menuTriggerRef}
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-expanded={mobileOpen}
-          aria-label="Toggle navigation menu"
+          aria-controls="mkan-mobile-navigation"
+          aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -175,6 +231,8 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
       {/* Fullscreen Luxury Mobile Overlay Menu */}
       {mobileOpen && (
         <div
+          ref={mobileMenuRef}
+          id="mkan-mobile-navigation"
           className="fixed inset-0 z-50 flex flex-col justify-between bg-plum-950/98 backdrop-blur-xl px-8 py-12 lg:hidden animate-in fade-in duration-300"
           role="dialog"
           aria-modal="true"
@@ -185,7 +243,7 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
             <a
               href="#home"
               onClick={(e) => handleScrollTo(e, "#home")}
-              className="flex flex-col leading-none"
+              className="flex flex-col leading-none rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
             >
               <span className="font-display text-2xl font-normal tracking-wider text-cream">
                 MKAN
@@ -198,7 +256,7 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
               type="button"
               onClick={() => setMobileOpen(false)}
               aria-label="Close menu"
-              className="p-2 text-cream hover:text-gold cursor-pointer"
+              className="rounded p-2 text-cream hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -223,8 +281,9 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
               <li key={item.label}>
                 <a
                   href={item.href}
+                  aria-current={activeSection === item.href.replace("#", "") ? "location" : undefined}
                   onClick={(e) => handleScrollTo(e, item.href)}
-                  className="block font-display text-3xl font-light text-cream/90 transition-colors hover:text-gold"
+                  className="block rounded font-display text-3xl font-light text-cream/90 transition-colors hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                 >
                   {item.label}
                 </a>
@@ -237,7 +296,7 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
             <a
               href={site.cta.href}
               onClick={(e) => handleScrollTo(e, site.cta.href)}
-              className="flex items-center justify-between border border-gold/70 px-6 py-3.5 text-xs font-sans font-medium tracking-[0.2em] uppercase text-cream transition-colors hover:bg-gold/10 hover:border-gold"
+              className="flex items-center justify-between border border-gold/70 px-6 py-3.5 text-xs font-sans font-medium tracking-[0.2em] uppercase text-cream transition-colors hover:bg-gold/10 hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
             >
               <span>{site.cta.label}</span>
               <span>→</span>

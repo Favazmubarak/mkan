@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { connectToDatabase } from "@/lib/db";
 import { AdminUser, type IAdminUser } from "@/lib/models/AdminUser";
 import { AdminSession } from "@/lib/models/AdminSession";
+import { consumeRateLimit } from "@/lib/rate-limit";
 
 const SESSION_COOKIE_NAME = "mkan_admin_session";
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -35,6 +36,19 @@ export async function authenticateAdmin(
         error:
           "Database connection is not configured or unavailable. Please add your MONGODB_URI to .env.local and run `npm run seed`.",
       };
+    }
+
+    const rateLimit = await consumeRateLimit(
+      "admin-login",
+      ipAddress || "unknown-client",
+      10,
+      15 * 60 * 1000
+    );
+    if (!rateLimit.available) {
+      return { success: false, error: "Login is temporarily unavailable. Please try again shortly." };
+    }
+    if (!rateLimit.allowed) {
+      return { success: false, error: "Too many login attempts. Please wait before trying again." };
     }
 
     const user = await AdminUser.findOne({ email: email.toLowerCase().trim() });
@@ -104,7 +118,6 @@ export async function authenticateAdmin(
   await AdminSession.create({
     userId: user._id,
     token: tokenHash,
-    ipAddress,
     userAgent,
     expiresAt,
   });
@@ -120,14 +133,14 @@ export async function authenticateAdmin(
   });
 
   return { success: true, user };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[Authenticate Admin Error]", error);
+    const errorMessage = error instanceof Error ? error.message : "";
     return {
       success: false,
-      error:
-        error.message && error.message.includes("timed out")
-          ? "Database connection timed out. Please check your MongoDB Atlas IP whitelist (Network Access) and connection string."
-          : error.message || "Authentication failed.",
+      error: errorMessage.includes("timed out")
+        ? "Database connection timed out. Please check MongoDB connectivity."
+        : "Authentication failed.",
     };
   }
 }

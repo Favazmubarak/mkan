@@ -4,10 +4,8 @@ import { usePathname } from "next/navigation";
 
 export function AdminLayoutClient({
   children,
-  userEmail,
 }: {
   children: React.ReactNode;
-  userEmail?: string;
 }) {
   const pathname = usePathname();
 

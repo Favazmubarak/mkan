@@ -1,6 +1,8 @@
 "use server";
 
+import { headers } from "next/headers";
 import { Resend } from "resend";
+import { consumeRateLimit, getClientIdentity } from "@/lib/rate-limit";
 
 export interface ContactFormState {
   success: boolean;
@@ -47,6 +49,27 @@ export async function submitContactInquiry(
       };
     }
 
+    const requestHeaders = await headers();
+    const rateLimit = await consumeRateLimit(
+      "contact-inquiry",
+      getClientIdentity(requestHeaders),
+      5,
+      60 * 60 * 1000,
+      true
+    );
+    if (!rateLimit.available) {
+      return {
+        success: false,
+        message: "We couldn't accept your inquiry right now. Please contact us directly by email.",
+      };
+    }
+    if (!rateLimit.allowed) {
+      return {
+        success: false,
+        message: "Please wait before sending another inquiry.",
+      };
+    }
+
     // 2. Extract and sanitize inputs
     const name = readTextField(formData, "name");
     const company = readTextField(formData, "company") || "Private Client";
@@ -80,20 +103,24 @@ export async function submitContactInquiry(
       };
     }
 
-    // 4. Save inquiry to MongoDB database inbox
+    // 4. Persist the inquiry in the studio inbox when MongoDB is available.
+    let savedToInbox = false;
     try {
       const { connectToDatabase } = await import("@/lib/db");
       const { ContactMessage } = await import("@/lib/models/ContactMessage");
-      await connectToDatabase();
-      await ContactMessage.create({
-        name,
-        company,
-        email,
-        message,
-        status: "unread",
-      });
+      const db = await connectToDatabase();
+      if (db) {
+        await ContactMessage.create({
+          name,
+          company,
+          email,
+          message,
+          status: "unread",
+        });
+        savedToInbox = true;
+      }
     } catch (dbErr) {
-      console.warn("[Contact DB Warning] Could not persist message record:", dbErr);
+      console.warn("[Contact DB Warning] Could not persist inquiry in the studio inbox:", dbErr);
     }
 
     const recipientEmail = process.env.CONTACT_EMAIL_TO || "favazkoppath10@gmail.com";
@@ -151,39 +178,47 @@ export async function submitContactInquiry(
       </html>
     `;
 
-    // 5. Send via Resend API (Modern single email engine)
+    // 5. Send an email notification when Resend is configured.
+    let emailDelivered = false;
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const senderEmail = process.env.CONTACT_EMAIL_FROM || "onboarding@resend.dev";
 
-      const { error } = await resend.emails.send({
-        from: `MKAN Concept <${senderEmail}>`,
-        to: [recipientEmail],
-        replyTo: email,
-        subject: `[New Inquiry] ${name.replace(/[\r\n]/g, " ")} — MKAN Concept`,
-        html: emailHtml,
-      });
+      try {
+        const { error } = await resend.emails.send({
+          from: `MKAN Concept <${senderEmail}>`,
+          to: [recipientEmail],
+          replyTo: email,
+          subject: `[New Inquiry] ${name.replace(/[\r\n]/g, " ")} — MKAN Concept`,
+          html: emailHtml,
+        });
 
-      if (error) {
-        console.error("[Resend Delivery Error]", error);
-        // We still return success if the message was saved in DB so client UX is seamless
+        if (error) {
+          console.error("[Resend Delivery Error]", error);
+        } else {
+          emailDelivered = true;
+        }
+      } catch (emailError) {
+        console.error("[Resend Request Error]", emailError);
       }
-    } else {
-      // Local dev simulation log
-      console.log("📨 [Resend Simulated Dispatch]", {
-        to: recipientEmail,
-        from: name,
-        email,
-        company,
-      });
+    } else if (process.env.NODE_ENV !== "production") {
+      console.info("[Contact Email] Resend is not configured; no notification email was sent.");
+    }
+
+    if (!savedToInbox && !emailDelivered) {
+      return {
+        success: false,
+        message: "We couldn't submit your inquiry just now. Please contact us directly by email.",
+      };
     }
 
     return {
       success: true,
-      message:
-        "Thank you for contacting MKAN Concept. Our team will review your inquiry and connect with you shortly.",
+      message: savedToInbox
+        ? "Thank you. Your inquiry has been received and saved for our team to review."
+        : "Thank you. Your inquiry has been sent to our team.",
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[Contact Form Exception]", error);
     return {
       success: false,

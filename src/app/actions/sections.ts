@@ -5,26 +5,68 @@ import { requireAdmin } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import { SiteSection } from "@/lib/models/SiteSection";
 
+const SECTION_KEYS = new Set([
+  "site",
+  "hero",
+  "about",
+  "expertise",
+  "method",
+  "philosophy",
+  "experiences",
+  "builtForBrands",
+  "trustedBy",
+  "impactBanner",
+  "contact",
+]);
+const MAX_SECTION_BYTES = 64 * 1024;
+
 export interface SectionActionResponse {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
-/**
- * Saves a draft of section content without publishing to live visitors.
- */
+function validateSectionKey(sectionKey: string, locale: string): string | null {
+  if (!SECTION_KEYS.has(sectionKey)) return "Unknown website section.";
+  if (!/^[a-z]{2}(?:-[A-Z]{2})?$/.test(locale)) return "Invalid content locale.";
+  return null;
+}
+
+function validateSectionData(data: unknown): string | null {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    return "Section content must be an object.";
+  }
+  try {
+    if (Buffer.byteLength(JSON.stringify(data), "utf8") > MAX_SECTION_BYTES) {
+      return "Section content is larger than the 64 KB limit.";
+    }
+  } catch {
+    return "Section content is not valid serializable data.";
+  }
+  return null;
+}
+
+async function ensureDatabase(): Promise<boolean> {
+  return Boolean(await connectToDatabase());
+}
+
+/** Saves an unpublished section draft. */
 export async function saveSectionDraftAction(
   sectionKey: string,
-  draftData: Record<string, any>,
-  locale: string = "en"
+  draftData: Record<string, unknown>,
+  locale = "en"
 ): Promise<SectionActionResponse> {
   try {
     await requireAdmin();
-    await connectToDatabase();
+    const invalidSection = validateSectionKey(sectionKey, locale);
+    if (invalidSection) return { success: false, message: invalidSection };
+    const invalidData = validateSectionData(draftData);
+    if (invalidData) return { success: false, message: invalidData };
+    if (!(await ensureDatabase())) {
+      return { success: false, message: "Content storage is temporarily unavailable." };
+    }
 
     const existing = await SiteSection.findOne({ sectionKey, locale });
-
     if (!existing) {
       await SiteSection.create({
         sectionKey,
@@ -36,13 +78,7 @@ export async function saveSectionDraftAction(
     } else {
       await SiteSection.updateOne(
         { sectionKey, locale },
-        {
-          $set: {
-            draftData,
-            status: "draft",
-            updatedAt: new Date(),
-          },
-        }
+        { $set: { draftData, status: "draft", updatedAt: new Date() } }
       );
     }
 
@@ -50,36 +86,30 @@ export async function saveSectionDraftAction(
       success: true,
       message: `Draft for "${sectionKey}" saved successfully. Click "Publish Changes" to make it live.`,
     };
-  } catch (error: any) {
+  } catch (error) {
     console.error("[Save Draft Error]", error);
-    return {
-      success: false,
-      message: error.message || "Failed to save draft.",
-    };
+    return { success: false, message: "Failed to save the section draft." };
   }
 }
 
-/**
- * Publishes section draft to the live public website and triggers on-demand ISR revalidation.
- */
+/** Publishes a section draft and revalidates the public homepage. */
 export async function publishSectionAction(
   sectionKey: string,
-  locale: string = "en"
+  locale = "en"
 ): Promise<SectionActionResponse> {
   try {
     await requireAdmin();
-    await connectToDatabase();
-
-    const section = await SiteSection.findOne({ sectionKey, locale });
-
-    if (!section) {
-      return { success: false, message: `Section "${sectionKey}" not found.` };
+    const invalidSection = validateSectionKey(sectionKey, locale);
+    if (invalidSection) return { success: false, message: invalidSection };
+    if (!(await ensureDatabase())) {
+      return { success: false, message: "Content storage is temporarily unavailable." };
     }
 
-    // Archive current publishedData as previousData for 1-click revert
+    const section = await SiteSection.findOne({ sectionKey, locale });
+    if (!section) return { success: false, message: `Section "${sectionKey}" not found.` };
+
     const previousData = section.publishedData || null;
     const publishedData = section.draftData || section.publishedData;
-
     await SiteSection.updateOne(
       { sectionKey, locale },
       {
@@ -93,44 +123,33 @@ export async function publishSectionAction(
       }
     );
 
-    // Trigger instant ISR cache revalidation for the home page
     revalidatePath("/");
-
-    return {
-      success: true,
-      message: `Section "${sectionKey}" is now LIVE on the website!`,
-    };
-  } catch (error: any) {
+    return { success: true, message: `Section "${sectionKey}" is now live.` };
+  } catch (error) {
     console.error("[Publish Error]", error);
-    return {
-      success: false,
-      message: error.message || "Failed to publish section.",
-    };
+    return { success: false, message: "Failed to publish the section." };
   }
 }
 
-/**
- * Reverts the section to the previous published version.
- */
+/** Restores the previous published version of a section. */
 export async function revertSectionAction(
   sectionKey: string,
-  locale: string = "en"
+  locale = "en"
 ): Promise<SectionActionResponse> {
   try {
     await requireAdmin();
-    await connectToDatabase();
+    const invalidSection = validateSectionKey(sectionKey, locale);
+    if (invalidSection) return { success: false, message: invalidSection };
+    if (!(await ensureDatabase())) {
+      return { success: false, message: "Content storage is temporarily unavailable." };
+    }
 
     const section = await SiteSection.findOne({ sectionKey, locale });
-
     if (!section || !section.previousData) {
-      return {
-        success: false,
-        message: "No previous published version found to revert to.",
-      };
+      return { success: false, message: "No previous published version is available." };
     }
 
     const restoredData = section.previousData;
-
     await SiteSection.updateOne(
       { sectionKey, locale },
       {
@@ -145,39 +164,35 @@ export async function revertSectionAction(
     );
 
     revalidatePath("/");
-
-    return {
-      success: true,
-      message: `Section "${sectionKey}" successfully reverted to the previous version.`,
-    };
-  } catch (error: any) {
+    return { success: true, message: `Section "${sectionKey}" was reverted.` };
+  } catch (error) {
     console.error("[Revert Error]", error);
-    return {
-      success: false,
-      message: error.message || "Failed to revert section.",
-    };
+    return { success: false, message: "Failed to revert the section." };
   }
 }
 
-/**
- * Publishes all draft changes across the entire site in 1 click.
- */
+/** Publishes all draft changes for one locale. */
 export async function publishAllSectionsAction(
-  locale: string = "en"
+  locale = "en"
 ): Promise<SectionActionResponse> {
   try {
     await requireAdmin();
-    await connectToDatabase();
+    if (!/^[a-z]{2}(?:-[A-Z]{2})?$/.test(locale)) {
+      return { success: false, message: "Invalid content locale." };
+    }
+    if (!(await ensureDatabase())) {
+      return { success: false, message: "Content storage is temporarily unavailable." };
+    }
 
     const sections = await SiteSection.find({ locale });
-    for (const sec of sections) {
-      if (sec.draftData) {
+    for (const section of sections) {
+      if (section.draftData) {
         await SiteSection.updateOne(
-          { _id: sec._id },
+          { _id: section._id },
           {
             $set: {
-              previousData: sec.publishedData || null,
-              publishedData: sec.draftData,
+              previousData: section.publishedData || null,
+              publishedData: section.draftData,
               status: "published",
               publishedAt: new Date(),
               updatedAt: new Date(),
@@ -188,17 +203,9 @@ export async function publishAllSectionsAction(
     }
 
     revalidatePath("/");
-
-    return {
-      success: true,
-      message: "All changes are now LIVE on the public website!",
-    };
-  } catch (error: any) {
+    return { success: true, message: "All section changes are now live." };
+  } catch (error) {
     console.error("[Publish All Error]", error);
-    return {
-      success: false,
-      message: error.message || "Failed to publish all sections.",
-    };
+    return { success: false, message: "Failed to publish all sections." };
   }
 }
-

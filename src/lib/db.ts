@@ -6,7 +6,6 @@ interface CachedConnection {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
   var mongooseCache: CachedConnection | undefined;
 }
 
@@ -55,7 +54,7 @@ export async function connectToDatabase(): Promise<typeof mongoose | null> {
 
   try {
     cached.conn = await cached.promise;
-  } catch (e) {
+  } catch {
     cached.promise = null;
     return null;
   }

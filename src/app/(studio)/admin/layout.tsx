@@ -17,14 +17,14 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { authenticated, user } = await getAuthenticatedAdmin();
+  const { authenticated } = await getAuthenticatedAdmin();
 
-  if (!authenticated || !user) {
+  if (!authenticated) {
     redirect("/admin/login");
   }
 
   return (
-    <AdminLayoutClient userEmail={user.email}>
+    <AdminLayoutClient>
       {children}
     </AdminLayoutClient>
   );

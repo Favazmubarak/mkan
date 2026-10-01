@@ -6,7 +6,13 @@ import Link from "next/link";
 import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 
-type ExperienceItem = (typeof homeContent.experiences.items)[number] & {
+type ExperienceItem = {
+  id: string;
+  title: string;
+  subtitle: string;
+  category: "events" | "exhibitions" | "workshops" | "activations";
+  imageKey: string;
+  href: string;
   imageUrl?: string;
   altText?: string;
 };
@@ -90,6 +96,7 @@ export function Experiences({ data = homeContent.experiences, assets = defaultAs
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
                 type="button"
+                aria-pressed={isActive}
                 className={`px-4 py-2 text-[0.68rem] sm:text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold ${
                   isActive
                     ? "bg-cream text-plum-950 shadow-sm"

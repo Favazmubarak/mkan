@@ -5,14 +5,43 @@ import { ContactMessage } from "@/lib/models/ContactMessage";
 import { site } from "@/content/site";
 import { homeContent } from "@/content/home";
 import { InstagramStudioClient } from "@/components/admin/InstagramStudioClient";
+import type { StudioSite } from "@/components/admin/studio-types";
 
 export const dynamic = "force-dynamic";
+
+type AdminSection = { draftData: Record<string, unknown>; status: string };
+type AdminProject = {
+  id?: string;
+  _id?: string;
+  title: string;
+  subtitle: string;
+  category: string;
+  imageKey?: string;
+  imageUrl?: string;
+  featuredOnHome: boolean;
+  sortOrder: number;
+  [key: string]: unknown;
+};
+type AdminMessage = {
+  _id: string;
+  name: string;
+  email: string;
+  company?: string;
+  message: string;
+  status: string;
+  createdAt: string;
+  [key: string]: unknown;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
 
 export default async function AdminDashboardPage() {
   await connectToDatabase();
 
   // Load all sections
-  let sectionsMap: Record<string, any> = {
+  const sectionsMap: Record<string, AdminSection> = {
     hero: { draftData: homeContent.hero, status: "published" },
     about: { draftData: homeContent.about, status: "published" },
     expertise: { draftData: homeContent.expertise, status: "published" },
@@ -23,22 +52,33 @@ export default async function AdminDashboardPage() {
     trustedBy: { draftData: homeContent.trustedBy, status: "published" },
   };
 
-  let siteData: any = site;
-  let projects: any[] = homeContent.experiences.items.map((item, idx) => ({
+  let siteData: Record<string, unknown> = { ...site };
+  let projects: AdminProject[] = homeContent.experiences.items.map((item, idx) => ({
     ...item,
     featuredOnHome: true,
     sortOrder: idx,
   }));
-  let messages: any[] = [];
+  let messages: AdminMessage[] = [];
 
   try {
     const dbSections = await SiteSection.find({ locale: "en" }).lean();
     for (const sec of dbSections) {
+      const fallback = sec.sectionKey in homeContent
+        ? homeContent[sec.sectionKey as keyof typeof homeContent]
+        : {};
+      const sectionData = isRecord(sec.draftData)
+        ? sec.draftData
+        : isRecord(sec.publishedData)
+          ? sec.publishedData
+          : isRecord(fallback)
+            ? fallback
+            : {};
+
       if (sec.sectionKey === "site") {
-        siteData = sec.draftData || sec.publishedData || site;
+        siteData = sectionData;
       } else {
         sectionsMap[sec.sectionKey] = {
-          draftData: sec.draftData || sec.publishedData || (homeContent as any)[sec.sectionKey],
+          draftData: sectionData,
           status: sec.status || "published",
         };
       }
@@ -46,17 +86,19 @@ export default async function AdminDashboardPage() {
 
     const dbProjects = await Project.find({ locale: "en" }).sort({ sortOrder: 1, createdAt: -1 }).lean();
     if (dbProjects.length > 0) {
-      projects = dbProjects.map((p) => ({
-        ...p,
-        _id: p._id.toString(),
+      projects = dbProjects.map((project) => ({
+        ...project,
+        _id: project._id.toString(),
       }));
     }
 
     const dbMessages = await ContactMessage.find({}).sort({ createdAt: -1 }).limit(20).lean();
-    messages = dbMessages.map((m) => ({
-      ...m,
-      _id: m._id.toString(),
-      createdAt: m.createdAt ? new Date(m.createdAt).toISOString() : new Date().toISOString(),
+    messages = dbMessages.map((message) => ({
+      ...message,
+      _id: message._id.toString(),
+      createdAt: message.createdAt
+        ? new Date(message.createdAt).toISOString()
+        : new Date().toISOString(),
     }));
   } catch (e) {
     console.warn("[Admin Page Data Load]", e);
@@ -67,7 +109,7 @@ export default async function AdminDashboardPage() {
       initialSections={sectionsMap}
       initialProjects={projects}
       initialMessages={messages}
-      initialSite={siteData}
+      initialSite={siteData as unknown as StudioSite}
     />
   );
 }

@@ -1,5 +1,6 @@
 "use server";
 
+import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
@@ -16,9 +17,14 @@ export async function toggleMessageReadAction(
 ): Promise<MessageActionResponse> {
   try {
     await requireAdmin();
-    await connectToDatabase();
+    if (!mongoose.isValidObjectId(messageId) || !["read", "unread"].includes(status)) {
+      return { success: false, message: "Invalid inquiry status update." };
+    }
+    const db = await connectToDatabase();
+    if (!db) return { success: false, message: "Inquiry storage is temporarily unavailable." };
 
-    await ContactMessage.findByIdAndUpdate(messageId, { status });
+    const updated = await ContactMessage.findByIdAndUpdate(messageId, { status });
+    if (!updated) return { success: false, message: "Inquiry was not found." };
     revalidatePath("/admin/messages");
     revalidatePath("/admin");
 
@@ -26,12 +32,9 @@ export async function toggleMessageReadAction(
       success: true,
       message: `Message marked as ${status}.`,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[Message Status Error]", error);
-    return {
-      success: false,
-      message: error.message || "Failed to update message status.",
-    };
+    return { success: false, message: "Failed to update inquiry status." };
   }
 }
 
@@ -40,9 +43,14 @@ export async function deleteMessageAction(
 ): Promise<MessageActionResponse> {
   try {
     await requireAdmin();
-    await connectToDatabase();
+    if (!mongoose.isValidObjectId(messageId)) {
+      return { success: false, message: "Invalid inquiry identifier." };
+    }
+    const db = await connectToDatabase();
+    if (!db) return { success: false, message: "Inquiry storage is temporarily unavailable." };
 
-    await ContactMessage.findByIdAndDelete(messageId);
+    const deleted = await ContactMessage.findByIdAndDelete(messageId);
+    if (!deleted) return { success: false, message: "Inquiry was not found." };
     revalidatePath("/admin/messages");
     revalidatePath("/admin");
 
@@ -50,12 +58,9 @@ export async function deleteMessageAction(
       success: true,
       message: "Message deleted successfully.",
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[Message Delete Error]", error);
-    return {
-      success: false,
-      message: error.message || "Failed to delete message.",
-    };
+    return { success: false, message: "Failed to delete inquiry." };
   }
 }
 
@@ -67,9 +72,10 @@ export async function exportMessagesCsvAction(): Promise<{
 }> {
   try {
     await requireAdmin();
-    await connectToDatabase();
+    const db = await connectToDatabase();
+    if (!db) return { success: false, message: "Inquiry storage is temporarily unavailable." };
 
-    const messages = await ContactMessage.find({}).sort({ createdAt: -1 }).lean();
+    const messages = await ContactMessage.find({}).sort({ createdAt: -1 }).limit(5000).lean();
 
     if (!messages || messages.length === 0) {
       return { success: false, message: "No inquiries to export." };
@@ -94,11 +100,8 @@ export async function exportMessagesCsvAction(): Promise<{
       csv: csvContent,
       filename,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[Export CSV Error]", error);
-    return {
-      success: false,
-      message: error.message || "Failed to export inquiries.",
-    };
+    return { success: false, message: "Failed to export inquiries." };
   }
 }

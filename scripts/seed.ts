@@ -11,11 +11,14 @@ dotenv.config({ path: ".env.local" });
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/mkan_concept";
 
 async function runSeed() {
-  const adminEmail = process.env.ADMIN_DEFAULT_EMAIL || "admin@mkanconcept.ae";
+  const adminEmail = (process.env.ADMIN_DEFAULT_EMAIL || "admin@mkanconcept.ae").trim().toLowerCase();
   const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD;
 
-  if (!adminPassword || adminPassword.length < 12) {
-    throw new Error("Set ADMIN_DEFAULT_PASSWORD to a value with at least 12 characters before seeding.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail) || adminEmail.length > 254) {
+    throw new Error("Set ADMIN_DEFAULT_EMAIL to a valid email address before seeding.");
+  }
+  if (!adminPassword || adminPassword.length < 12 || Buffer.byteLength(adminPassword, "utf8") > 72) {
+    throw new Error("Set ADMIN_DEFAULT_PASSWORD to a value with at least 12 characters and no more than 72 UTF-8 bytes.");
   }
 
   console.log("--------------------------------------------------");
@@ -111,8 +114,8 @@ async function runSeed() {
           category: proj.category,
           categoryLabel: proj.subtitle,
           imageKey: proj.imageKey,
-          imageUrl: (assets.experiences as any)[proj.imageKey]?.src || "/images/hero-bg.jpg",
-          altText: (assets.experiences as any)[proj.imageKey]?.alt || proj.title,
+          imageUrl: assets.experiences[proj.imageKey]?.src || "/images/hero-bg.jpg",
+          altText: assets.experiences[proj.imageKey]?.alt || proj.title,
           featuredOnHome: true,
           sortOrder: order++,
           locale: "en",

@@ -123,6 +123,7 @@ export function Footer({ site = defaultSite }: FooterProps) {
 
           <div className="flex items-center gap-3">
             <p>{site.footer.locationTag}</p>
+            <Link href="/privacy" className="transition-colors hover:text-cream/80">Privacy</Link>
 
             {/* Subtle luxury hidden entry point to Admin Portal (44px touch target) */}
             <Link

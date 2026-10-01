@@ -4,8 +4,8 @@ import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 
 interface BuiltForBrandsProps {
-  data?: any;
-  assets?: any;
+  data?: typeof homeContent.builtForBrands;
+  assets?: typeof defaultAssets;
 }
 
 export function BuiltForBrands({ data = homeContent.builtForBrands, assets = defaultAssets }: BuiltForBrandsProps) {
@@ -54,7 +54,7 @@ export function BuiltForBrands({ data = homeContent.builtForBrands, assets = def
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 className="object-cover object-center transition-transform duration-700 hover:scale-105"
-                {...(brandAsset.blurDataURL
+                {...(("blurDataURL" in brandAsset && typeof brandAsset.blurDataURL === "string")
                   ? { placeholder: "blur" as const, blurDataURL: brandAsset.blurDataURL }
                   : {})}
               />

@@ -3,9 +3,9 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface ISiteSection extends Document {
   sectionKey: string; // e.g., 'site', 'hero', 'about', 'expertise', 'method', 'philosophy', 'builtForBrands', 'trustedBy', 'impactBanner', 'contact'
   locale: string; // 'en' (default), future 'ar'
-  draftData: Record<string, any>;
-  publishedData: Record<string, any>;
-  previousData?: Record<string, any> | null;
+  draftData: Record<string, unknown>;
+  publishedData: Record<string, unknown>;
+  previousData?: Record<string, unknown> | null;
   status: "draft" | "published";
   updatedAt: Date;
   publishedAt?: Date | null;

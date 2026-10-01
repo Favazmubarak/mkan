@@ -4,8 +4,8 @@ import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 
 interface AboutProps {
-  data?: any;
-  assets?: any;
+  data?: typeof homeContent.about;
+  assets?: typeof defaultAssets;
 }
 
 export function About({ data = homeContent.about, assets = defaultAssets }: AboutProps) {
@@ -69,7 +69,7 @@ export function About({ data = homeContent.about, assets = defaultAssets }: Abou
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
-                {...(aboutInterior.blurDataURL
+                {...(("blurDataURL" in aboutInterior && typeof aboutInterior.blurDataURL === "string")
                   ? { placeholder: "blur" as const, blurDataURL: aboutInterior.blurDataURL }
                   : {})}
               />
@@ -80,7 +80,7 @@ export function About({ data = homeContent.about, assets = defaultAssets }: Abou
         {/* Stats Strip with Thin Hairline Dividers */}
         <div className="mt-16 sm:mt-20 pt-10 border-t border-plum-900/15">
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-plum-900/15 text-center">
-            {(about.stats || []).map((stat: any) => (
+            {(about.stats || []).map((stat) => (
               <div key={stat.label} className="py-4 sm:py-0 sm:px-6">
                 <p className="font-display text-3xl sm:text-4xl font-normal text-plum-900 tracking-wide">
                   {stat.value}

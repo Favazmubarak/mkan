@@ -4,8 +4,8 @@ import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 
 interface PhilosophyBannerProps {
-  data?: any;
-  assets?: any;
+  data?: typeof homeContent.philosophy;
+  assets?: typeof defaultAssets;
 }
 
 export function PhilosophyBanner({ data = homeContent.philosophy, assets = defaultAssets }: PhilosophyBannerProps) {
@@ -21,7 +21,7 @@ export function PhilosophyBanner({ data = homeContent.philosophy, assets = defau
         fill
         sizes="100vw"
         className="object-cover object-center"
-        {...(philosophyBg.blurDataURL
+        {...(("blurDataURL" in philosophyBg && typeof philosophyBg.blurDataURL === "string")
           ? { placeholder: "blur" as const, blurDataURL: philosophyBg.blurDataURL }
           : {})}
       />
