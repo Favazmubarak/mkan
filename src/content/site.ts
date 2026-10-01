@@ -11,7 +11,7 @@ export const site = {
     "Dubai-based, Emirati-owned events, exhibitions, workshops, activations and strategic consultancy company, established 2017.",
   locale: "en",
   dir: "ltr", // Future Arabic migration: switch to 'rtl'
-  domain: "https://mkanconcept.ae", // Placeholder domain
+  domain: "https://mkanconcept.ae",
 
   // Contact details as extracted from design reference
   contact: {
@@ -21,7 +21,7 @@ export const site = {
     emailHref: "mailto:mkanconcept@gmail.com",
     instagramHandle: "@mkan.concept",
     instagramUrl: "https://instagram.com/mkan.concept",
-    linkedinUrl: "https://linkedin.com/company/mkan-concept", // Placeholder to confirm
+    linkedinUrl: "https://linkedin.com/company/mkan-concept",
     location: "Wasl 51, Dubai, UAE",
     locationMapUrl: "https://maps.google.com/?q=Wasl+51+Dubai",
     established: "2017",
@@ -29,33 +29,33 @@ export const site = {
     country: "UAE",
   },
 
-  // Primary Navigation (Matches final source of truth reference)
+  // Primary Single-Page Navigation (Matches final source of truth reference)
   nav: [
-    { label: "About", href: "/about", anchor: "#about" },
-    { label: "Services", href: "/services", anchor: "#services" },
-    { label: "Experiences", href: "/experiences", anchor: "#experiences" },
-    { label: "Approach", href: "/method", anchor: "#method" },
-    { label: "Clients", href: "/#clients", anchor: "#clients" },
-    { label: "Contact", href: "/contact", anchor: "#contact" },
+    { label: "About", href: "#about" },
+    { label: "Services", href: "#services" },
+    { label: "Experiences", href: "#experiences" },
+    { label: "Approach", href: "#method" },
+    { label: "Clients", href: "#clients" },
+    { label: "Contact", href: "#contact" },
   ],
 
   // Header CTA Button
   cta: {
     label: "Let's Talk",
-    href: "/contact",
+    href: "#contact",
   },
 
-  // Footer Metadata
+  // Footer Navigation
   footer: {
     copyright: `© ${new Date().getFullYear()} MKAN CONCEPT. ALL RIGHTS RESERVED.`,
     locationTag: "DUBAI | UAE",
     links: [
-      { label: "About", href: "/about" },
-      { label: "Services", href: "/services" },
-      { label: "Experiences", href: "/experiences" },
-      { label: "Approach", href: "/method" },
-      { label: "Clients", href: "/#clients" },
-      { label: "Contact", href: "/contact" },
+      { label: "About", href: "#about" },
+      { label: "Services", href: "#services" },
+      { label: "Experiences", href: "#experiences" },
+      { label: "Approach", href: "#method" },
+      { label: "Clients", href: "#clients" },
+      { label: "Contact", href: "#contact" },
     ],
   },
 } as const;

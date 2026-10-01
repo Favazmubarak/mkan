@@ -1,22 +1,31 @@
 import Image from "next/image";
 import { homeContent } from "@/content/home";
-import { assets } from "@/config/assets";
+import { assets as defaultAssets } from "@/config/assets";
 
-export function Hero() {
-  const { hero } = homeContent;
+interface HeroProps {
+  data?: any;
+  assets?: any;
+}
+
+export function Hero({ data = homeContent.hero, assets = defaultAssets }: HeroProps) {
+  const hero = data;
+  const heroBg = assets.heroBg;
 
   return (
     <section id="home" className="relative min-h-screen w-full overflow-hidden bg-plum-950">
       {/* Background image */}
       <Image
-        src={assets.heroBg.src}
-        alt={assets.heroBg.alt}
+        src={heroBg.src}
+        alt={heroBg.alt}
         fill
         priority
         fetchPriority="high"
         className="object-cover object-center"
         sizes="100vw"
         quality={90}
+        {...(heroBg.blurDataURL
+          ? { placeholder: "blur" as const, blurDataURL: heroBg.blurDataURL }
+          : {})}
       />
 
       {/* Dark gradient overlay — heavier on the left for text readability */}
@@ -34,10 +43,10 @@ export function Hero() {
 
           {/* Main heading */}
           <h1 className="font-display text-[2.8rem] leading-[1.05] font-normal text-cream sm:text-[3.5rem] lg:text-[4.5rem]">
-            {hero.headingLines.map((line, i) => (
+            {(Array.isArray(hero.headingLines) ? hero.headingLines : [hero.headingLines]).map((line: string, i: number, arr: any[]) => (
               <span key={i}>
                 {line}
-                {i < hero.headingLines.length - 1 && <br />}
+                {i < arr.length - 1 && <br />}
               </span>
             ))}
           </h1>

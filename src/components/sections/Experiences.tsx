@@ -4,31 +4,37 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { homeContent } from "@/content/home";
-import { assets } from "@/config/assets";
+import { assets as defaultAssets } from "@/config/assets";
 
-export function Experiences() {
-  const { experiences } = homeContent;
+interface ExperiencesProps {
+  data?: typeof homeContent.experiences;
+  assets?: typeof defaultAssets;
+}
+
+export function Experiences({ data = homeContent.experiences, assets = defaultAssets }: ExperiencesProps) {
+  const experiences = data;
   const [activeFilter, setActiveFilter] = useState("all");
 
   const getImageSrc = (key: string) => {
     switch (key) {
       case "ramadanFair":
-        return assets.experiences.ramadanFair.src;
+        return assets.experiences?.ramadanFair?.src || assets.heroBg.src;
       case "corporateEvents":
-        return assets.experiences.corporateEvents.src;
+        return assets.experiences?.corporateEvents?.src || assets.heroBg.src;
       case "luxuryActivation":
-        return assets.experiences.luxuryActivation.src;
+        return assets.experiences?.luxuryActivation?.src || assets.heroBg.src;
       case "privateEngagement":
-        return assets.experiences.privateEngagement.src;
+        return assets.experiences?.privateEngagement?.src || assets.heroBg.src;
       default:
         return assets.heroBg.src;
     }
   };
 
+  const items = experiences.items || [];
   const filteredItems =
     activeFilter === "all"
-      ? experiences.items
-      : experiences.items.filter((item) => item.category === activeFilter);
+      ? items
+      : items.filter((item) => item.category === activeFilter);
 
   return (
     <section
@@ -48,11 +54,11 @@ export function Experiences() {
           </div>
 
           <Link
-            href={experiences.viewAllCta.href}
+            href={experiences.viewAllCta?.href || "#experiences"}
             className="group inline-flex items-center gap-2 text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase text-cream/80 transition-colors duration-300 hover:text-gold"
           >
             <span className="relative">
-              {experiences.viewAllCta.label}
+              {experiences.viewAllCta?.label || "View All Projects"}
               <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-gold origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
             </span>
             <span
@@ -66,7 +72,7 @@ export function Experiences() {
 
         {/* Filter Navigation Tabs */}
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 pb-12">
-          {experiences.filters.map((filter) => {
+          {(experiences.filters || []).map((filter) => {
             const isActive = activeFilter === filter.id;
             return (
               <button
@@ -90,7 +96,7 @@ export function Experiences() {
           {filteredItems.map((item) => (
             <Link
               key={item.id}
-              href={item.href}
+              href={item.href || "#contact"}
               className="group relative flex flex-col justify-end aspect-[4/3] sm:aspect-[16/11] p-6 sm:p-8 border border-cream/15 overflow-hidden transition-all duration-500 hover:border-gold/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
             >
               {/* Background Image with Ambient Zoom */}

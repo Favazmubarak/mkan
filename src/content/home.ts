@@ -1,6 +1,6 @@
 /**
  * Home Page Content & Structure
- * Single source of truth for all 12 sections of the MKAN Concept Home Page.
+ * Single source of truth for all 12 sections of the MKAN Concept Single-Page Website.
  */
 
 export const homeContent = {
@@ -17,11 +17,11 @@ export const homeContent = {
       "Events, exhibitions, workshops, activations and strategic consultancy.",
     ctaPrimary: {
       label: "Explore Our Work",
-      href: "/experiences",
+      href: "#experiences",
     },
     ctaSecondary: {
       label: "Let's Create Together",
-      href: "/contact",
+      href: "#contact",
     },
     locationLabel: "DUBAI • UAE | EST. 2017",
     scrollLabel: "SCROLL",
@@ -38,7 +38,7 @@ export const homeContent = {
     ],
     cta: {
       label: "Our Story",
-      href: "/about",
+      href: "#about",
     },
     stats: [
       { value: "2017", label: "ESTABLISHED" },
@@ -53,7 +53,7 @@ export const homeContent = {
     title: "OUR EXPERTISE",
     viewAllCta: {
       label: "View All Services",
-      href: "/services",
+      href: "#services",
     },
     cards: [
       {
@@ -61,7 +61,7 @@ export const homeContent = {
         title: "EVENTS",
         description:
           "Corporate & institutional events, government programs, product launches and engagement platforms.",
-        cta: { label: "Explore", href: "/services#events" },
+        cta: { label: "Explore", href: "#contact" },
         imageKey: "events",
       },
       {
@@ -69,7 +69,7 @@ export const homeContent = {
         title: "EXHIBITIONS",
         description:
           "Seasonal fairs, trade & public exhibitions with strategic planning and execution.",
-        cta: { label: "Explore", href: "/services#exhibitions" },
+        cta: { label: "Explore", href: "#contact" },
         imageKey: "exhibitions",
       },
       {
@@ -77,7 +77,7 @@ export const homeContent = {
         title: "WORKSHOPS",
         description:
           "Creative learning platforms and themed masterclasses.",
-        cta: { label: "Explore", href: "/services#workshops" },
+        cta: { label: "Explore", href: "#contact" },
         imageKey: "workshops",
       },
       {
@@ -85,7 +85,7 @@ export const homeContent = {
         title: "ACTIVATIONS",
         description:
           "Luxury brand activations, mall activations and retail pop-ups.",
-        cta: { label: "Explore", href: "/services#activations" },
+        cta: { label: "Explore", href: "#contact" },
         imageKey: "activations",
       },
       {
@@ -93,7 +93,7 @@ export const homeContent = {
         title: "CONSULTANCY",
         description:
           "Concept development, customer experience, market analysis and activation strategy.",
-        cta: { label: "Explore", href: "/services#consultancy" },
+        cta: { label: "Explore", href: "#contact" },
         imageKey: "consultancy",
       },
     ],
@@ -106,7 +106,7 @@ export const homeContent = {
     subtitle: "FROM STRATEGY TO EXTRAORDINARY EXPERIENCES.",
     cta: {
       label: "Our Approach",
-      href: "/method",
+      href: "#method",
     },
     steps: [
       {
@@ -154,7 +154,7 @@ export const homeContent = {
     subheading: "Curated experiences. Measurable impact.",
     cta: {
       label: "Why MKAN",
-      href: "/about#philosophy",
+      href: "#about",
     },
   },
 
@@ -164,7 +164,7 @@ export const homeContent = {
     title: "SELECTED EXPERIENCES",
     viewAllCta: {
       label: "View All Projects",
-      href: "/experiences",
+      href: "#experiences",
     },
     filters: [
       { id: "all", label: "ALL" },
@@ -180,7 +180,7 @@ export const homeContent = {
         subtitle: "Flagship Exhibition Platform",
         category: "exhibitions",
         imageKey: "ramadanFair",
-        href: "/experiences/ramadan-fair",
+        href: "#contact",
       },
       {
         id: "corporate-events",
@@ -188,7 +188,7 @@ export const homeContent = {
         subtitle: "Institutional Experience",
         category: "events",
         imageKey: "corporateEvents",
-        href: "/experiences/corporate-events",
+        href: "#contact",
       },
       {
         id: "luxury-brand-activation",
@@ -196,7 +196,7 @@ export const homeContent = {
         subtitle: "Retail & Experiential",
         category: "activations",
         imageKey: "luxuryActivation",
-        href: "/experiences/luxury-brand-activation",
+        href: "#contact",
       },
       {
         id: "private-engagement",
@@ -204,7 +204,7 @@ export const homeContent = {
         subtitle: "Curated Experience",
         category: "events",
         imageKey: "privateEngagement",
-        href: "/experiences/private-engagement",
+        href: "#contact",
       },
     ],
   },
@@ -216,7 +216,7 @@ export const homeContent = {
       "From corporate programs and government events to brand activations and cultural experiences, we create meaningful platforms that connect people, brands and opportunities.",
     cta: {
       label: "Our Clients",
-      href: "/contact",
+      href: "#clients",
     },
   },
 
@@ -241,7 +241,7 @@ export const homeContent = {
       "We collaborate with brands, institutions and communities to deliver experiences that inspire, engage and create lasting value.",
     cta: {
       label: "Let's Talk",
-      href: "/contact",
+      href: "#contact",
     },
   },
 

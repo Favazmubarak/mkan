@@ -1,23 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import { homeContent } from "@/content/home";
-import { assets } from "@/config/assets";
+import { assets as defaultAssets } from "@/config/assets";
 
-export function Method() {
-  const { method } = homeContent;
+interface MethodProps {
+  data?: typeof homeContent.method;
+  assets?: typeof defaultAssets;
+}
+
+export function Method({ data = homeContent.method, assets = defaultAssets }: MethodProps) {
+  const method = data;
 
   const getStepImage = (key: string) => {
     switch (key) {
       case "concept":
-        return assets.method.concept.src;
+        return assets.method?.concept?.src || assets.heroBg.src;
       case "development":
-        return assets.method.development.src;
+        return assets.method?.development?.src || assets.heroBg.src;
       case "curation":
-        return assets.method.curation.src;
+        return assets.method?.curation?.src || assets.heroBg.src;
       case "production":
-        return assets.method.production.src;
+        return assets.method?.production?.src || assets.heroBg.src;
       case "reporting":
-        return assets.method.reporting.src;
+        return assets.method?.reporting?.src || assets.heroBg.src;
       default:
         return assets.heroBg.src;
     }
@@ -44,11 +49,11 @@ export function Method() {
           </div>
 
           <Link
-            href={method.cta.href}
+            href={method.cta?.href || "#method"}
             className="group inline-flex items-center gap-2 text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase text-plum-900 transition-colors duration-300 hover:text-gold-dark"
           >
             <span className="relative">
-              {method.cta.label}
+              {method.cta?.label || "Our Approach"}
               <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-plum-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 group-hover:bg-gold-dark" />
             </span>
             <span
@@ -62,7 +67,7 @@ export function Method() {
 
         {/* 5 Sequential Framework Stages */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-6 relative">
-          {method.steps.map((step, index) => (
+          {(method.steps || []).map((step, index, arr) => (
             <div key={step.number} className="flex flex-col relative group">
               {/* Top Step Header with Circular Number and Connecting Line */}
               <div className="flex items-center gap-4 mb-6">
@@ -71,7 +76,7 @@ export function Method() {
                 </div>
 
                 {/* Connecting Line-Arrow on Desktop */}
-                {index < method.steps.length - 1 && (
+                {index < arr.length - 1 && (
                   <div className="hidden lg:flex items-center flex-1 h-[1px] bg-plum-900/20 relative">
                     <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] text-plum-900/40">
                       →

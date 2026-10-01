@@ -1,20 +1,29 @@
 import Image from "next/image";
 import Link from "next/link";
 import { homeContent } from "@/content/home";
-import { assets } from "@/config/assets";
+import { assets as defaultAssets } from "@/config/assets";
 
-export function PhilosophyBanner() {
-  const { philosophy } = homeContent;
+interface PhilosophyBannerProps {
+  data?: any;
+  assets?: any;
+}
+
+export function PhilosophyBanner({ data = homeContent.philosophy, assets = defaultAssets }: PhilosophyBannerProps) {
+  const philosophy = data;
+  const philosophyBg = assets.philosophyBg;
 
   return (
     <section className="relative w-full py-24 sm:py-32 overflow-hidden bg-plum-950 text-cream">
       {/* Background Image */}
       <Image
-        src={assets.philosophyBg.src}
-        alt={assets.philosophyBg.alt}
+        src={philosophyBg.src}
+        alt={philosophyBg.alt}
         fill
         sizes="100vw"
         className="object-cover object-center"
+        {...(philosophyBg.blurDataURL
+          ? { placeholder: "blur" as const, blurDataURL: philosophyBg.blurDataURL }
+          : {})}
       />
 
       {/* Dark Luxury Vignette Overlay */}
@@ -38,10 +47,10 @@ export function PhilosophyBanner() {
 
           <div className="mt-8">
             <Link
-              href={philosophy.cta.href}
+              href={philosophy.cta?.href || "#about"}
               className="inline-flex items-center gap-2.5 bg-gold px-6 py-3 text-[0.7rem] font-sans font-medium tracking-[0.2em] uppercase text-plum-950 transition-transform duration-200 hover:scale-[1.03] active:scale-[0.97]"
             >
-              <span>{philosophy.cta.label}</span>
+              <span>{philosophy.cta?.label || "Why MKAN"}</span>
               <span aria-hidden="true">→</span>
             </Link>
           </div>

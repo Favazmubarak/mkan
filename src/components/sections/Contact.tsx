@@ -1,10 +1,25 @@
 import Image from "next/image";
 import { homeContent } from "@/content/home";
-import { assets } from "@/config/assets";
+import { assets as defaultAssets } from "@/config/assets";
+import { site as defaultSite } from "@/content/site";
 import { ContactForm } from "@/components/ContactForm";
 
-export function Contact() {
-  const { contact } = homeContent;
+interface ContactProps {
+  data?: any;
+  site?: any;
+  assets?: any;
+}
+
+export function Contact({ data = homeContent.contact, site = defaultSite, assets = defaultAssets }: ContactProps) {
+  const contact = data;
+  const contactArch = assets.contactArch;
+
+  // Use dynamic site contact details if available, or fall back to contact.details
+  const phone = site.contact?.phone || contact.details?.phone || "+971 50 222 5890";
+  const email = site.contact?.email || contact.details?.email || "mkanconcept@gmail.com";
+  const instagram = site.contact?.instagramHandle || contact.details?.instagram || "@mkan.concept";
+  const instagramUrl = site.contact?.instagramUrl || `https://instagram.com/${instagram.replace("@", "")}`;
+  const address = site.contact?.location || contact.details?.address || "Wasl 51, Dubai, UAE";
 
   return (
     <section
@@ -34,29 +49,29 @@ export function Contact() {
               <div className="mt-10 flex flex-col gap-5">
                 {/* Phone */}
                 <a
-                  href={`tel:${contact.details.phone.replace(/\s+/g, "")}`}
+                  href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
                   className="group flex items-center gap-4 text-xs sm:text-sm font-sans font-normal text-plum-900 transition-colors hover:text-gold-dark"
                 >
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border border-plum-900/20 text-plum-900 transition-colors group-hover:border-gold-dark group-hover:text-gold-dark">
                     📞
                   </span>
-                  <span>{contact.details.phone}</span>
+                  <span>{phone}</span>
                 </a>
 
                 {/* Email */}
                 <a
-                  href={`mailto:${contact.details.email}`}
+                  href={`mailto:${email}`}
                   className="group flex items-center gap-4 text-xs sm:text-sm font-sans font-normal text-plum-900 transition-colors hover:text-gold-dark"
                 >
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border border-plum-900/20 text-plum-900 transition-colors group-hover:border-gold-dark group-hover:text-gold-dark">
                     ✉️
                   </span>
-                  <span>{contact.details.email}</span>
+                  <span>{email}</span>
                 </a>
 
                 {/* Instagram */}
                 <a
-                  href={`https://instagram.com/${contact.details.instagram.replace("@", "")}`}
+                  href={instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex items-center gap-4 text-xs sm:text-sm font-sans font-normal text-plum-900 transition-colors hover:text-gold-dark"
@@ -64,7 +79,7 @@ export function Contact() {
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border border-plum-900/20 text-plum-900 transition-colors group-hover:border-gold-dark group-hover:text-gold-dark">
                     📷
                   </span>
-                  <span>{contact.details.instagram}</span>
+                  <span>{instagram}</span>
                 </a>
 
                 {/* Address */}
@@ -72,7 +87,7 @@ export function Contact() {
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border border-plum-900/20 text-plum-900">
                     📍
                   </span>
-                  <span>{contact.details.address}</span>
+                  <span>{address}</span>
                 </div>
               </div>
             </div>
@@ -83,10 +98,13 @@ export function Contact() {
             {/* Background Arched Frame Graphic on Right */}
             <div className="absolute right-0 top-0 bottom-0 w-3/4 max-w-sm overflow-hidden rounded-t-[140px] opacity-20 pointer-events-none hidden sm:block">
               <Image
-                src={assets.contactArch.src}
+                src={contactArch.src}
                 alt="Architectural Arch"
                 fill
                 className="object-cover object-center"
+                {...(contactArch.blurDataURL
+                  ? { placeholder: "blur" as const, blurDataURL: contactArch.blurDataURL }
+                  : {})}
               />
             </div>
 

@@ -1,8 +1,12 @@
 import Image from "next/image";
 import { homeContent } from "@/content/home";
 
-export function Clients() {
-  const { trustedBy } = homeContent;
+interface ClientsProps {
+  data?: typeof homeContent.trustedBy;
+}
+
+export function Clients({ data = homeContent.trustedBy }: ClientsProps) {
+  const trustedBy = data;
 
   return (
     <section id="clients" className="bg-[#FAF1E8] px-6 py-16 sm:px-8 lg:px-12 lg:py-20 border-y border-plum-900/10">
@@ -11,9 +15,9 @@ export function Clients() {
           {trustedBy.eyebrow}
         </p>
 
-        {/* 7 Client Logos Grid with Subtle Dividers */}
+        {/* Client Logos Grid with Subtle Dividers */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-6 sm:gap-8 items-center justify-items-center">
-          {trustedBy.clients.map((client) => (
+          {(trustedBy.clients || []).map((client) => (
             <div
               key={client.name}
               className="relative h-12 w-full max-w-[130px] flex items-center justify-center grayscale opacity-80 transition-all duration-300 hover:grayscale-0 hover:opacity-100"

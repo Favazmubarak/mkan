@@ -1,10 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { homeContent } from "@/content/home";
-import { assets } from "@/config/assets";
+import { assets as defaultAssets } from "@/config/assets";
 
-export function About() {
-  const { about } = homeContent;
+interface AboutProps {
+  data?: any;
+  assets?: any;
+}
+
+export function About({ data = homeContent.about, assets = defaultAssets }: AboutProps) {
+  const about = data;
+  const aboutInterior = assets.aboutInterior;
 
   return (
     <section id="about" className="bg-cream text-ink px-6 py-20 sm:px-8 lg:px-12 lg:py-28">
@@ -30,17 +36,17 @@ export function About() {
 
               {/* Body Paragraph */}
               <p className="mt-6 text-sm sm:text-base font-sans font-light leading-relaxed text-plum-950/80 max-w-xl">
-                {about.paragraphs[0]}
+                {Array.isArray(about.paragraphs) ? about.paragraphs[0] : about.paragraphs}
               </p>
 
               {/* CTA Link */}
               <div className="mt-8">
                 <Link
-                  href={about.cta.href}
+                  href={about.cta?.href || "#about"}
                   className="group inline-flex items-center gap-2 text-xs font-sans font-medium tracking-[0.2em] uppercase text-plum-900 transition-colors duration-300 hover:text-gold-dark"
                 >
                   <span className="relative">
-                    {about.cta.label}
+                    {about.cta?.label || "Our Story"}
                     <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-plum-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 group-hover:bg-gold-dark" />
                   </span>
                   <span
@@ -58,11 +64,14 @@ export function About() {
           <div className="lg:col-span-6">
             <div className="relative aspect-[4/3] w-full overflow-hidden bg-plum-950/10">
               <Image
-                src={assets.aboutInterior.src}
-                alt={assets.aboutInterior.alt}
+                src={aboutInterior.src}
+                alt={aboutInterior.alt}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
+                {...(aboutInterior.blurDataURL
+                  ? { placeholder: "blur" as const, blurDataURL: aboutInterior.blurDataURL }
+                  : {})}
               />
             </div>
           </div>
@@ -71,7 +80,7 @@ export function About() {
         {/* Stats Strip with Thin Hairline Dividers */}
         <div className="mt-16 sm:mt-20 pt-10 border-t border-plum-900/15">
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-plum-900/15 text-center">
-            {about.stats.map((stat) => (
+            {(about.stats || []).map((stat: any) => (
               <div key={stat.label} className="py-4 sm:py-0 sm:px-6">
                 <p className="font-display text-3xl sm:text-4xl font-normal text-plum-900 tracking-wide">
                   {stat.value}

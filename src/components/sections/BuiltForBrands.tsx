@@ -1,10 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { homeContent } from "@/content/home";
-import { assets } from "@/config/assets";
+import { assets as defaultAssets } from "@/config/assets";
 
-export function BuiltForBrands() {
-  const { builtForBrands } = homeContent;
+interface BuiltForBrandsProps {
+  data?: any;
+  assets?: any;
+}
+
+export function BuiltForBrands({ data = homeContent.builtForBrands, assets = defaultAssets }: BuiltForBrandsProps) {
+  const builtForBrands = data;
+  const brandAsset = assets.builtForBrands;
 
   return (
     <section className="bg-cream text-ink px-6 py-20 sm:px-8 lg:px-12 lg:py-28">
@@ -22,11 +28,11 @@ export function BuiltForBrands() {
 
             <div className="mt-8">
               <Link
-                href={builtForBrands.cta.href}
+                href={builtForBrands.cta?.href || "#clients"}
                 className="group inline-flex items-center gap-2 text-xs font-sans font-medium tracking-[0.2em] uppercase text-plum-900 transition-colors duration-300 hover:text-gold-dark"
               >
                 <span className="relative">
-                  {builtForBrands.cta.label}
+                  {builtForBrands.cta?.label || "Our Clients"}
                   <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-plum-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 group-hover:bg-gold-dark" />
                 </span>
                 <span
@@ -43,11 +49,14 @@ export function BuiltForBrands() {
           <div className="lg:col-span-6 flex justify-center lg:justify-end">
             <div className="relative w-full max-w-md aspect-[4/5] overflow-hidden rounded-t-[140px] sm:rounded-t-[180px] bg-plum-900/10 shadow-sm">
               <Image
-                src={assets.builtForBrands.src}
-                alt={assets.builtForBrands.alt}
+                src={brandAsset.src}
+                alt={brandAsset.alt}
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 className="object-cover object-center transition-transform duration-700 hover:scale-105"
+                {...(brandAsset.blurDataURL
+                  ? { placeholder: "blur" as const, blurDataURL: brandAsset.blurDataURL }
+                  : {})}
               />
             </div>
           </div>

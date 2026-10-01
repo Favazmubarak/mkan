@@ -1,23 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import { homeContent } from "@/content/home";
-import { assets } from "@/config/assets";
+import { assets as defaultAssets } from "@/config/assets";
 
-export function Expertise() {
-  const { expertise } = homeContent;
+interface ExpertiseProps {
+  data?: typeof homeContent.expertise;
+  assets?: typeof defaultAssets;
+}
+
+export function Expertise({ data = homeContent.expertise, assets = defaultAssets }: ExpertiseProps) {
+  const expertise = data;
 
   const getImageSrc = (key: string) => {
     switch (key) {
       case "events":
-        return assets.expertise.events.src;
+        return assets.expertise?.events?.src || assets.heroBg.src;
       case "exhibitions":
-        return assets.expertise.exhibitions.src;
+        return assets.expertise?.exhibitions?.src || assets.heroBg.src;
       case "workshops":
-        return assets.expertise.workshops.src;
+        return assets.expertise?.workshops?.src || assets.heroBg.src;
       case "activations":
-        return assets.expertise.activations.src;
+        return assets.expertise?.activations?.src || assets.heroBg.src;
       case "consultancy":
-        return assets.expertise.consultancy.src;
+        return assets.expertise?.consultancy?.src || assets.heroBg.src;
       default:
         return assets.heroBg.src;
     }
@@ -41,11 +46,11 @@ export function Expertise() {
           </div>
 
           <Link
-            href={expertise.viewAllCta.href}
+            href={expertise.viewAllCta?.href || "#services"}
             className="group inline-flex items-center gap-2 text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase text-cream/80 transition-colors duration-300 hover:text-gold"
           >
             <span className="relative">
-              {expertise.viewAllCta.label}
+              {expertise.viewAllCta?.label || "View All Services"}
               <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-gold origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
             </span>
             <span
@@ -59,10 +64,10 @@ export function Expertise() {
 
         {/* 5 Column Tall Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-          {expertise.cards.map((card) => (
+          {(expertise.cards || []).map((card) => (
             <Link
               key={card.number}
-              href={card.cta.href}
+              href={card.cta?.href || "#contact"}
               className="group relative flex flex-col justify-end min-h-[460px] sm:min-h-[500px] lg:min-h-[540px] p-6 border border-cream/15 overflow-hidden transition-all duration-500 hover:border-gold/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
             >
               {/* Card Image Background with Hover Zoom */}
@@ -97,7 +102,7 @@ export function Expertise() {
 
                 {/* Explore Link */}
                 <div className="inline-flex items-center gap-2 text-[0.68rem] font-sans font-medium tracking-[0.22em] uppercase text-cream/90 transition-colors group-hover:text-gold">
-                  <span>{card.cta.label}</span>
+                  <span>{card.cta?.label || "Explore"}</span>
                   <span
                     aria-hidden="true"
                     className="transition-transform duration-300 group-hover:translate-x-1"

@@ -1,9 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { site } from "@/content/site";
+import { site as defaultSite } from "@/content/site";
 
-export function Footer() {
+interface FooterProps {
+  site?: typeof defaultSite;
+}
+
+export function Footer({ site = defaultSite }: FooterProps) {
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+
+    if (href === "#home" || href === "#" || href === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.history.pushState(null, "", " ");
+      return;
+    }
+
+    const targetId = href.replace("#", "");
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+      window.history.pushState(null, "", href);
+    }
+  };
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -13,28 +34,34 @@ export function Footer() {
       <div className="mx-auto max-w-[1440px]">
         {/* Main Footer Row */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-12 border-b border-cream/10">
-          {/* Brand Lettering Logo */}
+          {/* Brand Luxury Logo Mark */}
           <button
             onClick={scrollToTop}
-            className="group flex flex-col items-center md:items-start leading-none text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
+            className="flex items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
             aria-label="Back to top"
           >
-            <span className="font-display text-[1.85rem] font-normal tracking-[0.12em] text-cream transition-transform duration-300 group-hover:scale-[1.02]">
-              MKAN
-            </span>
-            <span className="text-[0.52rem] font-sans font-medium tracking-[0.38em] uppercase text-cream/70 transition-colors group-hover:text-cream/90">
-              CONCEPT
-            </span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold text-plum-950 font-display text-xl font-bold tracking-tighter shadow-md">
+              M
+            </div>
+            <div className="flex flex-col leading-none">
+              <span className="font-display text-[1.45rem] font-bold tracking-[0.16em] text-cream">
+                MKAN
+              </span>
+              <span className="text-[0.52rem] font-sans font-bold tracking-[0.35em] uppercase text-gold">
+                CONCEPT
+              </span>
+            </div>
           </button>
 
-          {/* Navigation Links */}
+          {/* Navigation Links with Smooth Upward/Downward Scroll */}
           <nav aria-label="Footer Navigation">
             <ul className="flex flex-wrap items-center justify-center gap-6 lg:gap-8" role="list">
               {site.footer.links.map((link) => (
                 <li key={link.label}>
-                  <Link
+                  <a
                     href={link.href}
-                    className="group relative inline-block py-1 text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase text-cream/75 transition-colors duration-300 hover:text-cream focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
+                    onClick={(e) => handleScrollTo(e, link.href)}
+                    className="group relative inline-block py-1 text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase text-cream/75 transition-colors duration-300 hover:text-cream focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
                   >
                     <span className="inline-block transition-transform duration-300 group-hover:scale-[1.06]">
                       {link.label}
@@ -43,7 +70,7 @@ export function Footer() {
                       className="absolute bottom-0 left-0 h-[1px] w-full bg-cream scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100"
                       aria-hidden="true"
                     />
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -90,10 +117,23 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom Metadata Row */}
+        {/* Bottom Metadata Row with Hidden Admin Trigger */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-[0.65rem] font-sans tracking-[0.25em] uppercase text-cream/50">
           <p>{site.footer.copyright}</p>
-          <p>{site.footer.locationTag}</p>
+
+          <div className="flex items-center gap-3">
+            <p>{site.footer.locationTag}</p>
+
+            {/* Subtle luxury hidden entry point to Admin Portal (44px touch target) */}
+            <Link
+              href="/admin/login"
+              rel="nofollow"
+              aria-label="Admin login"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full text-cream/20 hover:text-cream/60 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
+            >
+              <span className="inline-block h-2 w-2 rounded-full border border-cream/30 hover:border-gold/60 transition-colors" />
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
