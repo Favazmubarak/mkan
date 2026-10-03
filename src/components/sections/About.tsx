@@ -28,7 +28,7 @@ export function About({ data = homeContent.about, assets = defaultAssets }: Abou
 
             {/* Main Heading H2 */}
             <h2 className="font-display text-4xl sm:text-5xl lg:text-[4rem] font-normal leading-[1.05] tracking-tight text-[#3B0918] uppercase">
-              {about.heading.split('JUST ').map((part, i, arr) => (
+              {about.heading.split('JUST ').map((part, i) => (
                 <span key={i}>
                   {part}{i === 0 ? 'JUST ' : ''}
                   {i === 0 && <br />}

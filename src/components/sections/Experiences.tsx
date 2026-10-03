@@ -87,12 +87,7 @@ export function Experiences({
 
   const maxIndex = Math.max(0, items.length - visibleCount);
 
-  // Keep index within bounds on resize
-  useEffect(() => {
-    if (currentIndex > maxIndex) {
-      setCurrentIndex(maxIndex);
-    }
-  }, [maxIndex, currentIndex]);
+  const activeIndex = Math.min(currentIndex, maxIndex);
 
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
@@ -271,7 +266,7 @@ export function Experiences({
           <div
             className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform -mx-2.5 sm:-mx-3 lg:-mx-3.5"
             style={{
-              transform: `translate3d(-${currentIndex * slidePercent}%, 0, 0)`,
+              transform: `translate3d(-${activeIndex * slidePercent}%, 0, 0)`,
             }}
           >
             {items.map((item, index) => (
@@ -362,7 +357,7 @@ export function Experiences({
                 onClick={() => setCurrentIndex(idx)}
                 aria-label={`Go to slide ${idx + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                  currentIndex === idx
+                  activeIndex === idx
                     ? "w-8 bg-[#DDB78A] shadow-[0_0_14px_rgba(221,183,138,0.65)]"
                     : "w-2 bg-white/20 hover:bg-white/40"
                 }`}

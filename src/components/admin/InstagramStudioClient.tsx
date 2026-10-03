@@ -102,13 +102,14 @@ export function InstagramStudioClient({
         copy[sectionKey].draftData = structuredClone(seed) as Record<string, unknown>;
       }
 
+      const draft = copy[sectionKey].draftData as Record<string, unknown>;
       // If cards array is missing or was converted to object, ensure it's an array from seed
-      if (sectionKey === "expertise" && (!Array.isArray((copy[sectionKey].draftData as any).cards))) {
-        (copy[sectionKey].draftData as any).cards = structuredClone(homeContent.expertise.cards);
+      if (sectionKey === "expertise" && (!Array.isArray(draft.cards))) {
+        draft.cards = structuredClone(homeContent.expertise.cards);
       }
 
       const keys = field.split(".");
-      let target: any = copy[sectionKey].draftData;
+      let target: Record<string, unknown> = draft;
 
       for (let i = 0; i < keys.length - 1; i++) {
         const key = keys[i];
@@ -118,12 +119,12 @@ export function InstagramStudioClient({
         if (target[key] === undefined || target[key] === null) {
           target[key] = isNextIndex ? [] : {};
         }
-        target = target[key];
+        target = target[key] as Record<string, unknown>;
       }
 
       const lastKey = keys[keys.length - 1];
       if (/^\d+$/.test(lastKey) && Array.isArray(target)) {
-        target[Number(lastKey)] = value;
+        (target as unknown[])[Number(lastKey)] = value;
       } else {
         target[lastKey] = value;
       }

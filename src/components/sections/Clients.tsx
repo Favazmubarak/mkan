@@ -15,7 +15,7 @@ export interface ClientItem {
 interface ClientsProps {
   data?: {
     eyebrow?: string;
-    clients?: readonly ClientItem[] | ClientItem[] | any;
+    clients?: readonly ClientItem[] | ClientItem[];
     [key: string]: unknown;
   } | typeof homeContent.trustedBy;
 }
@@ -38,7 +38,6 @@ export function Clients({ data }: ClientsProps) {
       const files = fs.readdirSync(logoDir);
       for (const file of files) {
         if (!/\.(png|jpe?g|svg|webp)$/i.test(file)) continue;
-        const webPath = `/images/logo/${file}`.toLowerCase();
         const cleanBase = file.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ").toLowerCase().trim();
         const alreadyExists = clientList.some((c) => {
           const cPath = (c.logo || "").toLowerCase();
