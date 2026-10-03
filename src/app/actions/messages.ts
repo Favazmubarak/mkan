@@ -93,6 +93,16 @@ export async function deleteMessageAction(
   }
 }
 
+function sanitizeCsvCell(value: unknown): string {
+  const str = typeof value === "string" ? value : value ? String(value) : "";
+  const cleaned = str.replace(/"/g, '""').replace(/[\r\n]+/g, " ");
+  // Neutralize CSV Formula Injection (CWE-1236)
+  if (/^[=+\-@\t\r]/.test(cleaned)) {
+    return `"'${cleaned}"`;
+  }
+  return `"${cleaned}"`;
+}
+
 export async function exportMessagesCsvAction(): Promise<{
   success: boolean;
   csv?: string;
@@ -113,13 +123,13 @@ export async function exportMessagesCsvAction(): Promise<{
     const headers = ["Date", "Name", "Email", "Company", "Phone", "Status", "Replied", "Message"];
     const rows = messages.map((m) => [
       `"${new Date(m.createdAt).toISOString()}"`,
-      `"${(m.name || "").replace(/"/g, '""')}"`,
-      `"${(m.email || "").replace(/"/g, '""')}"`,
-      `"${(m.company || "").replace(/"/g, '""')}"`,
-      `"${(m.phone || "").replace(/"/g, '""')}"`,
-      `"${m.status}"`,
-      `"${m.replied ? "Yes" : "No"}"`,
-      `"${(m.message || "").replace(/"/g, '""').replace(/\n/g, " ")}"`,
+      sanitizeCsvCell(m.name),
+      sanitizeCsvCell(m.email),
+      sanitizeCsvCell(m.company),
+      sanitizeCsvCell(m.phone),
+      sanitizeCsvCell(m.status),
+      sanitizeCsvCell(m.replied ? "Yes" : "No"),
+      sanitizeCsvCell(m.message),
     ]);
 
     const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
