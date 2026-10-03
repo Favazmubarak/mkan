@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import { SiteSection } from "@/lib/models/SiteSection";
+import { touchContentVersion } from "@/lib/live-sync";
 
 const SECTION_KEYS = new Set([
   "site",
@@ -122,7 +123,8 @@ export async function publishSectionAction(
       }
     );
 
-    revalidatePath("/");
+    touchContentVersion();
+    revalidatePath("/", "layout");
     return { success: true, message: `Section "${sectionKey}" is now live.` };
   } catch (error) {
     console.error("[Publish Error]", error);
@@ -162,7 +164,8 @@ export async function revertSectionAction(
       }
     );
 
-    revalidatePath("/");
+    touchContentVersion();
+    revalidatePath("/", "layout");
     return { success: true, message: `Section "${sectionKey}" was reverted.` };
   } catch (error) {
     console.error("[Revert Error]", error);
@@ -201,7 +204,8 @@ export async function publishAllSectionsAction(
       }
     }
 
-    revalidatePath("/");
+    touchContentVersion();
+    revalidatePath("/", "layout");
     return { success: true, message: "All section changes are now live." };
   } catch (error) {
     console.error("[Publish All Error]", error);

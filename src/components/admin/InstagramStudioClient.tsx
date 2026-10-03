@@ -11,8 +11,9 @@ import {
   upsertProjectAction,
   deleteProjectAction,
   toggleProjectHomeAction,
+  reorderProjectsAction,
 } from "@/app/actions/projects";
-import { uploadMediaAction } from "@/app/actions/media";
+import { uploadMediaAction, deleteMediaSlotAction } from "@/app/actions/media";
 import { prepareImageUpload } from "@/lib/prepare-image-upload";
 import {
   toggleMessageReadAction,
@@ -26,6 +27,7 @@ import { PortfolioProjectCard } from "./PortfolioProjectCard";
 import { ClientInquiriesPanel } from "./ClientInquiriesPanel";
 import { StudioProfilePanel } from "./StudioProfilePanel";
 import { WebsiteContentPanel } from "./WebsiteContentPanel";
+import { ExpertiseContentPanel } from "./ExpertiseContentPanel";
 import type { Editable, StudioMessage, StudioProject, StudioSection, StudioSite } from "./studio-types";
 import {
   Layers,
@@ -57,7 +59,7 @@ export function InstagramStudioClient({
   initialSite,
 }: StudioProps) {
   // Navigation
-  const [activeTab, setActiveTab] = useState<"content" | "portfolio" | "inbox" | "settings">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "expertise" | "portfolio" | "inbox" | "settings">("content");
 
   // Data State
   const [sections, setSections] = useState(initialSections);
@@ -91,19 +93,54 @@ export function InstagramStudioClient({
   const updateSection = (sectionKey: string, field: string, value: unknown) => {
     setSections((prev) => {
       const copy = structuredClone(prev);
-      if (!copy[sectionKey]) copy[sectionKey] = { draftData: {}, status: "draft" };
-      if (!copy[sectionKey].draftData) copy[sectionKey].draftData = {};
+      const seed = ((homeContent as unknown as Record<string, Record<string, unknown>>)[sectionKey] || {}) as Record<string, unknown>;
+
+      if (!copy[sectionKey]) {
+        copy[sectionKey] = { draftData: structuredClone(seed) as Record<string, unknown>, status: "draft" };
+      }
+      if (!copy[sectionKey].draftData || Object.keys(copy[sectionKey].draftData).length === 0) {
+        copy[sectionKey].draftData = structuredClone(seed) as Record<string, unknown>;
+      }
+
+      // If cards array is missing or was converted to object, ensure it's an array from seed
+      if (sectionKey === "expertise" && (!Array.isArray((copy[sectionKey].draftData as any).cards))) {
+        (copy[sectionKey].draftData as any).cards = structuredClone(homeContent.expertise.cards);
+      }
 
       const keys = field.split(".");
-      let target: Record<string, unknown> = copy[sectionKey].draftData;
+      let target: any = copy[sectionKey].draftData;
+
       for (let i = 0; i < keys.length - 1; i++) {
-        const child = target[keys[i]];
-        if (!child || typeof child !== "object" || Array.isArray(child)) target[keys[i]] = {};
-        target = target[keys[i]] as Record<string, unknown>;
+        const key = keys[i];
+        const nextKey = keys[i + 1];
+        const isNextIndex = /^\d+$/.test(nextKey);
+
+        if (target[key] === undefined || target[key] === null) {
+          target[key] = isNextIndex ? [] : {};
+        }
+        target = target[key];
       }
-      target[keys[keys.length - 1]] = value;
+
+      const lastKey = keys[keys.length - 1];
+      if (/^\d+$/.test(lastKey) && Array.isArray(target)) {
+        target[Number(lastKey)] = value;
+      } else {
+        target[lastKey] = value;
+      }
       return copy;
     });
+  };
+
+  const broadcastLiveSync = () => {
+    try {
+      if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+        const ch = new BroadcastChannel("mkan_live_sync");
+        ch.postMessage({ type: "CONTENT_UPDATED", timestamp: Date.now() });
+        ch.close();
+      }
+    } catch {
+      // Ignore broadcast errors
+    }
   };
 
   /* ------------------------------------------------------------------ */
@@ -120,6 +157,7 @@ export function InstagramStudioClient({
       }
       const res = await publishSectionAction(sectionKey);
       if (res.success) {
+        broadcastLiveSync();
         showToast(`${label} saved & published live.`);
       } else {
         showToast(res.message || "Failed to update section.", "error");
@@ -155,6 +193,7 @@ export function InstagramStudioClient({
       }
       const res = await publishAllSectionsAction();
       if (res.success) {
+        broadcastLiveSync();
         showToast("✨ All changes are now live on the public website!");
       } else {
         showToast(res.message || "Failed to publish.", "error");
@@ -187,6 +226,7 @@ export function InstagramStudioClient({
 
       const res = await uploadMediaAction(formData);
       if (res.success) {
+        broadcastLiveSync();
         if (previousUrl?.startsWith("blob:")) URL.revokeObjectURL(previousUrl);
         const imageUrl = res.asset?.url;
         if (previewUrl && imageUrl) {
@@ -218,6 +258,25 @@ export function InstagramStudioClient({
     }
   };
 
+  const handleDeleteMedia = async (slotKey: string) => {
+    try {
+      const res = await deleteMediaSlotAction(slotKey);
+      if (res.success) {
+        broadcastLiveSync();
+        setUploadedPreviews((prev) => {
+          const next = { ...prev };
+          delete next[slotKey];
+          return next;
+        });
+        showToast("Photo removed.");
+      } else {
+        showToast(res.message || "Failed to remove photo.", "error");
+      }
+    } catch {
+      showToast("Failed to remove photo.", "error");
+    }
+  };
+
   /* ------------------------------------------------------------------ */
   /*  Project CRUD                                                      */
   /* ------------------------------------------------------------------ */
@@ -229,6 +288,7 @@ export function InstagramStudioClient({
       const formData = new FormData(e.currentTarget);
       const res = await upsertProjectAction(formData);
       if (res.success) {
+        broadcastLiveSync();
         showToast("Project saved.");
         setIsProjectModalOpen(false);
         setActiveProject(null);
@@ -272,6 +332,73 @@ export function InstagramStudioClient({
       }
     } catch {
       showToast("Could not update homepage visibility.", "error");
+    }
+  };
+
+  /* ------------------------------------------------------------------ */
+  /*  Project Drag & Drop Reordering (Instagram Style)                  */
+  /* ------------------------------------------------------------------ */
+  const [draggedProjectIndex, setDraggedProjectIndex] = useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedProjectIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (draggedProjectIndex === null || draggedProjectIndex === index) return;
+
+    // Optimistically reorder in place
+    setProjects((prev) => {
+      const copy = [...prev];
+      const [draggedItem] = copy.splice(draggedProjectIndex, 1);
+      copy.splice(index, 0, draggedItem);
+      return copy;
+    });
+    setDraggedProjectIndex(index);
+  };
+
+  const handleDragEnd = async () => {
+    setDraggedProjectIndex(null);
+    try {
+      const orderedIds = projects
+        .map((p) => (p._id || p.id || "").toString())
+        .filter(Boolean);
+      const res = await reorderProjectsAction(orderedIds);
+      if (res.success) {
+        broadcastLiveSync();
+        showToast("✨ Showcase sequence updated live on homepage.");
+      } else {
+        showToast(res.message || "Failed to update order.", "error");
+      }
+    } catch {
+      showToast("Failed to save reordered positions.", "error");
+    }
+  };
+
+  const handleMoveProject = async (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= projects.length) return;
+    const copy = [...projects];
+    const [moved] = copy.splice(fromIndex, 1);
+    copy.splice(toIndex, 0, moved);
+    setProjects(copy);
+
+    try {
+      const orderedIds = copy
+        .map((p) => (p._id || p.id || "").toString())
+        .filter(Boolean);
+      const res = await reorderProjectsAction(orderedIds);
+      if (res.success) {
+        broadcastLiveSync();
+        showToast("✨ Showcase sequence updated live.");
+      } else {
+        showToast(res.message || "Failed to update order.", "error");
+      }
+    } catch {
+      showToast("Failed to update order.", "error");
     }
   };
 
@@ -359,6 +486,7 @@ export function InstagramStudioClient({
   const hero = sectionData("hero");
   const about = sectionData("about");
   const impact = sectionData("impactBanner");
+  const expertise = sectionData("expertise");
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#111827] font-sans selection:bg-[#DDB78A] selection:text-[#111827] pb-24">
@@ -437,7 +565,8 @@ export function InstagramStudioClient({
           <aside className="lg:col-span-3 space-y-2 sticky top-[80px]">
             <div className="p-2 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm space-y-1">
               {([
-                { id: "content", label: "Website Content", icon: Layers, desc: "Hero, Story, Services" },
+                { id: "content", label: "Website Content", icon: Layers, desc: "Hero & Story" },
+                { id: "expertise", label: "Expertise Pages", icon: Grid, desc: "Services & inner pages" },
                 { id: "portfolio", label: "Portfolio Grid", icon: Grid, desc: "Experience showcases" },
                 { id: "inbox", label: "Client Inquiries", icon: MessageSquare, badge: unreadCount, desc: "Direct client inquiries" },
                 { id: "settings", label: "Studio Profile", icon: Settings, desc: "Contact & address" },
@@ -510,27 +639,52 @@ export function InstagramStudioClient({
             />
 
             {/* ──────────────────────────────────────────────────── */}
+            {/* TAB 1.5: EXPERTISE PAGES                             */}
+            {/* ──────────────────────────────────────────────────── */}
+            <ExpertiseContentPanel
+              active={activeTab === "expertise"}
+              expertise={expertise}
+              savingSection={savingSection}
+              uploadingSlot={uploadingSlot}
+              uploadedPreviews={uploadedPreviews}
+              updateSection={updateSection}
+              handleSaveSection={handleSaveSection}
+              handleUpload={handleUpload}
+              handleDeleteMedia={handleDeleteMedia}
+            />
+
+            {/* ──────────────────────────────────────────────────── */}
             {/* TAB 2: PORTFOLIO GRID                                */}
             {/* ──────────────────────────────────────────────────── */}
             {activeTab === "portfolio" && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-xl font-bold text-[#111827]">Portfolio Experiences</h2>
-                    <p className="text-xs text-[#6B7280]">Manage exhibitions, luxury activations, and featured experiences</p>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-xl font-bold text-[#111827]">Portfolio Experiences</h2>
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#F3F4F6] text-[#4B5563] text-[0.68rem] font-bold border border-[#E5E7EB]">
+                        {projects.length} Showcases
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#6B7280] mt-0.5">
+                      Drag and drop cards to change showcase order (like Instagram), toggle homepage carousel visibility, or edit visuals
+                    </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveProject(null);
-                      setProjectError(null);
-                      setIsProjectModalOpen(true);
-                    }}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#1A060E] px-4 py-2.5 text-xs font-bold text-[#DDB78A] hover:bg-[#2A0A17] transition-all cursor-pointer shadow-sm"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span>Add Experience</span>
-                  </button>
+
+                  <div className="flex items-center gap-2.5 self-start sm:self-auto">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveProject(null);
+                        setProjectError(null);
+                        setIsProjectModalOpen(true);
+                      }}
+                      className="inline-flex items-center gap-2 rounded-xl bg-[#1A060E] px-4 py-2.5 text-xs font-bold text-[#DDB78A] hover:bg-[#2A0A17] transition-all cursor-pointer shadow-sm"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Add Experience</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -538,6 +692,9 @@ export function InstagramStudioClient({
                     <PortfolioProjectCard
                       key={project._id || project.id || `project-${index}`}
                       project={project}
+                      index={index}
+                      total={projects.length}
+                      isDragging={draggedProjectIndex === index}
                       fallbackId={`project-${index}`}
                       onToggleHome={handleToggleHome}
                       onEdit={(selectedProject) => {
@@ -546,11 +703,16 @@ export function InstagramStudioClient({
                         setIsProjectModalOpen(true);
                       }}
                       onDelete={handleDeleteProject}
+                      onMove={handleMoveProject}
+                      onDragStart={handleDragStart}
+                      onDragOver={handleDragOver}
+                      onDragEnd={handleDragEnd}
                     />
                   ))}
                 </div>
               </div>
             )}
+
 
             {/* ──────────────────────────────────────────────────── */}
             {/* TAB 3: CLIENT INQUIRIES                              */}

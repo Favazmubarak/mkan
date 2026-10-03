@@ -49,6 +49,10 @@ export const getLiveSiteContent = cache(async (locale: string = "en") => {
     const siteData = { ...defaultSite };
     const homeData = {
       ...defaultHome,
+      trustedBy: {
+        ...defaultHome.trustedBy,
+        clients: defaultHome.trustedBy.clients.map((c) => ({ ...c })),
+      },
       experiences: {
         ...defaultHome.experiences,
         items: defaultHome.experiences.items.map(
@@ -65,8 +69,14 @@ export const getLiveSiteContent = cache(async (locale: string = "en") => {
       }
 
       if (section.sectionKey in homeData) {
-        const sectionData = homeData[section.sectionKey as keyof typeof homeData];
-        if (isRecord(sectionData)) Object.assign(sectionData, section.publishedData);
+        const key = section.sectionKey as keyof typeof homeData;
+        const sectionData = homeData[key];
+        if (isRecord(sectionData)) {
+          (homeData as Record<string, unknown>)[key] = {
+            ...sectionData,
+            ...section.publishedData,
+          };
+        }
       }
     }
 
@@ -87,28 +97,45 @@ export const getLiveSiteContent = cache(async (locale: string = "en") => {
 
     const dynamicAssets = JSON.parse(JSON.stringify(defaultAssets)) as Mutable<typeof defaultAssets>;
     const assetTree = dynamicAssets as unknown as Record<string, unknown>;
+    const mediaMap: Record<string, string> = {};
 
     for (const override of mediaOverrides) {
-      const [parentKey, childKey] = override.slotKey.split(".");
-      const slotKey = childKey ? parentKey : override.slotKey;
-      const container = childKey ? assetTree[parentKey] : assetTree;
-      if (!isRecord(container)) continue;
+      if (!override.slotKey || !override.url) continue;
+      mediaMap[override.slotKey] = override.url;
 
-      const currentAsset = container[childKey || slotKey];
-      if (!isRecord(currentAsset)) continue;
+      const parts = override.slotKey.split(".");
+      let target: Record<string, unknown> = assetTree;
+      let valid = true;
 
-      container[childKey || slotKey] = {
-        ...currentAsset,
-        src: override.url,
-        alt: override.altText || currentAsset.alt,
-        blurDataURL: override.blurDataURL || undefined,
-      };
+      for (let i = 0; i < parts.length - 1; i++) {
+        const p = parts[i];
+        if (isRecord(target[p])) {
+          target = target[p] as Record<string, unknown>;
+        } else {
+          valid = false;
+          break;
+        }
+      }
+
+      if (valid) {
+        const leafKey = parts[parts.length - 1];
+        if (isRecord(target[leafKey])) {
+          const currentAsset = target[leafKey] as Record<string, unknown>;
+          target[leafKey] = {
+            ...currentAsset,
+            src: override.url,
+            alt: override.altText || currentAsset.alt,
+            blurDataURL: override.blurDataURL || undefined,
+          };
+        }
+      }
     }
 
     return {
       site: siteData,
       home: homeData,
       assets: dynamicAssets,
+      mediaMap,
       isFromDatabase: true,
     };
   } catch (error) {

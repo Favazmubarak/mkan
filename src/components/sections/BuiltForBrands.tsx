@@ -8,57 +8,75 @@ interface BuiltForBrandsProps {
   assets?: typeof defaultAssets;
 }
 
-export function BuiltForBrands({ data = homeContent.builtForBrands, assets = defaultAssets }: BuiltForBrandsProps) {
+export function BuiltForBrands({
+  data = homeContent.builtForBrands,
+  assets = defaultAssets,
+}: BuiltForBrandsProps) {
   const builtForBrands = data;
-  const brandAsset = assets.builtForBrands;
+  const imageSrc = "/images/1.png";
+
+  const rawHeading =
+    builtForBrands.heading || "BUILT FOR BRANDS, INSTITUTIONS & COMMUNITIES.";
+  const parts = rawHeading.includes("INSTITUTIONS")
+    ? rawHeading.split("INSTITUTIONS")
+    : [rawHeading];
+
+  const ctaLabel = builtForBrands.cta?.label || "OUR CLIENTS";
 
   return (
-    <section className="bg-cream text-ink px-6 py-20 sm:px-8 lg:px-12 lg:py-28">
-      <div className="mx-auto max-w-[1440px]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Left Column — Text Content */}
-          <div className="lg:col-span-6 flex flex-col justify-center">
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.15] text-plum-900 tracking-normal">
-              {builtForBrands.heading}
-            </h2>
+    <section className="relative overflow-hidden min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] xl:min-h-[720px] flex items-center bg-[#F7F2EA]">
+      {/* Full-Bleed Architectural Environment Photo Layer (/images/1.png) */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <Image
+          src={imageSrc}
+          alt={
+            assets.builtForBrands?.alt ||
+            "Minimalist stone courtyard with arched portal framing an olive tree and warm sunlit wall"
+          }
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[78%_center] sm:object-[center_right] lg:object-center brightness-[0.99] contrast-[1.01]"
+        />
+        {/* Soft atmospheric gradient on mobile/tablet for crystal-clear text readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#F6F1EA]/95 via-[#F6F1EA]/75 via-45% to-transparent sm:via-[#F6F1EA]/30 sm:from-[#F6F1EA]/60 lg:hidden pointer-events-none" />
+      </div>
 
-            <p className="mt-6 text-sm sm:text-base font-sans font-normal leading-relaxed text-plum-950/80 max-w-lg">
-              {builtForBrands.paragraph}
-            </p>
+      {/* Foreground Content Container */}
+      <div className="relative z-10 mx-auto max-w-[1600px] w-full px-6 sm:px-10 lg:px-16 xl:px-20 py-16 sm:py-20 lg:py-24">
+        <div className="max-w-xl lg:max-w-2xl">
+          {/* Main Display Headline — Cormorant Garamond Serif matching reference image */}
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.85rem] font-medium leading-[1.12] text-[#240612] tracking-tight uppercase">
+            {parts.length > 1 ? (
+              <>
+                <span>{parts[0]}</span>
+                <br className="hidden sm:inline" />
+                <span>INSTITUTIONS{parts[1]}</span>
+              </>
+            ) : (
+              rawHeading
+            )}
+          </h2>
 
-            <div className="mt-8">
-              <Link
-                href={builtForBrands.cta?.href || "#clients"}
-                className="group inline-flex items-center gap-2 text-xs font-sans font-medium tracking-[0.2em] uppercase text-plum-900 transition-colors duration-300 hover:text-gold-dark"
+          {/* Subtitle / Paragraph */}
+          <p className="mt-6 sm:mt-8 text-sm sm:text-base lg:text-[1.05rem] font-sans font-normal leading-[1.68] text-[#4A3C35] max-w-[480px]">
+            {builtForBrands.paragraph}
+          </p>
+
+          {/* Outlined Rectangular Button with Cream Filling, Inverting to Cherry Noir on Hover */}
+          <div className="mt-8 sm:mt-10">
+            <Link
+              href={builtForBrands.cta?.href || "#clients"}
+              className="group inline-flex items-center gap-3.5 border border-[#D4B996] bg-[#F5EEE6] px-7 py-3.5 text-xs sm:text-[0.76rem] font-sans font-bold tracking-[0.24em] uppercase text-[#240612] shadow-[0_2px_12px_rgba(36,6,18,0.06)] transition-all duration-300 ease-out hover:bg-[#1A060E] hover:text-[#DDB78A] hover:border-[#1A060E] hover:shadow-[0_12px_28px_-6px_rgba(26,6,14,0.35)] active:scale-95"
+            >
+              <span>{ctaLabel}</span>
+              <span
+                aria-hidden="true"
+                className="inline-block transition-transform duration-300 ease-out group-hover:translate-x-1.5 font-bold"
               >
-                <span className="relative">
-                  {builtForBrands.cta?.label || "Our Clients"}
-                  <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-plum-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 group-hover:bg-gold-dark" />
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                >
-                  →
-                </span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Column — Elegant Arched Architecture Photo */}
-          <div className="lg:col-span-6 flex justify-center lg:justify-end">
-            <div className="group relative w-full max-w-md aspect-[4/5] overflow-hidden rounded-t-[140px] sm:rounded-t-[180px] bg-plum-900/10 shadow-sm img-shimmer-wrapper">
-              <Image
-                src={brandAsset.src}
-                alt={brandAsset.alt}
-                fill
-                sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-cover object-center img-arch-zoom"
-                {...(("blurDataURL" in brandAsset && typeof brandAsset.blurDataURL === "string")
-                  ? { placeholder: "blur" as const, blurDataURL: brandAsset.blurDataURL }
-                  : {})}
-              />
-            </div>
+                →
+              </span>
+            </Link>
           </div>
         </div>
       </div>

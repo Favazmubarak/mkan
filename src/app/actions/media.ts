@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import { MediaAsset } from "@/lib/models/MediaAsset";
+import { touchContentVersion } from "@/lib/live-sync";
 
 const ALLOWED_MIME_TYPES = [
   "image/jpeg",
@@ -211,8 +212,9 @@ export async function uploadMediaAction(
       { upsert: true, new: true }
     );
 
-    // On-demand Instant ISR Cache revalidation
-    revalidatePath("/");
+    // On-demand Instant ISR Cache revalidation & live sync
+    touchContentVersion();
+    revalidatePath("/", "layout");
 
     return {
       success: true,
@@ -235,6 +237,12 @@ export async function uploadMediaAction(
   }
 }
 
+export async function deleteMediaSlotAction(
+  slotKey: string
+): Promise<MediaActionResponse> {
+  return resetSlotToDefaultAction(slotKey);
+}
+
 /**
  * Restores a slot to its default theme seed image asset.
  */
@@ -250,17 +258,18 @@ export async function resetSlotToDefaultAction(
     if (!db) return { success: false, message: "Media storage is temporarily unavailable." };
 
     await MediaAsset.findOneAndDelete({ slotKey });
-    revalidatePath("/");
+    touchContentVersion();
+    revalidatePath("/", "layout");
 
     return {
       success: true,
-      message: `Slot "${slotKey}" has been restored to default theme imagery.`,
+      message: `Media for slot "${slotKey}" deleted successfully.`,
     };
   } catch (error: unknown) {
-    console.error("[Media Reset Error]", error);
+    console.error("[Media Delete Error]", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to restore default asset.",
+      message: error instanceof Error ? error.message : "Failed to delete asset.",
     };
   }
 }

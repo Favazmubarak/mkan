@@ -1,3 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 50" fill="none">
-  <text x="50%" y="30" text-anchor="middle" fill="#220811" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="600" letter-spacing="3" opacity="0.85">MERAAS</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 56" fill="none">
+  <!-- Meraas Landmark Emblem & Typography -->
+  <g fill="#4A2E2B">
+    <!-- Emblem: [|||] Bracketed Bars -->
+    <path d="M12 15H18M12 15V41M12 41H18M38 15H32M38 15V41M38 41H32" stroke="#4A2E2B" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M21 18V38M25 18V38M29 18V38" stroke="#4A2E2B" stroke-width="2.3" stroke-linecap="round"/>
+    
+    <!-- Typography: MERAAS -->
+    <text x="48" y="34" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="17" font-weight="700" letter-spacing="4.5">MERAAS</text>
+  </g>
 </svg>

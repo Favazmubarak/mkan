@@ -1,479 +1,285 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   EASY TWEAK ZONE — change these numbers to tune the feel
-   ═══════════════════════════════════════════════════════════════════════════
-   TRAVEL_MIN / TRAVEL_MAX  shortest / longest duration of one move (seconds)
-                            slower & more cinematic → 1.1 and 2.2
-   TRAVEL_PER_PX            extra time per pixel of distance
-   RETRACT_T                how long the thread takes to withdraw on leave
-   SHEEN_V                  speed of the light passing along the thread
-   IDLE_X                   parking spot (off-screen left) when not hovered
-   WAVE_*                   water ripple height / length / drift / settle time
-   DESC_COLOR               description colour on the hovered stage
-   NUM_COLOR                gold colour of the stage number
-   ═══════════════════════════════════════════════════════════════════════════ */
-const TRAVEL_MIN = 1.2;
-const TRAVEL_MAX = 2.2;
-const TRAVEL_PER_PX = 1 / 800;
-const RETRACT_T = 1.4;
-const SHEEN_V = 90;
-// water feel — kept subtle on purpose
-const WAVE_REST = 0.55; // ripple height (px) when still
-const WAVE_MOVE = 1.1; // extra ripple height while travelling
-const WAVE_LEN = 360; // wave length (px) — bigger = longer, calmer swells
-const WAVE_SPEED = 0.55; // how fast the ripple drifts along the thread
-const WAVE_SETTLE = 1.6; // how quickly ripples calm after stopping
-const IDLE_X = -60;
-const DESC_COLOR = "#7a5c3b";
-const NUM_COLOR = "#b88e5e";
-
-const GRAD_ID = "method-gold-grad";
-const SHEEN_ID = "method-gold-sheen";
-const HALO_ID = "method-gold-halo";
-
-/* Method-only CSS lives here so this is the only file you need to edit.
-   (You can delete the old `.method-*` rules from your global CSS.) */
-const METHOD_CSS = `
-.method-desc {
-  transition: color 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.method-step[data-active="true"] .method-desc {
-  color: ${DESC_COLOR};
-  transition-delay: var(--arrive, 0s);
-}
-.method-num-lit {
-  position: absolute;
-  left: 0;
-  top: 0;
-  color: ${NUM_COLOR};
-  opacity: 0;
-  pointer-events: none;
-}
-`;
 
 interface MethodProps {
   data?: typeof homeContent.method;
   assets?: typeof defaultAssets;
 }
 
-type Geo = { lefts: number[]; rights: number[]; cy: number; w: number };
-
-export function Method({ data = homeContent.method, assets = defaultAssets }: MethodProps) {
+export function Method({
+  data = homeContent.method,
+  assets = defaultAssets,
+}: MethodProps) {
   const method = data;
+  const steps = method.steps || [];
+
   const approachIsSelfLink = String(method.cta?.href) === "#method";
   const methodCtaHref = approachIsSelfLink ? "#contact" : method.cta?.href || "#contact";
-  const methodCtaLabel = approachIsSelfLink ? "Plan a Project" : method.cta?.label || "Plan a Project";
+  const methodCtaLabel = method.cta?.label || "OUR APPROACH";
 
-  // ── refs: everything animates imperatively, so hovering never re-renders React ──
-  const gridRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<SVGLineElement>(null);
-  const gradRef = useRef<SVGLinearGradientElement>(null);
-  const sheenGradRef = useRef<SVGLinearGradientElement>(null);
-  const glowRef = useRef<SVGPathElement>(null);
-  const threadRef = useRef<SVGPathElement>(null);
-  const sheenRef = useRef<SVGPathElement>(null);
-  const haloRef = useRef<SVGCircleElement>(null);
-  const headRef = useRef<SVGCircleElement>(null);
-  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const numRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const litRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  // Active step: -1 means resting at zero (no lines filled)
+  const [activeStep, setActiveStep] = useState<number>(-1);
 
-  const geo = useRef<Geo>({ lefts: [], rights: [], cy: 12, w: 0 });
-  const sim = useRef({
-    h: IDLE_X, hv: 0, // current position / velocity
-    from: IDLE_X, to: IDLE_X, // current move
-    v0: 0, t0: 0, T: 1, // start velocity, start time, duration
-    phase: 0, amp: WAVE_REST, raf: 0, last: 0,
-  });
-
-  /** Read where the stage numbers actually sit (works at any width, after fonts/images load). */
-  const measure = useCallback(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
-    const g = grid.getBoundingClientRect();
-    const lefts: number[] = [];
-    const rights: number[] = [];
-    let cy = 12;
-    numRefs.current.forEach((el, i) => {
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      lefts[i] = r.left - g.left;
-      rights[i] = r.right - g.left;
-      cy = r.top - g.top + r.height / 2;
-    });
-    geo.current = { lefts, rights, cy, w: g.width };
-
-    const track = trackRef.current;
-    if (track && lefts.length > 1) {
-      track.setAttribute("x1", String(rights[0]));
-      track.setAttribute("x2", String(lefts[lefts.length - 1]));
-      track.setAttribute("y1", String(cy));
-      track.setAttribute("y2", String(cy));
-    }
-  }, []);
-
-  /** Paint one frame of the thread from the current simulation state. */
-  const draw = useCallback(() => {
-    const s = sim.current;
-    const { lefts, cy } = geo.current;
-    const F = s.h; // leading point of the thread
-
-    const sm = (t: number) => {
-      const c = Math.max(0, Math.min(1, t));
-      return c * c * (3 - 2 * c);
-    };
-
-    // water: one long, quiet swell drifting along the thread
-    const A = s.amp;
-    let d = "";
-    if (F > 3) {
-      const pts: string[] = [];
-      for (let x = 0; x < F; x += 6) {
-        const env = sm(x / 110) * sm((F - x) / 120);
-        const y = cy + Math.sin((x * Math.PI * 2) / WAVE_LEN - s.phase * WAVE_SPEED * 2.2) * A * env;
-        pts.push(`${x.toFixed(1)} ${y.toFixed(2)}`);
-      }
-      pts.push(`${F.toFixed(1)} ${cy}`);
-      d = `M ${pts.join(" L ")}`;
-    }
-    glowRef.current?.setAttribute("d", d);
-    threadRef.current?.setAttribute("d", d);
-    sheenRef.current?.setAttribute("d", d);
-
-    // head: a small bright point inside a soft halo (soft fade-in)
-    const k = sm((F + 10) / 60);
-    if (headRef.current) {
-      headRef.current.setAttribute("cx", F.toFixed(2));
-      headRef.current.setAttribute("cy", String(cy));
-      headRef.current.setAttribute("r", (2.3 * k).toFixed(2));
-    }
-    if (haloRef.current) {
-      haloRef.current.setAttribute("cx", F.toFixed(2));
-      haloRef.current.setAttribute("cy", String(cy));
-      haloRef.current.setAttribute("r", (15 * k).toFixed(2));
-    }
-
-    // colour: deep gold at the source, champagne at the head
-    gradRef.current?.setAttribute("x2", String(Math.max(F, 90)));
-
-    // light: a soft band of highlight that travels along the thread on a loop
-    const band = ((s.phase * SHEEN_V) % (Math.max(F, 0) + 220)) - 110;
-    sheenGradRef.current?.setAttribute("x1", (band - 90).toFixed(1));
-    sheenGradRef.current?.setAttribute("x2", (band + 90).toFixed(1));
-
-    // stage numbers fade to gold gently as the thread approaches
-    litRefs.current.forEach((el, i) => {
-      if (!el || lefts[i] === undefined) return;
-      el.style.opacity = sm((F - (lefts[i] - 46)) / 40).toFixed(3);
-    });
-  }, []);
-
-  const frame = useCallback(
-    function frame(now: number) {
-      const s = sim.current;
-      const dt = Math.min((now - s.last) / 1000, 1 / 30);
-      s.last = now;
-      s.phase += dt;
-
-      // ripple height follows speed, but eases back slowly so the water keeps moving after a stop
-      const ampTarget = WAVE_REST + Math.min(Math.abs(s.hv) / 400, 1) * WAVE_MOVE;
-      s.amp += (ampTarget - s.amp) * Math.min(1, dt * WAVE_SETTLE);
-
-      // Cubic Hermite glide: starts with the velocity we already have (no jerk),
-      // finishes at zero velocity (long, soft landing).
-      const u = Math.min(1, Math.max(0, (now - s.t0) / (s.T * 1000)));
-      const u2 = u * u;
-      const u3 = u2 * u;
-
-      const pos =
-        (2 * u3 - 3 * u2 + 1) * s.from +
-        (u3 - 2 * u2 + u) * s.T * s.v0 +
-        (-2 * u3 + 3 * u2) * s.to;
-
-      const dPos =
-        (6 * u2 - 6 * u) * s.from +
-        (3 * u2 - 4 * u + 1) * s.T * s.v0 +
-        (-6 * u2 + 6 * u) * s.to;
-
-      s.h = pos;
-      s.hv = dPos / s.T;
-
-      if (u >= 1) {
-        s.h = s.to;
-        s.hv = 0;
-      }
-
-      draw();
-
-      if (u >= 1 && s.to <= IDLE_X + 1) {
-        s.raf = 0; // fully withdrawn → stop the loop
-        return;
-      }
-      s.raf = requestAnimationFrame(frame); // while hovered, keep the light moving
-    },
-    [draw]
-  );
-
-  /** Mark the hovered stage so its description colours in (CSS transition). */
-  const setActive = (index: number | null, arriveSec = 0) => {
-    stepRefs.current.forEach((el, i) => {
-      if (!el) return;
-      if (i === index) {
-        el.dataset.active = "true";
-        el.style.setProperty("--arrive", `${arriveSec.toFixed(2)}s`);
-      } else {
-        delete el.dataset.active;
-      }
-    });
-  };
-
-  const flowTo = (index: number | null) => {
-    if (!window.matchMedia("(min-width: 1024px)").matches) {
-      setActive(index);
-      return;
-    }
-    measure();
-    const { lefts, rights } = geo.current;
-    if (!lefts.length) {
-      setActive(index);
-      return;
-    }
-
-    const s = sim.current;
-    const target = index === null ? IDLE_X : index === 0 ? rights[0] + 14 : lefts[index] - 3;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setActive(index);
-      cancelAnimationFrame(s.raf);
-      s.raf = 0;
-      s.h = s.from = s.to = target;
-      s.hv = s.v0 = 0;
-      draw();
-      return;
-    }
-
-    // same destination already in progress → leave it alone
-    if (s.raf && Math.abs(s.to - target) < 0.5) {
-      setActive(index, 0);
-      return;
-    }
-
-    const dist = Math.abs(target - s.h);
-    const T =
-      index === null
-        ? RETRACT_T
-        : Math.min(TRAVEL_MAX, Math.max(TRAVEL_MIN, TRAVEL_MIN + dist * TRAVEL_PER_PX * 0.6));
-
-    s.from = s.h;
-    s.v0 = s.hv; // carry current speed into the new move
-    s.to = target;
-    s.T = T;
-    s.t0 = performance.now();
-
-    // description colour arrives as the thread nears the stage
-    setActive(index, Math.max(0, T * 0.55 - 0.15));
-
-    if (!s.raf) {
-      s.last = performance.now();
-      s.raf = requestAnimationFrame(frame);
-    }
-  };
-
-  useEffect(() => {
-    const grid = gridRef.current;
-    const s = sim.current;
-    measure();
-    draw();
-    if (!grid) return;
-    const ro = new ResizeObserver(() => {
-      measure();
-      draw();
-    });
-    ro.observe(grid);
-    return () => {
-      ro.disconnect();
-      cancelAnimationFrame(s.raf);
-    };
-  }, [measure, draw]);
-
+  // Helper to map assets
   const getStepImage = (key: string) => {
     switch (key) {
-      case "concept":
-        return assets.method?.concept?.src || assets.heroBg.src;
-      case "development":
-        return assets.method?.development?.src || assets.heroBg.src;
-      case "curation":
-        return assets.method?.curation?.src || assets.heroBg.src;
-      case "production":
-        return assets.method?.production?.src || assets.heroBg.src;
-      case "reporting":
-        return assets.method?.reporting?.src || assets.heroBg.src;
-      default:
-        return assets.heroBg.src;
+      case "concept":     return assets.method?.concept?.src     || "/images/method-concept.jpg";
+      case "development": return assets.method?.development?.src || "/images/method-development.jpg";
+      case "curation":    return assets.method?.curation?.src    || "/images/method-curation.jpg";
+      case "production":  return assets.method?.production?.src  || "/images/method-production.jpg";
+      case "reporting":   return assets.method?.reporting?.src   || "/images/method-reporting.jpg";
+      default:            return "/images/method-concept.jpg";
     }
   };
+
+  const handleStepHover = useCallback((targetIndex: number) => {
+    setActiveStep(targetIndex);
+  }, []);
+
+  // When mouse leaves the pipeline, progression bar drains smoothly back to ZERO
+  const handlePipelineLeave = useCallback(() => {
+    setActiveStep(-1);
+  }, []);
 
   return (
     <section
       id="method"
-      className="bg-cream text-ink px-6 py-20 sm:px-8 lg:px-12 lg:py-28"
+      className="relative bg-[#F9F6F0] text-[#1A060E] px-6 sm:px-8 lg:px-12 py-12 sm:py-16 lg:py-16 xl:py-20 overflow-hidden border-t border-[#1A060E]/5"
     >
-      <style>{METHOD_CSS}</style>
-
-      <div className="mx-auto max-w-[1440px]">
-        {/* Section Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 pb-16">
+      <div className="mx-auto max-w-[1550px]">
+        {/* Header: Title + Subtitle on Left, Approach Link on Right */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 pb-7 sm:pb-8 lg:pb-9 border-b border-[#1A060E]/10">
           <div>
-            <p className="font-sans text-[0.7rem] sm:text-[0.75rem] font-medium tracking-[0.3em] uppercase text-gold-dark mb-2">
-              {method.eyebrow}
-            </p>
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal text-plum-900 tracking-normal">
-              {method.title}
+            <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-[3.25rem] text-[#4f1c30] tracking-[0.025em] leading-[1.08] uppercase">
+              {method.title || "THE MKAN METHOD"}
             </h2>
-            <p className="mt-2 text-xs sm:text-sm font-sans font-medium tracking-[0.15em] uppercase text-plum-900/80">
-              {method.subtitle}
+            <p className="font-sans text-[0.68rem] sm:text-[0.74rem] font-bold tracking-[0.2em] text-[#7A6B68] uppercase mt-2.5">
+              {method.subtitle || "FROM STRATEGY TO EXTRAORDINARY EXPERIENCES."}
             </p>
           </div>
 
           <Link
             href={methodCtaHref}
-            className="group inline-flex items-center gap-2 text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase text-plum-900 transition-colors duration-300 hover:text-gold-dark"
+            className="group inline-flex items-center gap-2 font-sans text-[0.7rem] sm:text-[0.74rem] font-bold tracking-[0.22em] uppercase text-[#1A060E] transition-colors duration-300 hover:text-[#925B00]"
           >
-            <span className="relative">
-              {methodCtaLabel}
-              <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-plum-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 group-hover:bg-gold-dark" />
-            </span>
+            <span>{methodCtaLabel}</span>
             <span
               aria-hidden="true"
-              className="transition-transform duration-300 group-hover:translate-x-1"
+              className="inline-block transition-transform duration-300 group-hover:translate-x-1.5 font-bold"
             >
               →
             </span>
           </Link>
         </div>
 
-        {/* 5 Sequential Framework Stages */}
+        {/* 5-Step Horizontal Pipeline */}
         <div
-          ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-6 relative"
-          onPointerLeave={() => flowTo(null)}
+          onMouseLeave={handlePipelineLeave}
+          className="mt-8 sm:mt-10 lg:mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-7 lg:gap-5 xl:gap-7 items-start"
         >
-          {/* Gold thread: one continuous line across all five stages (desktop) */}
-          <svg
-            aria-hidden="true"
-            className="pointer-events-none absolute left-0 top-0 z-[1] hidden h-6 w-full overflow-visible lg:block"
-          >
-            <defs>
-              <linearGradient ref={gradRef} id={GRAD_ID} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="300" y2="0">
-                <stop offset="0" stopColor="#a8804f" />
-                <stop offset="0.65" stopColor="#ddb78a" />
-                <stop offset="1" stopColor="#f6e3c8" />
-              </linearGradient>
-              <linearGradient ref={sheenGradRef} id={SHEEN_ID} gradientUnits="userSpaceOnUse" x1="-90" y1="0" x2="90" y2="0">
-                <stop offset="0" stopColor="#fff6e6" stopOpacity="0" />
-                <stop offset="0.5" stopColor="#fff6e6" stopOpacity="0.95" />
-                <stop offset="1" stopColor="#fff6e6" stopOpacity="0" />
-              </linearGradient>
-              <radialGradient id={HALO_ID}>
-                <stop offset="0" stopColor="#f6e3c8" stopOpacity="0.55" />
-                <stop offset="1" stopColor="#ddb78a" stopOpacity="0" />
-              </radialGradient>
-            </defs>
+          {steps.map((step, idx) => {
+            const isActive = idx === activeStep;
+            // Progressed if activeStep >= 0 and idx <= activeStep
+            const isProgressed = activeStep >= 0 && idx <= activeStep;
+            const isLast = idx === steps.length - 1;
 
-            <line ref={trackRef} stroke="rgba(34, 8, 17, 0.2)" strokeWidth="1" />
+            return (
+              <div
+                key={step.number}
+                onMouseEnter={() => handleStepHover(idx)}
+                onClick={() => handleStepHover(idx)}
+                className="group flex flex-col cursor-pointer select-none transition-all duration-500"
+              >
+                {/* 1. Top Row: Step Number & Horizontal Progression Bar */}
+                <div className="flex items-center gap-3 w-full h-11 relative mb-1.5">
+                  {/* Number with Soft Luxury Ambient Halo */}
+                  <div className="relative flex items-center justify-center shrink-0 w-11 h-11">
+                    {/* Glowing Circular Ambient Halo */}
+                    <div
+                      className={`absolute inset-0 rounded-full bg-[#EADCCB]/90 -z-10 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                        isActive
+                          ? "scale-110 opacity-100 shadow-[0_0_20px_rgba(221,183,138,0.45)]"
+                          : "scale-75 opacity-0"
+                      }`}
+                    />
 
-            {/* soft bloom under the thread */}
-            <path
-              ref={glowRef}
-              fill="none"
-              stroke="#ddb78a"
-              strokeOpacity="0.16"
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ filter: "blur(4px)" }}
-            />
-            {/* the thread itself */}
-            <path
-              ref={threadRef}
-              fill="none"
-              stroke={`url(#${GRAD_ID})`}
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {/* travelling light */}
-            <path
-              ref={sheenRef}
-              fill="none"
-              stroke={`url(#${SHEEN_ID})`}
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <circle ref={haloRef} r="0" fill={`url(#${HALO_ID})`} />
-            <circle ref={headRef} r="0" fill="#fff4e2" />
-          </svg>
+                    <span
+                      className={`font-display text-3xl sm:text-4xl lg:text-[2.55rem] leading-none font-normal transition-all duration-500 ${
+                        isActive ? "text-[#1A060E] font-medium scale-105" : "text-[#1A060E]/80"
+                      }`}
+                    >
+                      {step.number}
+                    </span>
+                  </div>
 
-          {(method.steps || []).map((step, index) => (
-            <div
-              key={step.number}
-              ref={(el) => {
-                stepRefs.current[index] = el;
-              }}
-              className="method-step flex flex-col"
-              onPointerEnter={(e) => {
-                if (e.pointerType === "mouse") flowTo(index);
-              }}
-            >
-              {/* Stage number sits on the track; its cream box tucks the line underneath */}
-              <div className="mb-3 flex items-center">
-                <span
-                  ref={(el) => {
-                    numRefs.current[index] = el;
-                  }}
-                  className="relative z-[2] shrink-0 bg-cream pr-3 font-display text-2xl font-light leading-none text-plum-900"
-                >
-                  {step.number}
-                  <span
-                    ref={(el) => {
-                      litRefs.current[index] = el;
-                    }}
-                    aria-hidden="true"
-                    className="method-num-lit"
+                  {/* Horizontal Track with Apple-Grade Luminous Fluid Flow into Arrow Head */}
+                  <div className="flex-1 flex items-center relative pl-1.5 pr-1 h-6">
+                    {/* Layer 1: Muted Base Pipeline (Line + Arrow Head / Star) */}
+                    <div className="w-full flex items-center relative text-[#1A060E]/15">
+                      <div className="h-[2px] flex-1 bg-current rounded-full" />
+                      {!isLast ? (
+                        <svg
+                          className="w-4 h-4 shrink-0 -ml-1 text-current"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4.5 3.5L10.5 8L4.5 12.5"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      ) : (
+                        /* Step 5 (After Reports): Muted Diamond Star */
+                        <div className="relative shrink-0 flex items-center justify-center -ml-1 w-4 h-4 text-current">
+                          <svg
+                            className="w-4 h-4 shrink-0"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M12 1.5C12 7.2 16.8 12 22.5 12C16.8 12 12 16.8 12 22.5C12 16.8 7.2 12 1.5 12C7.2 12 12 7.2 12 1.5Z"
+                              fill="currentColor"
+                            />
+                            <path
+                              d="M12 6.5L13.8 10.2L17.5 12L13.8 13.8L12 17.5L10.2 13.8L6.5 12L10.2 10.2L12 6.5Z"
+                              fill="currentColor"
+                              opacity="0.8"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Layer 2: Apple-Grade Radiant Liquid Gold Stream (Flows continuously into arrow/star) */}
+                    <div
+                      className="absolute inset-0 pl-1.5 pr-1 flex items-center text-[#B88E5E] pointer-events-none"
+                      style={{
+                        clipPath: isProgressed ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)",
+                        transitionProperty: "clip-path",
+                        transitionDuration: isProgressed ? "500ms" : "280ms",
+                        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+                        transitionDelay: isProgressed ? `${idx * 105}ms` : "0ms",
+                      }}
+                    >
+                      {/* Liquid Gold Line with Specular Photon Gradient */}
+                      <div className="h-[2px] flex-1 bg-gradient-to-r from-[#8C5D28] via-[#B88E5E] via-65% to-[#FFE2B8] rounded-full shadow-[0_0_10px_rgba(221,183,138,0.5)]" />
+
+                      {/* Liquid Gold Arrow Head (Water flows smoothly right into it!) */}
+                      {!isLast ? (
+                        <svg
+                          className="w-4 h-4 shrink-0 -ml-1 text-[#A37844] drop-shadow-[0_0_8px_rgba(201,162,112,0.7)]"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4.5 3.5L10.5 8L4.5 12.5"
+                            stroke="currentColor"
+                            strokeWidth="2.4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      ) : (
+                        /* Step 5: Liquid Gold Diamond Star (Water flows smoothly right into it!) */
+                        <div className="relative shrink-0 flex items-center justify-center -ml-1 w-4 h-4 text-[#B88E5E]">
+                          <svg
+                            className="w-4 h-4 shrink-0 drop-shadow-[0_0_10px_rgba(201,162,112,0.85)]"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M12 1.5C12 7.2 16.8 12 22.5 12C16.8 12 12 16.8 12 22.5C12 16.8 7.2 12 1.5 12C7.2 12 12 7.2 12 1.5Z"
+                              fill="currentColor"
+                            />
+                            <path
+                              d="M12 6.5L13.8 10.2L17.5 12L13.8 13.8L12 17.5L10.2 13.8L6.5 12L10.2 10.2L12 6.5Z"
+                              fill="currentColor"
+                              opacity="0.8"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Step Title */}
+                <h3 className="font-sans text-xs sm:text-[0.82rem] font-extrabold tracking-[0.16em] uppercase text-[#1A060E] mt-3 mb-2.5 transition-colors duration-300 group-hover:text-[#925B00]">
+                  {step.name}
+                </h3>
+
+                {/* 3. Premium Cinematic Floating Image Card */}
+                <div className="relative mt-0.5 group/card">
+                  {/* Atmospheric Levitation Shadow & Ambient Underglow */}
+                  <div
+                    className={`absolute -inset-1.5 rounded-md bg-gradient-to-b from-[#B88E5E]/25 via-[#DDB78A]/20 to-[#1A060E]/30 blur-xl transition-all duration-800 ease-out pointer-events-none -z-10 translate-y-3 ${
+                      isActive ? "opacity-100 scale-100" : "opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100"
+                    }`}
+                  />
+
+                  {/* Floating Card Frame */}
+                  <div
+                    className={`relative aspect-[16/9.5] w-full overflow-hidden rounded-sm border bg-[#EFE9DF] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                      isActive
+                        ? "-translate-y-2 border-[#B88E5E] shadow-[0_24px_48px_-12px_rgba(26,6,14,0.22),0_8px_24px_-4px_rgba(184,142,94,0.25)]"
+                        : "border-[#1A060E]/12 translate-y-0 shadow-[0_4px_12px_rgba(26,6,14,0.04)] group-hover:-translate-y-2 group-hover:border-[#B88E5E] group-hover:shadow-[0_24px_48px_-12px_rgba(26,6,14,0.22),0_8px_24px_-4px_rgba(184,142,94,0.25)]"
+                    }`}
                   >
-                    {step.number}
-                  </span>
-                </span>
+                    {/* Cinematic 35mm Parallax Slow Camera Push */}
+                    <div
+                      className={`relative w-full h-full transition-transform duration-1000 ease-out ${
+                        isActive ? "scale-[1.04]" : "scale-100 group-hover:scale-[1.04]"
+                      }`}
+                    >
+                      <Image
+                        src={getStepImage(step.imageKey)}
+                        alt={step.name}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                        className="object-cover object-center transition-all duration-700 ease-out brightness-[0.98] contrast-[0.98] group-hover:brightness-[1.04] group-hover:contrast-[1.03] group-hover:saturate-[1.05]"
+                      />
+                    </div>
+
+                    {/* Cinematic Anamorphic Specular Light Sweep */}
+                    <div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[130%] group-hover:translate-x-[130%] transition-transform duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    />
+
+                    {/* Film Chiaroscuro Vignette */}
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-t from-[#1A060E]/35 via-transparent to-transparent transition-opacity duration-700 pointer-events-none ${
+                        isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                      }`}
+                    />
+
+                    {/* Ethereal Chamfer Rim Light */}
+                    <div
+                      className={`absolute inset-0 border transition-colors duration-500 pointer-events-none ${
+                        isActive ? "border-white/30" : "border-white/0 group-hover:border-white/30"
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* 4. Step Description */}
+                <p className="font-sans text-[0.74rem] sm:text-[0.78rem] text-[#5A4B46] leading-[1.6] mt-3 transition-colors duration-300 group-hover:text-[#1A060E]">
+                  {step.description}
+                </p>
               </div>
-
-              {/* Heading: no hover effect */}
-              <h3 className="mb-4 font-sans text-xs font-semibold tracking-[0.16em] uppercase text-plum-900 sm:text-sm">
-                {step.name}
-              </h3>
-
-              <div className="relative mb-4 aspect-[4/3] w-full overflow-hidden bg-plum-900/5">
-                <Image
-                  src={getStepImage(step.imageKey)}
-                  alt={step.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 20vw"
-                  className="object-cover object-center"
-                />
-              </div>
-
-              <p className="method-desc font-sans text-xs font-normal leading-relaxed text-plum-900/75 sm:text-[0.82rem]">
-                {step.description}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

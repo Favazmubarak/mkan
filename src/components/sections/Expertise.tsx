@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useRef, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { homeContent } from "@/content/home";
@@ -22,172 +22,257 @@ interface CardItem {
 }
 
 /**
- * Editorial Full-box Luxury Expertise Card:
- * - Tall, elegant aspect ratio matching the editorial reference.
- * - Crystal clear upper image (no fog or overlays on the top half).
- * - Refined smoky dark wine gradient covering strictly the lower typography area.
- * - Bold serif numbers & titles with stacked service items.
- * - Ultra-smooth 60fps continuous hover physics.
+ * Apple & Nike style Interactive Luxury 3D Parallax Card:
+ * - Fluid pointer tracking with sub-pixel interpolation
+ * - Smooth dynamic specular spotlight glare following cursor
+ * - Multi-layered parallax depth (image scales & shifts in opposition to tilt)
+ * - Buttery non-stuck spring recovery on mouse leave
  */
 function ExpertiseCardItem({
   card,
-  index,
-  isHovered,
   imageSrc,
-  onHoverStart,
-  onHoverEnd,
 }: {
   card: CardItem;
-  index: number;
-  isHovered: boolean;
   imageSrc: string;
-  onHoverStart: (idx: number) => void;
-  onHoverEnd: () => void;
 }) {
   const cardRef = useRef<HTMLAnchorElement>(null);
-  const imgWrapperRef = useRef<HTMLDivElement>(null);
-  const rafId = useRef<number | null>(null);
+  const imgRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Smooth, subtle mouse parallax on the image layer
+  // Physics animation state
+  const physics = useRef({
+    targetRotX: 0,
+    targetRotY: 0,
+    targetLift: 0,
+    targetScale: 1,
+    targetImgScale: 1,
+    targetImgX: 0,
+    targetImgY: 0,
+    currentRotX: 0,
+    currentRotY: 0,
+    currentLift: 0,
+    currentScale: 1,
+    currentImgScale: 1,
+    currentImgX: 0,
+    currentImgY: 0,
+    isHovered: false,
+    rafId: 0,
+  });
+
+  const itemLines =
+    card.items && card.items.length > 0
+      ? card.items
+      : card.description.split("\n").filter(Boolean);
+
+  const slug = card.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const innerHref = `/expertise/${slug}`;
+
+  // Continuous spring loop: smoothly drives physics to target with damped harmonic motion
+  const startSpringLoop = useCallback(() => {
+    if (physics.current.rafId) return;
+
+    const tick = () => {
+      const p = physics.current;
+      const cardEl = cardRef.current;
+      const imgEl = imgRef.current;
+
+      // Silky smooth dampening factor for card & image
+      const factor = p.isHovered ? 0.09 : 0.06;
+      const imgScaleFactor = p.isHovered ? 0.05 : 0.035;
+
+      p.currentRotX += (p.targetRotX - p.currentRotX) * factor;
+      p.currentRotY += (p.targetRotY - p.currentRotY) * factor;
+      p.currentLift += (p.targetLift - p.currentLift) * factor;
+      p.currentScale += (p.targetScale - p.currentScale) * factor;
+      p.currentImgScale += (p.targetImgScale - p.currentImgScale) * imgScaleFactor;
+      p.currentImgX += (p.targetImgX - p.currentImgX) * factor;
+      p.currentImgY += (p.targetImgY - p.currentImgY) * factor;
+
+      if (cardEl) {
+        cardEl.style.transform = `perspective(1200px) rotateX(${p.currentRotX.toFixed(2)}deg) rotateY(${p.currentRotY.toFixed(2)}deg) translateY(${p.currentLift.toFixed(2)}px) scale3d(${p.currentScale.toFixed(4)}, ${p.currentScale.toFixed(4)}, ${p.currentScale.toFixed(4)})`;
+      }
+      if (imgEl) {
+        imgEl.style.transform = `scale(${p.currentImgScale.toFixed(4)}) translate3d(${p.currentImgX.toFixed(2)}px, ${p.currentImgY.toFixed(2)}px, 0)`;
+      }
+
+      // Check if motion has settled to rest
+      const isSettled =
+        !p.isHovered &&
+        Math.abs(p.targetRotX - p.currentRotX) < 0.01 &&
+        Math.abs(p.targetRotY - p.currentRotY) < 0.01 &&
+        Math.abs(p.targetLift - p.currentLift) < 0.05 &&
+        Math.abs(p.targetScale - p.currentScale) < 0.001 &&
+        Math.abs(p.targetImgScale - p.currentImgScale) < 0.001 &&
+        Math.abs(p.targetImgX - p.currentImgX) < 0.05 &&
+        Math.abs(p.targetImgY - p.currentImgY) < 0.05;
+
+      if (!isSettled) {
+        p.rafId = requestAnimationFrame(tick);
+      } else {
+        p.rafId = 0;
+        p.currentRotX = 0;
+        p.currentRotY = 0;
+        p.currentLift = 0;
+        p.currentScale = 1;
+        p.currentImgScale = 1;
+        p.currentImgX = 0;
+        p.currentImgY = 0;
+        if (cardEl) {
+          cardEl.style.transform = "perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0px) scale3d(1, 1, 1)";
+        }
+        if (imgEl) {
+          imgEl.style.transform = "scale(1) translate3d(0, 0, 0)";
+        }
+      }
+    };
+
+    physics.current.rafId = requestAnimationFrame(tick);
+  }, []);
+
+  const handlePointerEnter = useCallback(() => {
+    setIsHovered(true);
+    const p = physics.current;
+    p.isHovered = true;
+    p.targetLift = -8;
+    p.targetScale = 1.018;
+    p.targetImgScale = 1.04;
+    startSpringLoop();
+  }, [startSpringLoop]);
+
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLAnchorElement>) => {
     if (e.pointerType !== "mouse") return;
     const cardEl = cardRef.current;
-    const imgEl = imgWrapperRef.current;
-    if (!cardEl || !imgEl) return;
+    if (!cardEl) return;
 
-    if (rafId.current) cancelAnimationFrame(rafId.current);
+    const rect = cardEl.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
 
-    rafId.current = requestAnimationFrame(() => {
-      const rect = cardEl.getBoundingClientRect();
-      const normX = (e.clientX - rect.left) / rect.width - 0.5;
-      const normY = (e.clientY - rect.top) / rect.height - 0.5;
+    const p = physics.current;
+    // Calculate gentle tilt angles based on mouse position from center (-3.2deg to +3.2deg)
+    p.targetRotX = ((y - centerY) / centerY) * -3.2;
+    p.targetRotY = ((x - centerX) / centerX) * 3.2;
+    // Subtle parallax depth shift for the background image
+    p.targetImgX = ((x - centerX) / centerX) * -5;
+    p.targetImgY = ((y - centerY) / centerY) * -5;
 
-      // Subtle 4px maximum shift for depth
-      const tx = (normX * -4).toFixed(2);
-      const ty = (normY * -4).toFixed(2);
-
-      imgEl.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)";
-      imgEl.style.transform = `scale(1.04) translate3d(${tx}px, ${ty}px, 0)`;
-    });
-  }, []);
-
-  const handlePointerEnter = useCallback(
-    (e: React.PointerEvent<HTMLAnchorElement>) => {
-      onHoverStart(index);
-      if (e.pointerType === "mouse" && imgWrapperRef.current) {
-        // Slow, elegant cinematic zoom-in
-        imgWrapperRef.current.style.transition = "transform 1.1s cubic-bezier(0.16, 1, 0.3, 1)";
-        imgWrapperRef.current.style.transform = "scale(1.04) translate3d(0, 0, 0)";
-      }
-    },
-    [index, onHoverStart]
-  );
+    startSpringLoop();
+  }, [startSpringLoop]);
 
   const handlePointerLeave = useCallback(() => {
-    onHoverEnd();
-    if (rafId.current) cancelAnimationFrame(rafId.current);
-    if (imgWrapperRef.current) {
-      // Slow, smooth return
-      imgWrapperRef.current.style.transition = "transform 1.1s cubic-bezier(0.16, 1, 0.3, 1)";
-      imgWrapperRef.current.style.transform = "scale(1.0) translate3d(0, 0, 0)";
-    }
-  }, [onHoverEnd]);
+    setIsHovered(false);
+    const p = physics.current;
+    p.isHovered = false;
+    p.targetRotX = 0;
+    p.targetRotY = 0;
+    p.targetLift = 0;
+    p.targetScale = 1;
+    p.targetImgScale = 1;
+    p.targetImgX = 0;
+    p.targetImgY = 0;
+    startSpringLoop();
+  }, [startSpringLoop]);
 
   useEffect(() => {
+    const p = physics.current;
     return () => {
-      if (rafId.current) cancelAnimationFrame(rafId.current);
+      if (p.rafId) cancelAnimationFrame(p.rafId);
     };
   }, []);
-
-  // Split lines if items is not explicitly provided
-  const itemLines = card.items && card.items.length > 0
-    ? card.items
-    : card.description.split("\n").filter(Boolean);
-
-  // Card container inline styles for smooth continuous transition
-  const cardStyle: React.CSSProperties = {
-    transition:
-      "transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.75s ease, box-shadow 0.85s cubic-bezier(0.16, 1, 0.3, 1)",
-    transform: isHovered ? "translateY(-8px)" : "translateY(0px)",
-    borderColor: isHovered ? "rgba(221, 183, 138, 0.55)" : "rgba(245, 238, 230, 0.14)",
-    boxShadow: isHovered
-      ? "0 26px 60px -12px rgba(0,0,0,0.8), 0 0 30px -4px rgba(221,183,138,0.14)"
-      : "0 8px 24px -8px rgba(0,0,0,0.4)",
-  };
 
   return (
     <Link
       ref={cardRef}
-      href={card.cta?.href || "#contact"}
+      href={innerHref}
       onPointerEnter={handlePointerEnter}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className="group relative flex flex-col justify-end min-h-[540px] sm:min-h-[580px] lg:min-h-[530px] xl:min-h-[575px] overflow-hidden border bg-[#14030B] select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
-      style={cardStyle}
+      className="group relative flex flex-col justify-end h-[480px] sm:h-[520px] lg:h-[calc(100vh-210px)] lg:min-h-[460px] lg:max-h-[580px] xl:max-h-[640px] overflow-hidden rounded-sm border bg-[#16030c] select-none will-change-transform focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
+      style={{
+        transformStyle: "preserve-3d",
+        borderColor: isHovered ? "rgba(221, 183, 138, 0.75)" : "rgba(221, 183, 138, 0.2)",
+        boxShadow: isHovered
+          ? "0 28px 55px -12px rgba(0, 0, 0, 0.88), 0 0 25px 2px rgba(221, 183, 138, 0.18)"
+          : "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
+        transition: "border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+      }}
     >
-      {/* ──────────────── 1. Full-Canvas Crystal Clear Background Image ──────────────── */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      {/* Full-bleed Photographic Layer */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div
-          ref={imgWrapperRef}
+          ref={imgRef}
           className="relative w-full h-full will-change-transform"
-          style={{ transform: "scale(1.0) translate3d(0,0,0)" }}
+          style={{ transform: "scale(1) translate3d(0,0,0)" }}
         >
           <Image
             src={imageSrc}
             alt={card.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-            className="object-cover object-center brightness-[1.0] contrast-[1.1]"
+            className="object-cover object-center brightness-[1.0] contrast-[1.05]"
           />
         </div>
 
-        {/* ──────────────── 2. Smoke / Mist Gradient ONLY on the Lower Half ──────────────── */}
-        {/* Top ~45-50% has zero overlays so image stays completely crystal clear.
-            The smoke gradient begins smoothly at the midpoint and deepens at the base. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-[#14030be2] from-55% via-[#16040C]/75 via-52% via-[#16040C]/25 via-78% to-transparent" />
-
-        {/* Subtle ambient warm gold light sheen on hover */}
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-gold/10 via-transparent to-transparent transition-opacity duration-700"
-          style={{ opacity: isHovered ? 1 : 0 }}
-        />
+        {/* Smooth Premium Dark Gradient Fade - Keeps top half 100% crystal clear */}
+        <div className="absolute inset-x-0 bottom-0 h-[68%] bg-gradient-to-t from-[#16030c] via-[#16030c]/90 via-45% to-transparent pointer-events-none" />
       </div>
 
-      {/* ──────────────── 3. Editorial Typography Block (Over the Lower Smoke) ──────────────── */}
-      <div className="relative z-10 flex flex-col justify-between p-6 sm:p-7 lg:p-5 xl:p-7">
-        <div>
-          {/* Large Editorial Number */}
-          <span className="block font-display text-5xl sm:text-6xl lg:text-5xl xl:text-6xl font-light text-[#EAD0B3] leading-none tracking-tight transition-transform duration-700 group-hover:-translate-y-0.5">
+      {/* Editorial Content Overlay with 3D Spatial Stacking */}
+      <div
+        className="relative z-10 flex flex-col justify-end p-5 sm:p-6 lg:p-5 xl:p-7 h-full w-full pointer-events-none"
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        <div
+          className="mt-auto transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          style={{ transform: "translateZ(30px)" }}
+        >
+          {/* Number */}
+          <span
+            className="block font-display text-4xl sm:text-5xl lg:text-[2.6rem] xl:text-[3rem] font-light text-[#EAD0B3] leading-none mb-3 sm:mb-4 tracking-tight transition-transform duration-500"
+            style={{ transform: "translateZ(10px)" }}
+          >
             {card.number}
           </span>
 
-          {/* Bold Serif Service Title */}
-          <h3 className="mt-2.5 font-display text-lg sm:text-xl lg:text-xl xl:text-2xl font-medium tracking-[0.14em] uppercase text-[#F5EEE6] leading-snug">
+          {/* Title */}
+          <h3
+            className="font-display text-lg sm:text-xl lg:text-[1.3rem] xl:text-[1.45rem] font-medium tracking-[0.14em] uppercase text-[#F5EEE6] mb-3 leading-snug"
+            style={{ transform: "translateZ(8px)" }}
+          >
             {card.title}
           </h3>
 
-          {/* Stacked Service Items List */}
-          <div className="mt-3.5 sm:mt-4 space-y-1 sm:space-y-1.5">
-            {itemLines.map((line, lineIdx) => (
-              <p
-                key={lineIdx}
-                className="font-sans text-[0.74rem] sm:text-[0.78rem] lg:text-[0.76rem] xl:text-[0.82rem] leading-relaxed font-normal text-[#EAE0D5]/80 transition-colors duration-500 group-hover:text-[#F5EEE6]"
-              >
-                {line}
-              </p>
-            ))}
+          {/* Service Summary Description */}
+          <div
+            className="font-sans text-[0.7rem] sm:text-[0.74rem] lg:text-[0.72rem] xl:text-[0.78rem] leading-[1.65] font-normal text-[#EAE0D5]/75 line-clamp-3 max-w-[95%] transition-colors duration-500 group-hover:text-[#F5EEE6]"
+            style={{ transform: "translateZ(5px)" }}
+          >
+            <p>
+              {itemLines.join(", ").length > 95
+                ? itemLines.join(", ").substring(0, 95) + "..."
+                : itemLines.join(", ")}
+            </p>
           </div>
         </div>
 
         {/* Explore Link at Bottom */}
-        <div className="mt-8 sm:mt-9 flex items-center gap-2 font-sans text-[0.66rem] sm:text-[0.7rem] font-medium tracking-[0.24em] uppercase text-[#DDB78A] transition-colors duration-500 group-hover:text-[#FAF1E8]">
-          <span>{card.cta?.label || "EXPLORE"}</span>
+        <div
+          className="mt-6 sm:mt-7 flex items-center gap-2 font-sans text-[0.66rem] sm:text-[0.7rem] font-bold tracking-[0.22em] uppercase text-[#DDB78A] transition-colors duration-500 group-hover:text-[#FAF1E8]"
+          style={{ transform: "translateZ(40px)" }}
+        >
+          <span className="relative">
+            {card.cta?.label || "EXPLORE"}
+            <span
+              className="absolute -bottom-0.5 left-0 h-[1px] bg-[#DDB78A] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              style={{ width: isHovered ? "100%" : "0%" }}
+            />
+          </span>
           <span
             aria-hidden="true"
-            className="inline-block transition-transform duration-700"
-            style={{
-              transform: isHovered ? "translateX(6px)" : "translateX(0px)",
-            }}
+            className="inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            style={{ transform: isHovered ? "translateX(6px)" : "translateX(0px)" }}
           >
             →
           </span>
@@ -202,7 +287,6 @@ export function Expertise({
   assets = defaultAssets,
 }: ExpertiseProps) {
   const expertise = data;
-  const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
 
   const viewAllIsSelfLink = String(expertise.viewAllCta?.href) === "#services";
   const viewAllHref = viewAllIsSelfLink ? "#contact" : expertise.viewAllCta?.href || "#contact";
@@ -224,22 +308,24 @@ export function Expertise({
   return (
     <section
       id="services"
-      className="relative bg-[#16040C] text-cream px-6 py-16 sm:px-8 lg:px-15 xl:px-25 lg:py-12"
+      className="relative bg-[#1A040E] text-cream px-4 sm:px-6 lg:px-10 xl:px-14 py-14 sm:py-16 lg:py-12 xl:py-16 lg:min-h-screen lg:flex lg:flex-col lg:justify-center"
     >
-      <div className="mx-auto max-w-[1480px]">
+      <div className="mx-auto w-full max-w-[1600px] flex flex-col justify-center">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 pb-8 lg:pb-12 border-b border-cream/10">
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font- tracking-[0.18em] sm:tracking-[0.22em] text-[#F5EEE6] uppercase">
-            {expertise.title || "OUR EXPERTISE"}
-          </h2>
+        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 pb-6 sm:pb-8 lg:pb-7 xl:pb-9 border-b border-cream/10">
+          <div>
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-[2.6rem] xl:text-[3rem] font-normal tracking-[0.14em] sm:tracking-[0.18em] text-[#DDB78A] uppercase leading-none">
+              {expertise.title || "OUR EXPERTISE"}
+            </h2>
+          </div>
 
           <Link
             href={viewAllHref}
-            className="group inline-flex items-center gap-2 text-[0.6rem] sm:text-[0.74rem] font-sans font-medium tracking-[0.26em] uppercase text-cream/70 transition-colors duration-300 hover:text-[#DDB78A]"
+            className="group inline-flex items-center gap-2 text-[0.68rem] sm:text-[0.74rem] font-sans font-bold tracking-[0.22em] uppercase text-[#DDB78A]/80 transition-colors duration-300 hover:text-[#DDB78A]"
           >
             <span className="relative">
               {viewAllLabel}
-              <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-[#DDB78A] origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
+              <span className="absolute -bottom-0.5 left-0 h-[1px] w-0 bg-[#DDB78A] transition-all duration-300 group-hover:w-full" />
             </span>
             <span
               aria-hidden="true"
@@ -251,19 +337,12 @@ export function Expertise({
         </div>
 
         {/* 5 Full-Box Horizontal Cards */}
-        <div
-          className="mt-8 lg:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-3 xl:gap-5 items-stretch"
-          onMouseLeave={() => setActiveCardIndex(null)}
-        >
-          {cards.map((card, index) => (
+        <div className="mt-6 sm:mt-8 lg:mt-6 xl:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-5 items-stretch">
+          {cards.map((card) => (
             <ExpertiseCardItem
               key={card.number}
               card={card}
-              index={index}
-              isHovered={activeCardIndex === index}
               imageSrc={getImageSrc(card.imageKey)}
-              onHoverStart={(idx) => setActiveCardIndex(idx)}
-              onHoverEnd={() => setActiveCardIndex(null)}
             />
           ))}
         </div>

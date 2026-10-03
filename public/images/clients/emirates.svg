@@ -1,3 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 50" fill="none">
-  <text x="50%" y="30" text-anchor="middle" fill="#220811" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="700" letter-spacing="3" opacity="0.85">EMIRATES</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 68" fill="none">
+  <!-- Emirates: Arabic Emblem on top, Emirates on bottom -->
+  <g fill="#4A2E2B" transform="translate(42, 2)">
+    <!-- Calligraphic Arabic Flourish Emblem -->
+    <path d="M26 6C19 6 15 10 15 15C15 22 28 20 28 25C28 28 24 30 19 29M33 8C35 12 37 19 35 25M23 15C25 20 22 26 20 30M30 17C29 22 27 27 25 31" stroke="#4A2E2B" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+  <!-- Wordmark: Emirates -->
+  <text x="70" y="58" text-anchor="middle" fill="#4A2E2B" font-family="Georgia, 'Times New Roman', serif" font-size="21" font-weight="700" letter-spacing="0.5">Emirates</text>
 </svg>

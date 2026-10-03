@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 56" fill="none">
-  <!-- Dubai Culture Official Typography Lockup -->
+  <!-- Dubai Future Foundation Lockup -->
   <g fill="#4A2E2B">
     <!-- Geometric DUBAI wordmark -->
     <text x="10" y="28" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="20" font-weight="900" letter-spacing="2">D<tspan letter-spacing="1">U</tspan>BAI</text>
-    <!-- Culture & Arts Authority -->
-    <text x="12" y="42" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="7.8" font-weight="700" letter-spacing="1.5" opacity="0.85">Culture &amp; Arts Authority</text>
+    <!-- Future Foundation -->
+    <text x="12" y="42" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="8.5" font-weight="700" letter-spacing="1.5" opacity="0.85">Future Foundation</text>
   </g>
 </svg>

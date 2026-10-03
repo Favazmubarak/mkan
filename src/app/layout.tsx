@@ -3,12 +3,14 @@ import { Cormorant_Garamond, Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { site } from "@/content/site";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { MotionProvider } from "@/components/MotionProvider";
+import { LiveContentSync } from "@/components/LiveContentSync";
 import "./globals.css";
+import "./luxury-motion.css";
 
 const displayFont = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -77,6 +79,7 @@ export default function RootLayout({
         <SmoothScroll>
           <MotionProvider>{children}</MotionProvider>
         </SmoothScroll>
+        <LiveContentSync />
       </body>
     </html>
   );

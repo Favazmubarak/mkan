@@ -1,3 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 50" fill="none">
-  <text x="50%" y="30" text-anchor="middle" fill="#220811" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="700" letter-spacing="4" opacity="0.85">EMAAR</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70" fill="none">
+  <!-- EMAAR: Stacked Emblem on top, Text on bottom -->
+  <g fill="#4A2E2B" transform="translate(25, 2)">
+    <!-- Sunburst Pavilion Emblem -->
+    <path d="M35 4C24 4 16 12 16 23V46H54V23C54 12 46 4 35 4ZM22 41V25C22 18 28 10 35 10C42 10 48 18 48 25V41H22Z" fill-rule="evenodd"/>
+    <path d="M35 41V16M35 41L27 22M35 41L43 22M35 41L20 30M35 41L50 30" stroke="#4A2E2B" stroke-width="2.2" stroke-linecap="round"/>
+  </g>
+  <!-- Typography: EMAAR -->
+  <text x="60" y="62" text-anchor="middle" fill="#4A2E2B" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="14.5" font-weight="800" letter-spacing="3.5">EMAAR</text>
 </svg>

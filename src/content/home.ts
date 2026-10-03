@@ -61,6 +61,9 @@ export const homeContent = {
         title: "EVENTS",
         description:
           "Corporate & Institutional\nGovernment Events\nEngagement Platforms\nProduct Launches",
+        longDescription: "",
+        blogTitle: "",
+        blogExcerpt: "",
         items: [
           "Corporate & Institutional",
           "Government Events",
@@ -75,6 +78,9 @@ export const homeContent = {
         title: "EXHIBITIONS",
         description:
           "Seasonal Fairs\nTrade & Public Exhibitions\nExhibition Strategy\n& Planning",
+        longDescription: "",
+        blogTitle: "",
+        blogExcerpt: "",
         items: [
           "Seasonal Fairs",
           "Trade & Public Exhibitions",
@@ -89,6 +95,9 @@ export const homeContent = {
         title: "WORKSHOPS",
         description:
           "Creative Learning\nPlatforms\nMasterclasses\nGuided Sessions",
+        longDescription: "",
+        blogTitle: "",
+        blogExcerpt: "",
         items: [
           "Creative Learning",
           "Platforms",
@@ -103,6 +112,9 @@ export const homeContent = {
         title: "ACTIVATIONS",
         description:
           "Luxury Brand Activations\nMall Activations\nRetail Pop-Ups",
+        longDescription: "",
+        blogTitle: "",
+        blogExcerpt: "",
         items: [
           "Luxury Brand Activations",
           "Mall Activations",
@@ -116,6 +128,9 @@ export const homeContent = {
         title: "CONSULTANCY",
         description:
           "Concept Development\nCustomer Experience\nMarket Analysis\nActivation Strategy\nLaunch & Repositioning",
+        longDescription: "",
+        blogTitle: "",
+        blogExcerpt: "",
         items: [
           "Concept Development",
           "Customer Experience",
@@ -135,7 +150,7 @@ export const homeContent = {
     title: "THE MKAN METHOD",
     subtitle: "FROM STRATEGY TO EXTRAORDINARY EXPERIENCES.",
     cta: {
-      label: "Plan a Project",
+      label: "OUR APPROACH",
       href: "#contact",
     },
     steps: [
@@ -182,16 +197,9 @@ export const homeContent = {
     eyebrow: "OUR WORK",
     title: "SELECTED EXPERIENCES",
     viewAllCta: {
-      label: "Start a Project",
+      label: "VIEW ALL PROJECTS",
       href: "#contact",
     },
-    filters: [
-      { id: "all", label: "ALL" },
-      { id: "events", label: "EVENTS" },
-      { id: "exhibitions", label: "EXHIBITIONS" },
-      { id: "workshops", label: "WORKSHOPS" },
-      { id: "activations", label: "ACTIVATIONS" },
-    ],
     items: [
       {
         id: "ramadan-fair",
@@ -199,14 +207,6 @@ export const homeContent = {
         subtitle: "Flagship Exhibition Platform",
         category: "exhibitions",
         imageKey: "ramadanFair",
-        href: "#contact",
-      },
-      {
-        id: "corporate-events",
-        title: "CORPORATE EVENTS",
-        subtitle: "Institutional Experience",
-        category: "events",
-        imageKey: "corporateEvents",
         href: "#contact",
       },
       {
@@ -218,11 +218,35 @@ export const homeContent = {
         href: "#contact",
       },
       {
+        id: "corporate-engagement",
+        title: "CORPORATE ENGAGEMENT",
+        subtitle: "Private Event Experience",
+        category: "events",
+        imageKey: "corporateEvents",
+        href: "#contact",
+      },
+      {
         id: "private-engagement",
         title: "PRIVATE ENGAGEMENT",
-        subtitle: "Curated Experience",
+        subtitle: "Curated VIP Protocol",
         category: "events",
         imageKey: "privateEngagement",
+        href: "#contact",
+      },
+      {
+        id: "cultural-pavilion",
+        title: "CULTURAL PAVILION",
+        subtitle: "Architectural Public Platform",
+        category: "exhibitions",
+        imageKey: "ramadanFair",
+        href: "#contact",
+      },
+      {
+        id: "institutional-summit",
+        title: "INSTITUTIONAL SUMMIT",
+        subtitle: "High-Level Executive Forum",
+        category: "events",
+        imageKey: "corporateEvents",
         href: "#contact",
       },
     ],
@@ -234,7 +258,7 @@ export const homeContent = {
     paragraph:
       "From corporate programs and government events to brand activations and cultural experiences, we create meaningful platforms that connect people, brands and opportunities.",
     cta: {
-      label: "Our Clients",
+      label: "OUR CLIENTS",
       href: "#clients",
     },
   },
@@ -244,12 +268,12 @@ export const homeContent = {
     eyebrow: "TRUSTED BY",
     clients: [
       { name: "Government of Dubai", logo: "/images/clients/gov-dubai.svg" },
-      { name: "Emaar", logo: "/images/clients/emaar.svg" },
-      { name: "Meraas", logo: "/images/clients/meraas.svg" },
+      { name: "EMAAR", logo: "/images/clients/emaar.svg" },
+      { name: "MERAAS", logo: "/images/clients/meraas.svg" },
       { name: "Dubai Culture & Arts Authority", logo: "/images/clients/dubai-culture.svg" },
       { name: "ADNOC", logo: "/images/clients/adnoc.svg" },
       { name: "Emirates", logo: "/images/clients/emirates.svg" },
-      { name: "Dubai Tourism", logo: "/images/clients/dubai-tourism.svg" },
+      { name: "Dubai Future Foundation", logo: "/images/clients/dubai-future.svg" },
     ],
   },
 

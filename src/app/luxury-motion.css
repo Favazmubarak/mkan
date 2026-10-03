@@ -201,11 +201,28 @@
   pointer-events: none;
 }
 
+/* ─── 5. FLOATING CAROUSEL SYSTEM (Experiences) ───────────────────────────── */
+@keyframes lux-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.lux-float {
+  animation: lux-float 5.5s ease-in-out infinite;
+  will-change: transform;
+}
+
 /* ─── Reduced motion ────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .lux-card,
-  .lux-lift-text {
+  .lux-lift-text,
+  .lux-float {
     transform: none !important;
+    animation: none !important;
   }
   .lux-enter {
     animation: none;

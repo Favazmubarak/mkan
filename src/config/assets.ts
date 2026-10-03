@@ -159,10 +159,10 @@ export const assets = {
 
   // Built for Brands Arched Visual
   builtForBrands: {
-    src: "/images/built-for-brands.jpg",
-    alt: "Arched architectural portal framing an olive tree and clean stone courtyard",
-    width: 800,
-    height: 1000,
+    src: "/images/1.png",
+    alt: "Minimalist stone courtyard with arched portal framing an olive tree and warm sunlit wall",
+    width: 1920,
+    height: 1080,
     page: "home",
     section: "built-for-brands",
   },

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 54" fill="none">
+  <!-- DP WORLD Emblem & Typography -->
+  <g fill="#240612">
+    <!-- Emblem: Dynamic Circular Swoosh Loop -->
+    <path d="M22 10C29 10 35 15 35 22C35 29 27 33 21 34C15 35 10 39 10 44" stroke="#240612" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M22 44C15 44 9 39 9 32C9 25 17 21 23 20C29 19 34 15 34 10" stroke="#240612" stroke-width="2.6" stroke-linecap="round"/>
+    
+    <!-- Typography: DP WORLD -->
+    <text x="46" y="32" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="16" font-weight="900" letter-spacing="2">DP WORLD</text>
+  </g>
+</svg>

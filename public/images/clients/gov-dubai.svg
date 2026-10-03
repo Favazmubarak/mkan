@@ -1,3 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" fill="none">
-  <text x="50%" y="30" text-anchor="middle" fill="#220811" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="600" letter-spacing="2" opacity="0.85">GOVERNMENT OF DUBAI</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 56" fill="none">
+  <!-- Government of Dubai Official Emblem & Typography -->
+  <g fill="#4A2E2B">
+    <!-- Emblem: Coat of arms with dhow and palm tree elements -->
+    <path d="M24 7C24 7 12 12 12 26C12 37 21 45 24 47C27 45 36 37 36 26C36 12 24 7 24 7ZM24 10.5C28.5 14 32.5 20.5 32.5 26C32.5 34 26.5 40.5 24 42.5C21.5 40.5 15.5 34 15.5 26C15.5 20.5 19.5 14 24 10.5Z" fill-rule="evenodd"/>
+    <path d="M24 15V35M19 23L24 18L29 23M18 30C21 32 27 32 30 30" stroke="#4A2E2B" stroke-width="1.8" stroke-linecap="round"/>
+    
+    <!-- Arabic: حكومة دبي -->
+    <text x="48" y="24" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" letter-spacing="1">حكومة دبي</text>
+    
+    <!-- English: Government of Dubai -->
+    <text x="48" y="40" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="10" font-weight="600" letter-spacing="0.5" opacity="0.9">Government of Dubai</text>
+  </g>
 </svg>

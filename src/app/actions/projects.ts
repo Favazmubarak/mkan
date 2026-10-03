@@ -171,3 +171,37 @@ export async function toggleProjectHomeAction(
     return { success: false, message: "Failed to update project visibility." };
   }
 }
+
+export async function reorderProjectsAction(
+  orderedIds: string[]
+): Promise<ProjectActionResponse> {
+  try {
+    await requireAdmin();
+    if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+      return { success: false, message: "Invalid project order list." };
+    }
+    const db = await connectToDatabase();
+    if (!db) return { success: false, message: "Project storage is temporarily unavailable." };
+
+    const operations = orderedIds.map((id, index) => {
+      if (mongoose.isValidObjectId(id)) {
+        return Project.findByIdAndUpdate(id, { sortOrder: index });
+      } else {
+        // Fallback for slug-based items
+        return Project.findOneAndUpdate({ slug: id, locale: "en" }, { sortOrder: index });
+      }
+    });
+
+    await Promise.all(operations);
+    revalidatePath("/");
+    revalidatePath("/admin");
+
+    return {
+      success: true,
+      message: "Portfolio order updated successfully.",
+    };
+  } catch (error) {
+    console.error("[Reorder Projects Error]", error);
+    return { success: false, message: "Failed to update portfolio order." };
+  }
+}
