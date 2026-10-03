@@ -4,6 +4,7 @@ import { site as defaultSite } from "@/content/site";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { PageLoader } from "@/components/PageLoader";
 import { Hero } from "@/components/sections/Hero";
 import { About } from "@/components/sections/About";
 import { Expertise } from "@/components/sections/Expertise";
@@ -13,6 +14,7 @@ import { BuiltForBrands } from "@/components/sections/BuiltForBrands";
 import { Clients } from "@/components/sections/Clients";
 import { ImpactBanner } from "@/components/sections/ImpactBanner";
 import { Contact } from "@/components/sections/Contact";
+
 
 export async function generateMetadata(): Promise<Metadata> {
   const { site } = await getLiveSiteContent("en");
@@ -74,6 +76,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <PageLoader />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd) }}

@@ -47,13 +47,13 @@ export function BuiltForBrands({ data = homeContent.builtForBrands, assets = def
 
           {/* Right Column — Elegant Arched Architecture Photo */}
           <div className="lg:col-span-6 flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-md aspect-[4/5] overflow-hidden rounded-t-[140px] sm:rounded-t-[180px] bg-plum-900/10 shadow-sm">
+            <div className="group relative w-full max-w-md aspect-[4/5] overflow-hidden rounded-t-[140px] sm:rounded-t-[180px] bg-plum-900/10 shadow-sm img-shimmer-wrapper">
               <Image
                 src={brandAsset.src}
                 alt={brandAsset.alt}
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-cover object-center transition-transform duration-700 hover:scale-105"
+                className="object-cover object-center img-arch-zoom"
                 {...(("blurDataURL" in brandAsset && typeof brandAsset.blurDataURL === "string")
                   ? { placeholder: "blur" as const, blurDataURL: brandAsset.blurDataURL }
                   : {})}

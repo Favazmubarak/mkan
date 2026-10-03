@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
+import { SpotlightLink } from "@/components/SpotlightLink";
 
 type ExperienceItem = {
   id: string;
@@ -100,10 +101,10 @@ export function Experiences({ data = homeContent.experiences, assets = defaultAs
                 onClick={() => setActiveFilter(filter.id)}
                 type="button"
                 aria-pressed={isActive}
-                className={`px-4 py-2 text-[0.68rem] sm:text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold ${
+                className={`px-4 py-2 text-[0.68rem] sm:text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase transition-all duration-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold ${
                   isActive
-                    ? "bg-cream text-plum-950 shadow-sm"
-                    : "border border-cream/20 text-cream/75 hover:border-cream/50 hover:text-cream"
+                    ? "bg-cream text-plum-950 shadow-[0_8px_24px_-10px_rgba(221,183,138,0.55)]"
+                    : "border border-cream/20 text-cream/75 hover:border-gold/60 hover:text-gold"
                 }`}
               >
                 {filter.label}
@@ -112,48 +113,73 @@ export function Experiences({ data = homeContent.experiences, assets = defaultAs
           })}
         </div>
 
-        {/* 2x2 Interactive Experience Cards Grid */}
+        {/* 2x2 Showcase Cards */}
         {filteredItems.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
-            {filteredItems.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href || "#contact"}
-              className="group relative flex flex-col justify-end aspect-[4/3] sm:aspect-[16/11] p-6 sm:p-8 border border-cream/15 overflow-hidden transition-all duration-500 hover:border-gold/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
-            >
-              {/* Background Image with Ambient Zoom */}
-              <div className="absolute inset-0 z-0 overflow-hidden">
-                <Image
-                  src={getImageSrc(item.imageKey, item.imageUrl)}
-                  alt={item.altText || item.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                />
-                {/* Vignette */}
-                <div className="absolute inset-0 bg-gradient-to-t from-plum-950 via-plum-950/60 to-plum-950/15" />
-              </div>
-
-              {/* Content Overlay */}
-              <div className="relative z-10 flex items-end justify-between w-full">
-                <div>
-                  <h3 className="font-sans text-base sm:text-lg font-semibold tracking-[0.16em] uppercase text-cream mb-1">
-                    {item.title}
-                  </h3>
-                  <p className="font-sans text-xs font-normal text-cream/75 tracking-wider">
-                    {item.subtitle}
-                  </p>
-                </div>
-
-                {/* Circular Outlined Arrow Button */}
-                <span
-                  aria-hidden="true"
-                  className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-cream/30 text-xs text-cream transition-all duration-300 group-hover:border-gold group-hover:text-gold group-hover:scale-110 group-hover:translate-x-0.5"
+            {filteredItems.map((item, index) => (
+              // key includes the filter so cards re-mount and replay the staggered entrance
+              <div
+                key={`${activeFilter}-${item.id}`}
+                className="lux-enter"
+                style={{ "--i": index } as CSSProperties}
+              >
+                <SpotlightLink
+                  href={item.href || "#contact"}
+                  tilt={2.5}
+                  className="group lux-card relative flex aspect-[4/3] sm:aspect-[16/11] flex-col justify-end overflow-hidden border border-cream/15 p-6 sm:p-8 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
                 >
-                  →
-                </span>
+                  {/* Image layer */}
+                  <div className="absolute inset-0 z-0 overflow-hidden img-shimmer-wrapper">
+                    <Image
+                      src={getImageSrc(item.imageKey, item.imageUrl)}
+                      alt={item.altText || item.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="lux-img object-cover object-center"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-plum-950 via-plum-950/55 to-plum-950/10 transition-opacity duration-700 group-hover:opacity-80" />
+                  </div>
+
+                  {/* Top meta: category + index */}
+                  <div className="absolute inset-x-6 top-6 z-10 flex items-start justify-between sm:inset-x-8 sm:top-8">
+                    <span className="inline-flex items-center gap-3 font-sans text-[0.62rem] font-medium uppercase tracking-[0.3em] text-gold-light">
+                      <span aria-hidden="true" className="lux-tag-line" />
+                      {item.category}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="font-display text-2xl font-light text-cream/60 transition-colors duration-500 group-hover:text-gold"
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+
+                  {/* Bottom content */}
+                  <div className="lux-lift-text relative z-10 flex w-full items-end justify-between gap-4">
+                    <div>
+                      <h3 className="font-sans text-base sm:text-lg font-semibold tracking-[0.16em] uppercase text-cream">
+                        {item.title}
+                      </h3>
+                      <span aria-hidden="true" className="lux-rule my-3" />
+                      <p className="font-sans text-xs font-normal tracking-wider text-cream/75 transition-colors duration-500 group-hover:text-cream">
+                        {item.subtitle}
+                      </p>
+                    </div>
+
+                    <span
+                      aria-hidden="true"
+                      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-cream/30 text-xs text-cream transition-all duration-500 group-hover:-rotate-45 group-hover:border-gold group-hover:bg-gold group-hover:text-plum-950"
+                    >
+                      →
+                    </span>
+                  </div>
+
+                  {/* Cursor-following disc (mouse devices only) */}
+                  <span aria-hidden="true" className="lux-cursor font-sans">
+                    View
+                  </span>
+                </SpotlightLink>
               </div>
-            </Link>
             ))}
           </div>
         ) : (

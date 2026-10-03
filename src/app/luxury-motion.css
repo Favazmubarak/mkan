@@ -1,0 +1,216 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   MKAN Concept — Luxury Motion System
+   Used by: Expertise (lux-card), Experiences (lux-card + lux-cursor),
+            Method (method-*)
+   Hex values are literal on purpose so nothing depends on Tailwind emitting
+   theme variables.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --lux-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --lux-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── 1. LUX CARD (Expertise + Experiences) ──────────────────────────────────
+   Tilt (--rx/--ry) and spotlight (--mx/--my) are written by <SpotlightLink />.
+   Layers: image · spotlight (::before) · content        */
+
+.lux-card {
+  --mx: 50%;
+  --my: 50%;
+  --rx: 0deg;
+  --ry: 0deg;
+  --lift: 0px;
+  transform: perspective(1100px) translate3d(0, var(--lift), 0)
+    rotateX(var(--rx)) rotateY(var(--ry));
+  transition:
+    transform 0.55s var(--lux-ease-out),
+    border-color 0.5s var(--lux-ease),
+    box-shadow 0.7s var(--lux-ease);
+  will-change: transform;
+}
+.lux-card:hover,
+.lux-card:focus-visible {
+  --lift: -8px;
+  border-color: rgba(221, 183, 138, 0.55);
+  box-shadow:
+    0 32px 60px -24px rgba(0, 0, 0, 0.7),
+    0 0 44px -12px rgba(221, 183, 138, 0.28);
+}
+
+/* Gold spotlight that follows the cursor */
+.lux-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    420px circle at var(--mx) var(--my),
+    rgba(234, 208, 179, 0.22),
+    rgba(221, 183, 138, 0.07) 42%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.5s var(--lux-ease);
+}
+.lux-card:hover::before,
+.lux-card:focus-visible::before {
+  opacity: 1;
+}
+
+/* Image: muted at rest, "comes alive" on hover with a slow cinematic push */
+.lux-img {
+  filter: saturate(0.86) brightness(0.9);
+  transition:
+    transform 1.4s var(--lux-ease-out),
+    filter 1s var(--lux-ease);
+  will-change: transform;
+}
+.lux-card:hover .lux-img,
+.lux-card:focus-visible .lux-img {
+  transform: scale(1.09);
+  filter: saturate(1.1) brightness(1.04) contrast(1.03);
+}
+
+/* Text block settles upward on hover */
+.lux-lift-text {
+  transform: translateY(12px);
+  transition: transform 0.8s var(--lux-ease-out);
+}
+.lux-card:hover .lux-lift-text,
+.lux-card:focus-visible .lux-lift-text {
+  transform: translateY(0);
+}
+
+/* Gold rule that stretches under the title */
+.lux-rule {
+  display: block;
+  height: 1px;
+  width: 2rem;
+  background: linear-gradient(90deg, #ddb78a, rgba(221, 183, 138, 0));
+  transition: width 0.9s var(--lux-ease-out);
+}
+.lux-card:hover .lux-rule,
+.lux-card:focus-visible .lux-rule {
+  width: 5rem;
+}
+
+/* Little category line (Experiences) */
+.lux-tag-line {
+  display: inline-block;
+  height: 1px;
+  width: 1.5rem;
+  background: #ddb78a;
+  transition: width 0.8s var(--lux-ease-out);
+}
+.lux-card:hover .lux-tag-line,
+.lux-card:focus-visible .lux-tag-line {
+  width: 2.75rem;
+}
+
+/* ─── 2. CURSOR-FOLLOWING "VIEW" DISC (Experiences, mouse only) ─────────────── */
+
+.lux-cursor {
+  display: none;
+  position: absolute;
+  left: var(--mx);
+  top: var(--my);
+  z-index: 20;
+  width: 92px;
+  height: 92px;
+  margin: -46px 0 0 -46px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(234, 208, 179, 0.7);
+  background: rgba(26, 6, 14, 0.38);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #ead0b3;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 0.35s var(--lux-ease),
+    transform 0.6s var(--lux-ease-out),
+    left 0.55s var(--lux-ease-out),
+    top 0.55s var(--lux-ease-out);
+}
+/* first frame after entering: jump to the pointer instead of gliding from centre */
+.lux-card[data-snap] .lux-cursor {
+  transition:
+    opacity 0.35s var(--lux-ease),
+    transform 0.6s var(--lux-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .lux-cursor {
+    display: flex;
+  }
+  .lux-card:hover .lux-cursor {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ─── 3. STAGGERED ENTRANCE (Experiences, replays on filter change) ─────────── */
+
+@keyframes lux-rise {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.lux-enter {
+  animation: lux-rise 0.95s var(--lux-ease-out) both;
+  animation-delay: calc(var(--i, 0) * 120ms);
+}
+
+/* ─── 4. EXECUTION FRAMEWORK (Method) ─────────────────────────────────────────
+   The liquid itself is an SVG goo-filter simulation drawn in Method.tsx.
+   Only the gold copy of each stage number needs CSS (its opacity is set by JS). */
+
+/* Hovered stage: heading + description warm to gold, timed to the thread's arrival (--arrive) */
+.method-title,
+.method-desc {
+  transition: color 0.8s var(--lux-ease);
+}
+.method-step[data-active="true"] .method-title {
+  color: #b88e5e;
+  transition-delay: var(--arrive, 0s);
+}
+.method-step[data-active="true"] .method-desc {
+  color: #7a5c3b;
+  transition-delay: calc(var(--arrive, 0s) + 0.1s);
+}
+
+.method-num-lit {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #b88e5e;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─── Reduced motion ────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .lux-card,
+  .lux-lift-text {
+    transform: none !important;
+  }
+  .lux-enter {
+    animation: none;
+  }
+  .lux-cursor {
+    display: none !important;
+  }
+}

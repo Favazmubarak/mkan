@@ -52,7 +52,7 @@ export const homeContent = {
     eyebrow: "WHAT WE DO",
     title: "OUR EXPERTISE",
     viewAllCta: {
-      label: "Discuss a Service",
+      label: "VIEW ALL SERVICES",
       href: "#contact",
     },
     cards: [
@@ -60,40 +60,70 @@ export const homeContent = {
         number: "01",
         title: "EVENTS",
         description:
-          "Corporate & institutional events, government programs, product launches and engagement platforms.",
-        cta: { label: "Explore", href: "#contact" },
+          "Corporate & Institutional\nGovernment Events\nEngagement Platforms\nProduct Launches",
+        items: [
+          "Corporate & Institutional",
+          "Government Events",
+          "Engagement Platforms",
+          "Product Launches",
+        ],
+        cta: { label: "EXPLORE", href: "#contact" },
         imageKey: "events",
       },
       {
         number: "02",
         title: "EXHIBITIONS",
         description:
-          "Seasonal fairs, trade & public exhibitions with strategic planning and execution.",
-        cta: { label: "Explore", href: "#contact" },
+          "Seasonal Fairs\nTrade & Public Exhibitions\nExhibition Strategy\n& Planning",
+        items: [
+          "Seasonal Fairs",
+          "Trade & Public Exhibitions",
+          "Exhibition Strategy",
+          "& Planning",
+        ],
+        cta: { label: "EXPLORE", href: "#contact" },
         imageKey: "exhibitions",
       },
       {
         number: "03",
         title: "WORKSHOPS",
         description:
-          "Creative learning platforms and themed masterclasses.",
-        cta: { label: "Explore", href: "#contact" },
+          "Creative Learning\nPlatforms\nMasterclasses\nGuided Sessions",
+        items: [
+          "Creative Learning",
+          "Platforms",
+          "Masterclasses",
+          "Guided Sessions",
+        ],
+        cta: { label: "EXPLORE", href: "#contact" },
         imageKey: "workshops",
       },
       {
         number: "04",
         title: "ACTIVATIONS",
         description:
-          "Luxury brand activations, mall activations and retail pop-ups.",
-        cta: { label: "Explore", href: "#contact" },
+          "Luxury Brand Activations\nMall Activations\nRetail Pop-Ups",
+        items: [
+          "Luxury Brand Activations",
+          "Mall Activations",
+          "Retail Pop-Ups",
+        ],
+        cta: { label: "EXPLORE", href: "#contact" },
         imageKey: "activations",
       },
       {
         number: "05",
         title: "CONSULTANCY",
         description:
-          "Concept development, customer experience, market analysis and activation strategy.",
-        cta: { label: "Explore", href: "#contact" },
+          "Concept Development\nCustomer Experience\nMarket Analysis\nActivation Strategy\nLaunch & Repositioning",
+        items: [
+          "Concept Development",
+          "Customer Experience",
+          "Market Analysis",
+          "Activation Strategy",
+          "Launch & Repositioning",
+        ],
+        cta: { label: "EXPLORE", href: "#contact" },
         imageKey: "consultancy",
       },
     ],

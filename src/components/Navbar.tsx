@@ -2,6 +2,7 @@
 
 import { site as defaultSite } from "@/content/site";
 import { useState, useEffect, useRef } from "react";
+import { Logo } from "@/components/Logo";
 
 interface NavbarProps {
   site?: typeof defaultSite;
@@ -124,15 +125,14 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
         aria-label="Main Navigation"
         className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-6 py-6 sm:px-8 lg:px-12 lg:py-7"
       >
-        {/* Text-only brand lockup */}
+        {/* Official brand vector lockup */}
         <a
           href="#home"
           onClick={(e) => handleScrollTo(e, "#home")}
-          className="flex shrink-0 flex-col leading-none rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          className="flex shrink-0 items-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
           aria-label="MKAN Concept Home"
         >
-          <span className="font-display text-[1.45rem] sm:text-[1.7rem] font-medium tracking-[0.16em] text-cream">MKAN</span>
-          <span className="mt-1 text-[0.52rem] sm:text-[0.58rem] font-sans font-semibold tracking-[0.35em] uppercase text-gold">CONCEPT</span>
+          <Logo className="h-9 sm:h-11 w-auto" />
         </a>
 
         {/* Desktop Navigation Links — Centered */}
@@ -147,16 +147,15 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
                   href={item.href}
                   aria-current={isActive ? "location" : undefined}
                   onClick={(e) => handleScrollTo(e, item.href)}
-                  className="group relative inline-block py-1 text-[0.72rem] font-sans font-medium tracking-[0.22em] uppercase text-cream/80 transition-colors duration-300 hover:text-cream focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
+                  className="group relative inline-block py-1.5 text-[0.75rem] font-sans font-medium tracking-[0.28em] uppercase text-cream/70 transition-colors duration-500 hover:text-[#EAD0B3] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
                 >
-                  {/* Scaling text */}
-                  <span className="inline-block transition-transform duration-300 group-hover:scale-[1.06] group-focus-visible:scale-[1.06]">
+                  <span className="inline-block transition-colors duration-500">
                     {item.label}
                   </span>
 
-                  {/* Drawing underline from left */}
+                  {/* Draw elegant gold underline from center */}
                   <span
-                    className={`absolute bottom-0 left-0 h-[1px] w-full bg-cream transition-transform duration-300 origin-left ${
+                    className={`absolute -bottom-1 left-0 h-[1.5px] w-full bg-[#DDB78A] transition-transform duration-500 origin-center ${
                       isActive
                         ? "scale-x-100"
                         : "scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100"
@@ -173,12 +172,12 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
         <a
           href={site.cta.href}
           onClick={(e) => handleScrollTo(e, site.cta.href)}
-          className="group hidden lg:inline-flex items-center gap-2.5 border border-gold/70 px-5 py-2 text-[0.7rem] font-sans font-medium tracking-[0.2em] uppercase text-cream shrink-0 transition-all duration-300 hover:border-gold hover:bg-gold/10 hover:scale-[1.03] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
+          className="group hidden lg:inline-flex items-center gap-2.5 border-[1.5px] border-[#B88E5E] px-6 py-2.5 text-[0.72rem] font-sans font-bold tracking-[0.22em] uppercase text-[#B88E5E] shrink-0 transition-all duration-500 hover:border-[#DDB78A] hover:bg-[#DDB78A]/10 hover:text-[#EAD0B3] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
         >
           <span>{site.cta.label}</span>
           <span
             aria-hidden="true"
-            className="inline-block transition-transform duration-300 group-hover:translate-x-1"
+            className="inline-block transition-transform duration-500 group-hover:translate-x-1"
           >
             →
           </span>
@@ -234,14 +233,10 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
             <a
               href="#home"
               onClick={(e) => handleScrollTo(e, "#home")}
-              className="flex flex-col leading-none rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+              className="flex items-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+              aria-label="MKAN Concept Home"
             >
-              <span className="font-display text-2xl font-normal tracking-wider text-cream">
-                MKAN
-              </span>
-              <span className="text-[0.5rem] font-sans font-medium tracking-[0.35em] uppercase text-cream/70">
-                CONCEPT
-              </span>
+              <Logo className="h-9 w-auto" />
             </a>
             <button
               type="button"

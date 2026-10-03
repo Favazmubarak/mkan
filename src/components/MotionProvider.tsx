@@ -20,22 +20,10 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
 
     // Desktop luxury motion choreography (>= 1024px)
     mm.add("(min-width: 1024px)", () => {
-      // 1. Hero load reveal sequence
-      const heroTimeline = gsap.timeline({ defaults: { ease: "power3.out" } });
-      heroTimeline
-        .fromTo(
-          "#home p, #home h1, #home .max-w-md, #home .flex-wrap",
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 1, stagger: 0.15, delay: 0.2 }
-        )
-        .fromTo(
-          "#home .flex.items-end",
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.8 },
-          "-=0.5"
-        );
+      // Hero entrance is handled by PageLoader (src/components/PageLoader.tsx).
+      // MotionProvider owns only the scroll-triggered section animations below.
 
-      // 2. Expertise cards staggered entrance
+      // 1. Expertise cards staggered entrance
       gsap.fromTo(
         "#services .grid > *",
         { opacity: 0, y: 40 },

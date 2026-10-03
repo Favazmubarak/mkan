@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./luxury-motion.css";
 
 /* MKAN Concept Luxury Design Tokens */
 @theme {
@@ -61,6 +62,96 @@ body {
 /* Base interactive transitions */
 a, button {
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─── Image Hover System ──────────────────────────────────────────────────── */
+
+/*
+ * Easing: cubic-bezier(0.0, 0.0, 0.2, 1) = "ease-out" that fires at full
+ * velocity immediately then decelerates — no slow ramp-up, so the image
+ * STARTS moving the instant the cursor lands.
+ *
+ * Durations are kept short (0.35s–0.45s) so the motion feels instant
+ * but still has a silky tail. Scale is modest (1.04) — Apple and Nike
+ * zoom is barely perceptible; the subtle movement is what reads as premium.
+ */
+
+/* img-luxury-zoom — card images (Expertise, Experiences, About) */
+.img-luxury-zoom {
+  transition:
+    transform 0.45s cubic-bezier(0.0, 0.0, 0.2, 1),
+    filter    0.45s cubic-bezier(0.0, 0.0, 0.2, 1);
+  will-change: transform;
+}
+.group:hover .img-luxury-zoom,
+.group:focus-visible .img-luxury-zoom {
+  transform: scale(1.04);
+  filter: brightness(1.04) contrast(1.02);
+}
+
+/* img-arch-zoom — arched portrait (BuiltForBrands) */
+.img-arch-zoom {
+  transition:
+    transform 0.55s cubic-bezier(0.0, 0.0, 0.2, 1),
+    filter    0.55s cubic-bezier(0.0, 0.0, 0.2, 1);
+  will-change: transform;
+}
+.group:hover .img-arch-zoom,
+.group:focus-visible .img-arch-zoom {
+  transform: scale(1.04) translateY(-6px);
+  filter: brightness(1.03);
+}
+
+/* img-logo-lift — client logos (grayscale → colour on hover) */
+.img-logo-lift {
+  transition:
+    opacity   0.3s cubic-bezier(0.0, 0.0, 0.2, 1),
+    filter    0.3s cubic-bezier(0.0, 0.0, 0.2, 1),
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* slight spring on the lift */
+  will-change: transform, filter;
+}
+.logo-card:hover .img-logo-lift,
+.logo-card:focus-visible .img-logo-lift {
+  opacity: 1;
+  filter: grayscale(0) brightness(1.05);
+  transform: translateY(-4px);
+}
+
+/* card-luxury-hover — border glow + depth shadow on image cards */
+.card-luxury-hover {
+  transition:
+    border-color 0.3s cubic-bezier(0.0, 0.0, 0.2, 1),
+    box-shadow   0.3s cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+.card-luxury-hover:hover,
+.card-luxury-hover:focus-visible {
+  border-color: rgba(221, 183, 138, 0.6);
+  box-shadow:
+    0 12px 40px -10px rgba(0, 0, 0, 0.5),
+    0 0   18px  -3px rgba(221, 183, 138, 0.14);
+}
+
+/* img-shimmer-wrapper — gold sheen sweep on hover */
+.img-shimmer-wrapper { position: relative; }
+.img-shimmer-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(221, 183, 138, 0.09) 50%,
+    transparent 70%
+  );
+  transform: translateX(-110%);
+  transition: transform 0.55s cubic-bezier(0.0, 0.0, 0.2, 1);
+  pointer-events: none;
+  z-index: 2;
+}
+.group:hover .img-shimmer-wrapper::after,
+.group:focus-visible .img-shimmer-wrapper::after {
+  transform: translateX(110%);
 }
 
 @media (prefers-reduced-motion: reduce) {

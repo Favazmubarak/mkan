@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { site as defaultSite } from "@/content/site";
+import { Logo } from "@/components/Logo";
 
 interface FooterProps {
   site?: typeof defaultSite;
@@ -34,14 +35,13 @@ export function Footer({ site = defaultSite }: FooterProps) {
       <div className="mx-auto max-w-[1440px]">
         {/* Main Footer Row */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-12 border-b border-cream/10">
-          {/* Text-only brand lockup */}
+          {/* Brand Vector Lockup */}
           <button
             onClick={scrollToTop}
-            className="flex flex-col leading-none text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
+            className="flex items-center text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
             aria-label="Back to top"
           >
-            <span className="font-display text-[1.45rem] font-medium tracking-[0.16em] text-cream">MKAN</span>
-            <span className="mt-1 text-[0.52rem] font-sans font-semibold tracking-[0.35em] uppercase text-gold">CONCEPT</span>
+            <Logo className="h-10 w-auto" />
           </button>
 
           {/* Navigation Links with Smooth Upward/Downward Scroll */}
@@ -52,13 +52,13 @@ export function Footer({ site = defaultSite }: FooterProps) {
                   <a
                     href={link.href}
                     onClick={(e) => handleScrollTo(e, link.href)}
-                    className="group relative inline-block py-1 text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase text-cream/75 transition-colors duration-300 hover:text-cream focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
+                    className="group relative inline-block py-1.5 text-[0.75rem] font-sans font-medium tracking-[0.28em] uppercase text-cream/70 transition-colors duration-500 hover:text-[#EAD0B3] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
                   >
-                    <span className="inline-block transition-transform duration-300 group-hover:scale-[1.06]">
+                    <span className="inline-block transition-colors duration-500">
                       {link.label}
                     </span>
                     <span
-                      className="absolute bottom-0 left-0 h-[1px] w-full bg-cream scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100"
+                      className="absolute -bottom-1 left-0 h-[1.5px] w-full bg-[#DDB78A] scale-x-0 transition-transform duration-500 origin-center group-hover:scale-x-100"
                       aria-hidden="true"
                     />
                   </a>

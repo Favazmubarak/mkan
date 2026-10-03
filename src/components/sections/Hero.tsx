@@ -37,12 +37,12 @@ export function Hero({ data = homeContent.hero, assets = defaultAssets }: HeroPr
         {/* Main hero text */}
         <div className="max-w-3xl">
           {/* Eyebrow */}
-          <p className="mb-5 max-w-[32rem] font-sans text-[0.62rem] tracking-[0.16em] uppercase text-gold sm:text-[0.7rem] sm:tracking-[0.3em] lg:text-[0.75rem]">
+          <p className="hero-animate mb-5 max-w-[32rem] font-sans text-[0.62rem] tracking-[0.16em] uppercase text-gold sm:text-[0.7rem] sm:tracking-[0.3em] lg:text-[0.75rem]">
             {hero.eyebrow}
           </p>
 
           {/* Main heading */}
-          <h1 className="max-w-full break-words font-display text-[clamp(1.75rem,8vw,3.5rem)] leading-[0.98] font-normal text-cream text-balance sm:text-[3.5rem] lg:text-[4.5rem]">
+          <h1 className="hero-animate max-w-full break-words font-display text-[clamp(1.75rem,8vw,3.5rem)] leading-[0.98] font-normal text-cream text-balance sm:text-[3.5rem] lg:text-[4.5rem]">
             {(Array.isArray(hero.headingLines) ? hero.headingLines : [hero.headingLines]).map((line, i, arr) => (
               <span key={i}>
                 {line}
@@ -52,12 +52,12 @@ export function Hero({ data = homeContent.hero, assets = defaultAssets }: HeroPr
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-6 max-w-md font-sans text-[0.95rem] leading-relaxed text-cream/80 lg:text-[1.05rem]">
+          <p className="hero-animate mt-6 max-w-md font-sans text-[0.95rem] leading-relaxed text-cream/80 lg:text-[1.05rem]">
             {hero.subtitle}
           </p>
 
           {/* Buttons */}
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="hero-animate mt-8 flex flex-wrap items-center gap-4">
             {/* Primary — filled gold */}
             <a
               href={hero.ctaPrimary.href}
@@ -78,23 +78,27 @@ export function Hero({ data = homeContent.hero, assets = defaultAssets }: HeroPr
         </div>
 
         {/* Bottom bar */}
-        <div className="flex items-end justify-between">
+        <div className="hero-animate flex items-end justify-between">
           {/* Location */}
           <p className="font-sans text-[0.65rem] tracking-[0.25em] uppercase text-cream/60 lg:text-[0.7rem]">
             {hero.locationLabel}
           </p>
 
-          {/* Scroll indicator */}
+          {/* Premium Scroll indicator */}
           <a
             href={hero.scrollTarget}
-            className="group flex items-center gap-2 font-sans text-[0.65rem] tracking-[0.25em] uppercase text-cream/60 transition-colors hover:text-cream lg:text-[0.7rem]"
+            className="group flex items-center gap-3.5 font-sans transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDB78A]"
           >
-            <span>{hero.scrollLabel}</span>
+            <span className="text-[0.7rem] font-bold tracking-[0.3em] uppercase text-[#F5EEE6] group-hover:text-[#DDB78A] transition-colors duration-300">
+              {hero.scrollLabel}
+            </span>
             <span
               aria-hidden="true"
-              className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-cream/30 text-xs transition-transform duration-200 group-hover:translate-y-0.5 group-hover:border-cream"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full bg-[#DDB78A]/10 border-[1.5px] border-[#DDB78A]/60 text-[#DDB78A] transition-all duration-300 group-hover:bg-[#DDB78A] group-hover:text-[#1A060E] group-hover:border-[#DDB78A]"
             >
-              ↓
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+              </svg>
             </span>
           </a>
         </div>

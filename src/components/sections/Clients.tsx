@@ -20,14 +20,14 @@ export function Clients({ data = homeContent.trustedBy }: ClientsProps) {
           {(trustedBy.clients || []).map((client) => (
             <div
               key={client.name}
-              className="relative h-12 w-full max-w-[130px] flex items-center justify-center grayscale opacity-80 transition-all duration-300 hover:grayscale-0 hover:opacity-100"
+              className="logo-card relative h-12 w-full max-w-[130px] flex items-center justify-center cursor-default"
             >
               <Image
                 src={client.logo}
                 alt={`${client.name} official logo`}
                 width={130}
                 height={45}
-                className="object-contain max-h-10"
+                className="object-contain max-h-10 grayscale opacity-70 img-logo-lift"
               />
             </div>
           ))}
