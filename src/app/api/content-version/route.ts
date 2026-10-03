@@ -10,9 +10,8 @@ export async function GET() {
     { version, timestamp: Date.now() },
     {
       headers: {
-        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
-        Pragma: "no-cache",
-        Expires: "0",
+        // Protect serverless quotas by caching globally at Vercel/Cloudflare CDN edge for 15s with 45s SWR
+        "Cache-Control": "public, s-maxage=15, stale-while-revalidate=45",
       },
     }
   );

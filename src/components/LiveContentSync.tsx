@@ -69,11 +69,11 @@ export function LiveContentSync() {
       }, 1200);
     }
 
-    // 4. Polling check for remote updates across devices (every 3.5s when active)
+    // 4. Polling check for remote updates across devices (every 25s when active)
     const interval = setInterval(async () => {
       if (document.hidden) return; // Don't poll aggressively when tab is in background
       try {
-        const res = await fetch("/api/content-version", { cache: "no-store" });
+        const res = await fetch("/api/content-version");
         if (!res.ok) return;
         const data = await res.json();
         if (
@@ -88,7 +88,7 @@ export function LiveContentSync() {
       } catch {
         // Ignore background polling errors
       }
-    }, 3500);
+    }, 25000);
 
     // 5. Check immediately when user switches back to this tab
     const handleVisibilityChange = async () => {

@@ -286,7 +286,7 @@ export function Experiences({
                   className="group relative flex h-[260px] sm:h-[295px] lg:h-[325px] xl:h-[350px] w-full flex-col justify-end overflow-hidden rounded-xl border border-white/15 bg-[#14020A] transition-all duration-500 ease-out hover:-translate-y-1.5 hover:border-[#DDB78A]/75 hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.85)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#DDB78A]"
                 >
                   {/* Full-bleed Photographic Layer with Silky Optical Zoom */}
-                  <div className="absolute inset-0 z-0 overflow-hidden">
+                  <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
                     <Image
                       src={getImageSrc(
                         item.imageKey,

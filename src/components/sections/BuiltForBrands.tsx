@@ -35,7 +35,7 @@ export function BuiltForBrands({
   return (
     <section className="relative overflow-hidden min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] xl:min-h-[720px] flex items-center bg-[#F7F2EA]">
       {/* Full-Bleed Architectural Environment Photo Layer (/images/1.png) */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         <Image
           src={imageSrc}
           alt={

@@ -1,6 +1,4 @@
 import Image from "next/image";
-import fs from "fs";
-import path from "path";
 import { homeContent } from "@/content/home";
 
 export interface ClientItem {
@@ -30,32 +28,6 @@ export function Clients({ data }: ClientsProps) {
       ? (trustedBy.clients as ClientItem[])
       : (homeContent.trustedBy.clients as unknown as ClientItem[])),
   ];
-
-  // Dynamically detect any newly uploaded logos in public/images/logo
-  try {
-    const logoDir = path.join(process.cwd(), "public", "images", "logo");
-    if (fs.existsSync(logoDir)) {
-      const files = fs.readdirSync(logoDir);
-      for (const file of files) {
-        if (!/\.(png|jpe?g|svg|webp)$/i.test(file)) continue;
-        const cleanBase = file.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ").toLowerCase().trim();
-        const alreadyExists = clientList.some((c) => {
-          const cPath = (c.logo || "").toLowerCase();
-          const cName = (c.name || "").toLowerCase().replace(/[-_]/g, " ").trim();
-          return cPath.includes(cleanBase) || cName === cleanBase;
-        });
-        if (!alreadyExists) {
-          const formattedName = cleanBase.replace(/\b\w/g, (char) => char.toUpperCase());
-          clientList.push({
-            name: formattedName,
-            logo: `/images/logo/${file}`,
-          });
-        }
-      }
-    }
-  } catch {
-    // Fallback safely to static client list
-  }
 
   // Dynamically split into two balanced rows
   const row1Base = clientList.filter((_, idx) => idx % 2 === 0);

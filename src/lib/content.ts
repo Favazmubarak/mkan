@@ -126,12 +126,15 @@ export const getLiveSiteContent = cache(async (locale: string = "en") => {
         const leafKey = parts[parts.length - 1];
         if (isRecord(target[leafKey])) {
           const currentAsset = target[leafKey] as Record<string, unknown>;
-          target[leafKey] = {
-            ...currentAsset,
-            src: override.url,
-            alt: override.altText || currentAsset.alt,
-            blurDataURL: override.blurDataURL || undefined,
-          };
+          const cleanUrl = typeof override.url === "string" ? override.url.trim() : "";
+          if (cleanUrl.startsWith("/") || cleanUrl.startsWith("http://") || cleanUrl.startsWith("https://")) {
+            target[leafKey] = {
+              ...currentAsset,
+              src: cleanUrl,
+              alt: override.altText || currentAsset.alt,
+              blurDataURL: override.blurDataURL || undefined,
+            };
+          }
         }
       }
     }

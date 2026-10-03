@@ -14,19 +14,21 @@ export function Hero({ data = homeContent.hero, assets = defaultAssets }: HeroPr
   return (
     <section id="home" className="relative min-h-screen w-full overflow-hidden bg-plum-950">
       {/* Background image */}
-      <Image
-        src={heroBg.src}
-        alt={heroBg.alt}
-        fill
-        priority
-        fetchPriority="high"
-        className="object-cover object-center"
-        sizes="100vw"
-        quality={90}
-        {...(("blurDataURL" in heroBg && typeof heroBg.blurDataURL === "string")
-          ? { placeholder: "blur" as const, blurDataURL: heroBg.blurDataURL }
-          : {})}
-      />
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+        <Image
+          src={heroBg.src}
+          alt={heroBg.alt}
+          fill
+          priority
+          fetchPriority="high"
+          className="object-cover object-center"
+          sizes="100vw"
+          quality={90}
+          {...(("blurDataURL" in heroBg && typeof heroBg.blurDataURL === "string")
+            ? { placeholder: "blur" as const, blurDataURL: heroBg.blurDataURL }
+            : {})}
+        />
+      </div>
 
       {/* Dark gradient overlay — heavier on the left for text readability */}
       <div className="absolute inset-0 bg-gradient-to-r from-plum-950/90 via-plum-950/50 to-transparent" />

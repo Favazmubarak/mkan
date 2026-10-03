@@ -18,9 +18,9 @@ export function ImpactBanner({
   return (
     <section className="relative w-full overflow-hidden bg-black text-white min-h-[300px] sm:min-h-[350px] md:min-h-[390px] lg:min-h-[430px] xl:min-h-[460px] flex items-center">
       {/* Background Image (/images/impact.png) */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         <Image
-          src="/images/impact.png"
+          src={impactBg?.src || "/images/impact.png"}
           alt={
             impactBg?.alt ||
             "Illuminated architectural portal and lantern-lit promenade framing evening skyline"
