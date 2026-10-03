@@ -70,19 +70,18 @@ export function About({ data = homeContent.about, assets = defaultAssets }: Abou
           {/* Right Column — Interior Photograph & Stats */}
           <div className="lg:col-span-6 flex flex-col pt-4 lg:pt-0">
             {/* Image Frame */}
-            <div className="relative p-2 border border-[#3B0918]/15 rounded-sm bg-cream shadow-xl hover:shadow-2xl transition-shadow duration-700 group">
+            <div className="relative p-2 border border-[#3B0918]/15 rounded-sm bg-cream shadow-xl">
               <div className="relative aspect-[3/2] w-full overflow-hidden bg-plum-950/10">
                 <Image
                   src={aboutInterior.src}
                   alt={aboutInterior.alt}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover object-center transition-transform duration-[2500ms] ease-[cubic-bezier(0.21,1,0.36,1)] group-hover:scale-[1.07]"
+                  className="object-cover object-center"
                   {...(("blurDataURL" in aboutInterior && typeof aboutInterior.blurDataURL === "string")
                     ? { placeholder: "blur" as const, blurDataURL: aboutInterior.blurDataURL }
                     : {})}
                 />
-                <div className="absolute inset-0 bg-[#3B0918]/5 transition-opacity duration-[1500ms] group-hover:opacity-0 pointer-events-none" />
               </div>
             </div>
 

@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
+import { scrollToElementCenter } from "@/lib/cinematic-scroll";
 
 interface BuiltForBrandsProps {
   data?: typeof homeContent.builtForBrands;
@@ -22,6 +25,12 @@ export function BuiltForBrands({
     : [rawHeading];
 
   const ctaLabel = builtForBrands.cta?.label || "OUR CLIENTS";
+
+  // Cinematic slow smooth scroll to dead center of the client animation section
+  const handleScrollToClients = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    scrollToElementCenter("#clients", 1400, "#clients");
+  };
 
   return (
     <section className="relative overflow-hidden min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] xl:min-h-[720px] flex items-center bg-[#F7F2EA]">
@@ -66,7 +75,8 @@ export function BuiltForBrands({
           {/* Outlined Rectangular Button with Cream Filling, Inverting to Cherry Noir on Hover */}
           <div className="mt-8 sm:mt-10">
             <Link
-              href={builtForBrands.cta?.href || "#clients"}
+              href="#clients"
+              onClick={handleScrollToClients}
               className="group inline-flex items-center gap-3.5 border border-[#D4B996] bg-[#F5EEE6] px-7 py-3.5 text-xs sm:text-[0.76rem] font-sans font-bold tracking-[0.24em] uppercase text-[#240612] shadow-[0_2px_12px_rgba(36,6,18,0.06)] transition-all duration-300 ease-out hover:bg-[#1A060E] hover:text-[#DDB78A] hover:border-[#1A060E] hover:shadow-[0_12px_28px_-6px_rgba(26,6,14,0.35)] active:scale-95"
             >
               <span>{ctaLabel}</span>

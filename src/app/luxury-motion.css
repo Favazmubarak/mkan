@@ -204,16 +204,74 @@
 /* ─── 5. FLOATING CAROUSEL SYSTEM (Experiences) ───────────────────────────── */
 @keyframes lux-float {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translate3d(0, 0px, 0);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translate3d(0, -6px, 0);
   }
 }
 
 .lux-float {
-  animation: lux-float 5.5s ease-in-out infinite;
+  animation: lux-float 6.5s ease-in-out infinite;
   will-change: transform;
+}
+.lux-float:hover {
+  animation-play-state: paused;
+}
+
+/* ─── 6. TWO-ROW CLIENT MARQUEE SYSTEM ─────────────────────────────────────── */
+@keyframes lux-marquee-rtl {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes lux-marquee-ltr {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.lux-marquee-rtl {
+  animation: lux-marquee-rtl 38s linear infinite;
+  will-change: transform;
+}
+
+.lux-marquee-ltr {
+  animation: lux-marquee-ltr 42s linear infinite;
+  will-change: transform;
+}
+
+.lux-marquee-mask {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 7%,
+    black 93%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 7%,
+    black 93%,
+    transparent 100%
+  );
+}
+
+.lux-marquee-rtl-slow {
+  animation: lux-marquee-rtl 42s linear infinite;
+  will-change: transform;
+}
+
+.lux-marquee-track:hover {
+  animation-play-state: paused;
 }
 
 /* ─── Reduced motion ────────────────────────────────────────────────────────── */

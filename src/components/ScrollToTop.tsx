@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { scrollToElementCenter } from "@/lib/cinematic-scroll";
 
 export function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -33,10 +34,7 @@ export function ScrollToTop() {
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    scrollToElementCenter("#home", 1400, " ");
   };
 
   if (!visible || contactVisible) return null;

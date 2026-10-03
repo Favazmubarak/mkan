@@ -169,10 +169,10 @@ export const assets = {
 
   // Impact Banner
   impactBg: {
-    src: "/images/impact-bg.jpg",
-    alt: "Atmospheric evening courtyard with warm candlelit tables and sculpted greenery",
-    width: 1920,
-    height: 800,
+    src: "/images/impact.png",
+    alt: "Illuminated architectural portal and lantern-lit promenade framing evening skyline",
+    width: 2158,
+    height: 729,
     page: "home",
     section: "impact-banner",
   },

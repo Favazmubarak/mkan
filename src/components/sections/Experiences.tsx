@@ -269,9 +269,9 @@ export function Experiences({
           onMouseUp={handleMouseUp}
         >
           <div
-            className="flex transition-transform duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] -mx-2.5 sm:-mx-3 lg:-mx-3.5"
+            className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform -mx-2.5 sm:-mx-3 lg:-mx-3.5"
             style={{
-              transform: `translateX(-${currentIndex * slidePercent}%)`,
+              transform: `translate3d(-${currentIndex * slidePercent}%, 0, 0)`,
             }}
           >
             {items.map((item, index) => (
@@ -280,96 +280,73 @@ export function Experiences({
                 style={{ width: `${slidePercent}%` }}
                 className="shrink-0 px-2.5 sm:px-3 lg:px-3.5"
               >
-                {/* Floating Card Wrapper with Organic Staggered Sinusoidal Float */}
-                <div
-                  className="relative group/wrapper h-full lux-float"
-                  style={{
-                    animationDelay: `${(index % 3) * 1.5}s`,
+                {/* Main Panoramic Card Link: High-FPS Hardware Accelerated Smooth Motion */}
+                <Link
+                  href={item.href || "#contact"}
+                  onClick={(e) => {
+                    if (dragDistance.current > 12) {
+                      e.preventDefault();
+                    }
                   }}
+                  className="group relative flex h-[260px] sm:h-[295px] lg:h-[325px] xl:h-[350px] w-full flex-col justify-end overflow-hidden rounded-xl border border-white/15 bg-[#14020A] transition-all duration-500 ease-out hover:-translate-y-1.5 hover:border-[#DDB78A]/75 hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.85)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#DDB78A]"
                 >
-                  {/* Atmospheric Levitation Shadow & Ambient Underglow */}
-                  <div
-                    className="absolute -inset-2 rounded-2xl bg-gradient-to-b from-[#DDB78A]/25 via-[#B88E5E]/15 to-transparent blur-xl opacity-0 group-hover/wrapper:opacity-100 transition-all duration-700 ease-out pointer-events-none -z-10 translate-y-3"
-                  />
-
-                  {/* Main Panoramic Card Link: Decreased Elegant Height & Modern Rounded Borders */}
-                  <Link
-                    href={item.href || "#contact"}
-                    onClick={(e) => {
-                      if (dragDistance.current > 12) {
-                        e.preventDefault();
+                  {/* Full-bleed Photographic Layer with Silky Optical Zoom */}
+                  <div className="absolute inset-0 z-0 overflow-hidden">
+                    <Image
+                      src={getImageSrc(
+                        item.imageKey,
+                        "imageUrl" in item && typeof (item as { imageUrl?: string }).imageUrl === "string"
+                          ? (item as { imageUrl?: string }).imageUrl
+                          : undefined
+                      )}
+                      alt={
+                        ("altText" in item && typeof (item as { altText?: string }).altText === "string"
+                          ? (item as { altText?: string }).altText
+                          : undefined) || item.title
                       }
-                    }}
-                    className="group relative flex h-[260px] sm:h-[295px] lg:h-[325px] xl:h-[350px] w-full flex-col justify-end overflow-hidden rounded-xl border border-white/15 bg-[#14020A] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:scale-[1.015] hover:border-[#DDB78A]/85 hover:shadow-[0_22px_44px_-10px_rgba(0,0,0,0.8),0_0_28px_-6px_rgba(221,183,138,0.22)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#DDB78A]"
-                  >
-                    {/* Full-bleed Photographic Layer with 35mm Parallax Push */}
-                    <div className="absolute inset-0 z-0 overflow-hidden">
-                      <div className="relative w-full h-full transition-transform duration-1200 ease-out group-hover:scale-[1.045]">
-                        <Image
-                          src={getImageSrc(
-                            item.imageKey,
-                            "imageUrl" in item && typeof (item as { imageUrl?: string }).imageUrl === "string"
-                              ? (item as { imageUrl?: string }).imageUrl
-                              : undefined
-                          )}
-                          alt={
-                            ("altText" in item && typeof (item as { altText?: string }).altText === "string"
-                              ? (item as { altText?: string }).altText
-                              : undefined) || item.title
-                          }
-                          fill
-                          priority={index < 3}
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-cover object-center transition-all duration-700 ease-out brightness-[0.96] contrast-[1.02] group-hover:brightness-[1.04] group-hover:contrast-[1.04]"
-                        />
-                      </div>
+                      fill
+                      priority={index < 3}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover object-center brightness-[0.96] contrast-[1.02] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform group-hover:scale-105"
+                    />
 
-                      {/* Cinematic Anamorphic Specular Light Sweep */}
-                      <div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[130%] group-hover:translate-x-[130%] transition-transform duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none z-10"
-                      />
+                    {/* Deep Cinematic Shadow Gradient for Crystal-Clear Text Legibility */}
+                    <div className="absolute inset-x-0 bottom-0 h-[70%] bg-gradient-to-t from-[#14020A] via-[#14020A]/80 via-50% to-transparent pointer-events-none transition-opacity duration-500 group-hover:opacity-90 z-10" />
+                  </div>
 
-                      {/* Deep Cinematic Shadow Gradient for Crystal-Clear Text Legibility */}
-                      <div className="absolute inset-x-0 bottom-0 h-[68%] bg-gradient-to-t from-[#14020A] via-[#14020A]/80 via-50% to-transparent pointer-events-none transition-opacity duration-700 group-hover:opacity-90 z-10" />
-
-                      {/* Subtle Ethereal Glass Rim Light */}
-                      <div className="absolute inset-0 border border-white/0 group-hover:border-white/20 transition-colors duration-500 pointer-events-none z-10" />
+                  {/* Bottom Content Overlay: Title + Subtitle on Left, Circular Button on Right */}
+                  <div className="relative z-20 flex w-full items-end justify-between gap-3 p-4 sm:p-5 lg:p-5 xl:p-6">
+                    <div className="flex-1 pr-1.5">
+                      <h3 className="font-display text-base sm:text-lg lg:text-[1.12rem] xl:text-[1.22rem] font-medium tracking-[0.03em] uppercase text-[#F5EEE6] leading-snug transition-colors duration-300 group-hover:text-white">
+                        {item.title}
+                      </h3>
+                      <p className="font-sans text-[0.7rem] sm:text-[0.74rem] lg:text-[0.78rem] text-[#D4C8BC]/85 font-normal tracking-wide mt-1 transition-colors duration-300 group-hover:text-[#EAD0B3]">
+                        {item.subtitle}
+                      </p>
                     </div>
 
-                    {/* Bottom Content Overlay: Title + Subtitle on Left, Circular Button on Right */}
-                    <div className="relative z-20 flex w-full items-end justify-between gap-3 p-4 sm:p-5 lg:p-5 xl:p-6">
-                      <div className="flex-1 pr-1.5">
-                        <h3 className="font-display text-base sm:text-lg lg:text-[1.12rem] xl:text-[1.22rem] font-medium tracking-[0.03em] uppercase text-[#F5EEE6] leading-snug transition-colors duration-300 group-hover:text-white">
-                          {item.title}
-                        </h3>
-                        <p className="font-sans text-[0.7rem] sm:text-[0.74rem] lg:text-[0.78rem] text-[#D4C8BC]/85 font-normal tracking-wide mt-1 transition-colors duration-300 group-hover:text-[#EAD0B3]">
-                          {item.subtitle}
-                        </p>
-                      </div>
-
-                      {/* Circular Interactive Arrow Button (Matches reference image) */}
-                      <div
-                        className="relative flex h-9 w-9 sm:h-9.5 sm:w-9.5 shrink-0 items-center justify-center rounded-full border border-white/25 bg-black/30 backdrop-blur-md text-white transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:border-[#DDB78A] group-hover:bg-[#DDB78A] group-hover:text-[#1A060E] group-hover:shadow-[0_0_16px_rgba(221,183,138,0.65)]"
-                        aria-hidden="true"
+                    {/* Circular Interactive Arrow Button (Matches reference image) */}
+                    <div
+                      className="relative flex h-9 w-9 sm:h-9.5 sm:w-9.5 shrink-0 items-center justify-center rounded-full border border-white/25 bg-black/35 backdrop-blur-md text-white transition-all duration-300 ease-out group-hover:scale-105 group-hover:border-[#DDB78A] group-hover:bg-[#DDB78A] group-hover:text-[#1A060E] group-hover:shadow-[0_0_16px_rgba(221,183,138,0.5)]"
+                      aria-hidden="true"
+                    >
+                      <svg
+                        className="w-3.5 h-3.5 transition-transform duration-300 ease-out group-hover:-rotate-45 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
-                        <svg
-                          className="w-3.5 h-3.5 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-rotate-45 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
+                        <path
+                          d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </div>
-                  </Link>
-                </div>
+                  </div>
+                </Link>
               </div>
             ))}
           </div>
@@ -384,9 +361,9 @@ export function Experiences({
                 type="button"
                 onClick={() => setCurrentIndex(idx)}
                 aria-label={`Go to slide ${idx + 1}`}
-                className={`h-1.5 rounded-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                className={`h-1.5 rounded-full transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                   currentIndex === idx
-                    ? "w-8 bg-[#DDB78A] shadow-[0_0_12px_rgba(221,183,138,0.6)]"
+                    ? "w-8 bg-[#DDB78A] shadow-[0_0_14px_rgba(221,183,138,0.65)]"
                     : "w-2 bg-white/20 hover:bg-white/40"
                 }`}
               />

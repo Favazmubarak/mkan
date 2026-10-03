@@ -68,6 +68,11 @@ export const getLiveSiteContent = cache(async (locale: string = "en") => {
         continue;
       }
 
+      if (section.sectionKey === "trustedBy") {
+        // Client logos are managed directly via public/images/logo
+        continue;
+      }
+
       if (section.sectionKey in homeData) {
         const key = section.sectionKey as keyof typeof homeData;
         const sectionData = homeData[key];

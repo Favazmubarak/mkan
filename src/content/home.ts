@@ -265,25 +265,35 @@ export const homeContent = {
 
   // 8. Trusted By Section (Light Cream)
   trustedBy: {
-    eyebrow: "TRUSTED BY",
+    eyebrow: "OUR CLIENTS",
     clients: [
-      { name: "Government of Dubai", logo: "/images/clients/gov-dubai.svg" },
-      { name: "EMAAR", logo: "/images/clients/emaar.svg" },
-      { name: "MERAAS", logo: "/images/clients/meraas.svg" },
-      { name: "Dubai Culture & Arts Authority", logo: "/images/clients/dubai-culture.svg" },
-      { name: "ADNOC", logo: "/images/clients/adnoc.svg" },
-      { name: "Emirates", logo: "/images/clients/emirates.svg" },
-      { name: "Dubai Future Foundation", logo: "/images/clients/dubai-future.svg" },
+      { name: "Abu Dhabi Business Women Council", logo: "/images/logo/abudhabi-business-women-council.png", width: 800, height: 172, aspectRatio: 4.65 },
+      { name: "Dubai Ladies Club", logo: "/images/logo/dubai-ladies-club.png", width: 463, height: 324, aspectRatio: 1.43 },
+      { name: "Chalhoub Group", logo: "/images/logo/chalhoub.png", width: 432, height: 379, aspectRatio: 1.14 },
+      { name: "Emirates Steel", logo: "/images/logo/emirates-steel.png", width: 654, height: 200, aspectRatio: 3.27 },
+      { name: "Galeries Lafayette", logo: "/images/logo/gallaries.png", width: 603, height: 315, aspectRatio: 1.91 },
+      { name: "Dubai Health Authority", logo: "/images/logo/health-authotirty.png", width: 241, height: 220, aspectRatio: 1.1 },
+      { name: "HSBC", logo: "/images/logo/hsbc.png", width: 213, height: 157, aspectRatio: 1.36 },
+      { name: "Kaya Skin Clinic", logo: "/images/logo/kaya.png", width: 796, height: 305, aspectRatio: 2.61 },
+      { name: "KIZAD", logo: "/images/logo/kizad.png", width: 575, height: 189, aspectRatio: 3.04 },
+      { name: "SEHA", logo: "/images/logo/seha.png", width: 179, height: 155, aspectRatio: 1.15 },
+      { name: "Alta Pleat", logo: "/images/logo/alta-pleat.png", width: 206, height: 186, aspectRatio: 1.11 },
+      { name: "Aisha's", logo: "/images/logo/aishas.png", width: 165, height: 133, aspectRatio: 1.24 },
+      { name: "EIC", logo: "/images/logo/eic.png", width: 345, height: 218, aspectRatio: 1.58 },
+      { name: "Fabula Jewels", logo: "/images/logo/fabula.png", width: 391, height: 109, aspectRatio: 3.59 },
+      { name: "Fiz", logo: "/images/logo/fiz.png", width: 229, height: 260, aspectRatio: 0.88 },
+      { name: "Homa Q", logo: "/images/logo/homaq.png", width: 379, height: 130, aspectRatio: 2.92 },
+      { name: "Selsela", logo: "/images/logo/selsela.png", width: 190, height: 106, aspectRatio: 1.79 },
     ],
   },
 
   // 9. Meaningful Experiences Impact Banner (Plum over photo)
   impactBanner: {
-    heading: "MEANINGFUL EXPERIENCES. REAL IMPACT.",
+    heading: "MEANINGFUL EXPERIENCES.\nREAL IMPACT.",
     paragraph:
-      "We collaborate with brands, institutions and communities to deliver experiences that inspire, engage and create lasting value.",
+      "We collaborate with brands, institutions and communities to deliver experiences that\ninspire, engage and create lasting value.",
     cta: {
-      label: "Let's Talk",
+      label: "LET'S TALK",
       href: "#contact",
     },
   },

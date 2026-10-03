@@ -3,6 +3,7 @@
 import { site as defaultSite } from "@/content/site";
 import { useState, useEffect, useRef } from "react";
 import { Logo } from "@/components/Logo";
+import { scrollToElementCenter } from "@/lib/cinematic-scroll";
 
 interface NavbarProps {
   site?: typeof defaultSite;
@@ -97,26 +98,7 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     setMobileOpen(false);
-
-    if (href === "#home" || href === "#" || href === "/") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      window.history.pushState(null, "", " ");
-      const home = document.getElementById("home");
-      if (home) {
-        home.setAttribute("tabindex", "-1");
-        window.setTimeout(() => home.focus({ preventScroll: true }), 0);
-      }
-      return;
-    }
-
-    const targetId = href.replace("#", "");
-    const element = document.getElementById(targetId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      window.history.pushState(null, "", href);
-      element.setAttribute("tabindex", "-1");
-      window.setTimeout(() => element.focus({ preventScroll: true }), 0);
-    }
+    scrollToElementCenter(href, 1400, href);
   };
 
   return (
