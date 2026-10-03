@@ -1,0 +1,40 @@
+name: MKAN CI/CD Quality & Security Gate
+
+on:
+  push:
+    branches: [main, audit/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: Typecheck, Lint, Test & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Static Type Check
+        run: npm run typecheck
+
+      - name: ESLint Code Quality
+        run: npm run lint
+
+      - name: Automated Unit & Integration Tests
+        run: npm test
+
+      - name: Production Build
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_TELEMETRY_DISABLED: 1

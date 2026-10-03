@@ -44,6 +44,8 @@ R2_PUBLIC_DOMAIN=
 - `npm run build` — create a production build.
 - `npm start` — serve the production build.
 - `npm run lint` — run ESLint.
+- `npm run typecheck` — run TypeScript static type checking.
+- `npm test` — execute automated unit and integration tests.
 - `npm run seed` — seed the initial admin and content. This resets the configured admin password and revokes existing admin sessions.
 - `npm run admin:reset-password -- admin@example.com` — reset an admin password using `ADMIN_DEFAULT_PASSWORD` from `.env.local` or the process environment. This revokes existing sessions.
 
