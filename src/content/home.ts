@@ -37,8 +37,8 @@ export const homeContent = {
       "MKAN CONCEPT is a Dubai-based, Emirati-owned consultancy, events, workshops, and exhibition company established in 2017. We design and deliver curated events, workshops, exhibitions, and structured brand activations, supported by strategic consultancy to ensure alignment with commercial objectives and market positioning.",
     ],
     cta: {
-      label: "Our Story",
-      href: "#about",
+      label: "Our Approach",
+      href: "#method",
     },
     stats: [
       { value: "2017", label: "ESTABLISHED" },
@@ -49,11 +49,11 @@ export const homeContent = {
 
   // 3. Our Expertise Section (Plum)
   expertise: {
-    eyebrow: "OUR EXPERTISE",
+    eyebrow: "WHAT WE DO",
     title: "OUR EXPERTISE",
     viewAllCta: {
-      label: "View All Services",
-      href: "#services",
+      label: "Discuss a Service",
+      href: "#contact",
     },
     cards: [
       {
@@ -105,8 +105,8 @@ export const homeContent = {
     title: "THE MKAN METHOD",
     subtitle: "FROM STRATEGY TO EXTRAORDINARY EXPERIENCES.",
     cta: {
-      label: "Our Approach",
-      href: "#method",
+      label: "Plan a Project",
+      href: "#contact",
     },
     steps: [
       {
@@ -147,24 +147,13 @@ export const homeContent = {
     ],
   },
 
-  // 5. Philosophy Banner (Plum over photo)
-  philosophy: {
-    eyebrow: "OUR PHILOSOPHY",
-    heading: "STRATEGY BEFORE SPECTACLE.",
-    subheading: "Curated experiences. Measurable impact.",
-    cta: {
-      label: "Why MKAN",
-      href: "#about",
-    },
-  },
-
   // 6. Selected Experiences Section (Plum)
   experiences: {
     eyebrow: "OUR WORK",
     title: "SELECTED EXPERIENCES",
     viewAllCta: {
-      label: "View All Projects",
-      href: "#experiences",
+      label: "Start a Project",
+      href: "#contact",
     },
     filters: [
       { id: "all", label: "ALL" },

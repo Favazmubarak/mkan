@@ -24,14 +24,10 @@ export default function AdminLoginPage() {
         <div className="rounded-2xl border border-[#E8E4DF] bg-white p-8 sm:p-10 shadow-lg">
           {/* Brand Header */}
           <div className="text-center pb-7 border-b border-[#E8E4DF]">
-            <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#DDB78A] text-white font-bold text-2xl mb-4 shadow-sm">
-              M
-            </div>
-
             <h1 className="text-2xl sm:text-3xl font-bold tracking-wide text-[#1A1A1A]">
               MKAN CONCEPT
             </h1>
-            <p className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase text-[#DDB78A] mt-1">
+            <p className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase text-[#7C3F50] mt-1">
               Studio Management Console
             </p>
           </div>
@@ -95,7 +91,7 @@ export default function AdminLoginPage() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#DDB78A] px-6 py-3 text-xs font-bold tracking-wide uppercase text-white transition-all duration-200 hover:bg-[#D0A875] hover:shadow-md active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9A6B3A] focus-visible:ring-offset-2 disabled:opacity-50 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#1A060E] px-6 py-3 text-xs font-bold tracking-wide uppercase text-white transition-all duration-200 hover:bg-[#2A0A17] hover:shadow-md active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDB78A] focus-visible:ring-offset-2 disabled:opacity-50 cursor-pointer"
               >
                 <span>{isPending ? "Verifying..." : "Sign In"}</span>
                 {!isPending && <ArrowRight className="h-3.5 w-3.5" />}

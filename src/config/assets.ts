@@ -23,15 +23,6 @@ export const assets = {
     page: "home",
     section: "hero",
   },
-  logoPlaceholder: {
-    src: "/images/mkan-logo.svg",
-    alt: "MKAN CONCEPT Luxury Exhibitions & Curated Experiences Logo",
-    width: 200,
-    height: 60,
-    page: "global",
-    section: "navbar & footer",
-  },
-
   // Home Page
   aboutInterior: {
     src: "/images/about-interior.jpg",
@@ -45,42 +36,42 @@ export const assets = {
   // Our Expertise (5 cards)
   expertise: {
     events: {
-      src: "/images/expertise-events.jpg",
-      alt: "Curated high-end institutional and corporate gala event with arched lighting",
-      width: 600,
-      height: 900,
+      src: "/images/experience-corporate.jpg",
+      alt: "Institutional gala dinner with warm lighting and a formal tablescape",
+      width: 800,
+      height: 600,
       page: "home & services",
       section: "expertise-01",
     },
     exhibitions: {
-      src: "/images/expertise-exhibitions.jpg",
-      alt: "Curated architectural exhibition structure with illuminated white arches",
-      width: 600,
-      height: 900,
+      src: "/images/experience-ramadan-fair.jpg",
+      alt: "Cultural exhibition pavilion with sculptural illuminated archways",
+      width: 800,
+      height: 600,
       page: "home & services",
       section: "expertise-02",
     },
     workshops: {
-      src: "/images/expertise-workshops.jpg",
-      alt: "Intimate masterclass and workshop setting with bespoke centerpiece lighting",
-      width: 600,
-      height: 900,
+      src: "/images/method-development.jpg",
+      alt: "Experiential design planning with presentation layouts and material studies",
+      width: 400,
+      height: 300,
       page: "home & services",
       section: "expertise-03",
     },
     activations: {
-      src: "/images/expertise-activations.jpg",
-      alt: "Luxury retail pop-up and experiential pavilion with glowing frames",
-      width: 600,
-      height: 900,
+      src: "/images/experience-luxury-activation.jpg",
+      alt: "Luxury brand activation with illuminated geometric installations",
+      width: 800,
+      height: 600,
       page: "home & services",
       section: "expertise-04",
     },
     consultancy: {
-      src: "/images/expertise-consultancy.jpg",
-      alt: "Executive strategy boardroom setting with ambient lighting and curated decor",
-      width: 600,
-      height: 900,
+      src: "/images/method-reporting.jpg",
+      alt: "Event performance report with strategic impact recommendations",
+      width: 400,
+      height: 300,
       page: "home & services",
       section: "expertise-05",
     },
@@ -128,16 +119,6 @@ export const assets = {
       page: "home & method",
       section: "method-05",
     },
-  },
-
-  // Philosophy Banner
-  philosophyBg: {
-    src: "/images/philosophy-bg.jpg",
-    alt: "Warm theatrical dining banquet with ambient chandeliers and floral installations",
-    width: 1920,
-    height: 800,
-    page: "home",
-    section: "philosophy",
   },
 
   // Selected Experiences (2x2 Grid)

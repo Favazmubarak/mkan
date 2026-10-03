@@ -174,7 +174,7 @@ export function ProjectEditorDialog({
             <button
               type="submit"
               disabled={saving}
-              className="rounded-lg bg-[#111827] px-5 py-2 text-xs font-bold text-[#DDB78A] hover:bg-[#1F2937] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8860B] disabled:cursor-wait disabled:opacity-60"
+              className="rounded-lg bg-[#1A060E] px-5 py-2 text-xs font-bold text-[#DDB78A] hover:bg-[#2A0A17] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8860B] disabled:cursor-wait disabled:opacity-60"
             >
               {saving ? "Saving…" : "Save"}
             </button>

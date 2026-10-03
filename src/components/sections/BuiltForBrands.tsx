@@ -18,11 +18,11 @@ export function BuiltForBrands({ data = homeContent.builtForBrands, assets = def
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Column — Text Content */}
           <div className="lg:col-span-6 flex flex-col justify-center">
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.15] text-plum-900 tracking-tight">
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.15] text-plum-900 tracking-normal">
               {builtForBrands.heading}
             </h2>
 
-            <p className="mt-6 text-sm sm:text-base font-sans font-light leading-relaxed text-plum-950/80 max-w-lg">
+            <p className="mt-6 text-sm sm:text-base font-sans font-normal leading-relaxed text-plum-950/80 max-w-lg">
               {builtForBrands.paragraph}
             </p>
 

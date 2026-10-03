@@ -24,7 +24,7 @@ export function PortfolioProjectCard({
 
   return (
     <article className="flex flex-col justify-between overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-sm transition-shadow hover:shadow-md">
-      <div className="relative aspect-[4/3] bg-[#111827]">
+      <div className="relative aspect-[4/3] bg-[#1A060E]">
         {project.imageUrl ? (
           <Image src={project.imageUrl} alt={project.altText || project.title} fill className="object-cover" unoptimized />
         ) : (

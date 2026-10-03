@@ -38,6 +38,7 @@ export type StudioMessage = {
   company?: string;
   message: string;
   status: string;
+  replied: boolean;
   createdAt: string;
 };
 

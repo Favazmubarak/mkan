@@ -38,6 +38,35 @@ export async function toggleMessageReadAction(
   }
 }
 
+export async function setMessageRepliedAction(
+  messageId: string,
+  replied: boolean
+): Promise<MessageActionResponse> {
+  try {
+    await requireAdmin();
+    if (!mongoose.isValidObjectId(messageId) || typeof replied !== "boolean") {
+      return { success: false, message: "Invalid inquiry reply status update." };
+    }
+    const db = await connectToDatabase();
+    if (!db) return { success: false, message: "Inquiry storage is temporarily unavailable." };
+
+    const updated = await ContactMessage.findByIdAndUpdate(
+      messageId,
+      replied ? { replied, status: "read" } : { replied }
+    );
+    if (!updated) return { success: false, message: "Inquiry was not found." };
+    revalidatePath("/admin");
+
+    return {
+      success: true,
+      message: replied ? "Inquiry marked as replied." : "Replied status removed.",
+    };
+  } catch (error: unknown) {
+    console.error("[Message Reply Status Error]", error);
+    return { success: false, message: "Failed to update inquiry reply status." };
+  }
+}
+
 export async function deleteMessageAction(
   messageId: string
 ): Promise<MessageActionResponse> {
@@ -81,7 +110,7 @@ export async function exportMessagesCsvAction(): Promise<{
       return { success: false, message: "No inquiries to export." };
     }
 
-    const headers = ["Date", "Name", "Email", "Company", "Phone", "Status", "Message"];
+    const headers = ["Date", "Name", "Email", "Company", "Phone", "Status", "Replied", "Message"];
     const rows = messages.map((m) => [
       `"${new Date(m.createdAt).toISOString()}"`,
       `"${(m.name || "").replace(/"/g, '""')}"`,
@@ -89,6 +118,7 @@ export async function exportMessagesCsvAction(): Promise<{
       `"${(m.company || "").replace(/"/g, '""')}"`,
       `"${(m.phone || "").replace(/"/g, '""')}"`,
       `"${m.status}"`,
+      `"${m.replied ? "Yes" : "No"}"`,
       `"${(m.message || "").replace(/"/g, '""').replace(/\n/g, " ")}"`,
     ]);
 

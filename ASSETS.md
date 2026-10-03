@@ -10,7 +10,7 @@ To replace any visual asset, drop the replacement image in `/public/images/` usi
 
 | Key | File Path | Aspect Ratio | Dimensions | Role / Usage | Status / Source |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `logoPlaceholder` | `/public/images/mkan-logo.svg` | Vector | Scale-to-fit | Navbar & Footer brand lettering | Custom SVG placeholder matching reference geometry. *Replace with official client SVG file when provided.* |
+| — | `/public/images/mkan-logo.svg` | Vector | Scale-to-fit | Organization logo in structured metadata | Used by search and social metadata; the visible site header and footer use text-only branding. |
 
 ---
 
@@ -30,7 +30,6 @@ To replace any visual asset, drop the replacement image in `/public/images/` usi
 | `method.curation` | `/public/images/method-curation.jpg` | `4:3` | 400×300 | **Method 03** | Sculptural elements and sensory curation items. |
 | `method.production` | `/public/images/method-production.jpg` | `4:3` | 400×300 | **Method 04** | On-site staging, lighting and logistics execution. |
 | `method.reporting` | `/public/images/method-reporting.jpg` | `4:3` | 400×300 | **Method 05** | Strategic post-event evaluation portfolio. |
-| `philosophyBg` | `/public/images/philosophy-bg.jpg` | `21:9` | 1920×800 | **Philosophy Banner** | Theatrical dining banquet with ambient chandeliers. |
 | `experiences.ramadanFair` | `/public/images/experience-ramadan-fair.jpg` | `4:3` | 800×600 | **Selected Experiences** | Ramadan Fair flagship cultural pavilion with terracotta arches. |
 | `experiences.corporateEvents` | `/public/images/experience-corporate.jpg` | `4:3` | 800×600 | **Selected Experiences** | Institutional corporate gala dinner with golden glow. |
 | `experiences.luxuryActivation` | `/public/images/experience-luxury-activation.jpg` | `4:3` | 800×600 | **Selected Experiences** | High-end luxury activation with illuminated geometric columns. |

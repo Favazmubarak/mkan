@@ -11,7 +11,6 @@ const SECTION_KEYS = new Set([
   "about",
   "expertise",
   "method",
-  "philosophy",
   "experiences",
   "builtForBrands",
   "trustedBy",

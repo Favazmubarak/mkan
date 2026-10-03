@@ -141,7 +141,7 @@ export function StudioProfilePanel({ active, site, setSite, onSave }: StudioProf
                   <button
                     type="button"
                     onClick={onSave}
-                    className="rounded-xl bg-[#111827] px-5 py-2.5 text-xs font-bold text-[#DDB78A] transition-all hover:bg-[#1F2937] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8860B]"
+                    className="rounded-xl bg-[#1A060E] px-5 py-2.5 text-xs font-bold text-[#DDB78A] transition-all hover:bg-[#2A0A17] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8860B]"
                   >
                     Save Profile
                   </button>

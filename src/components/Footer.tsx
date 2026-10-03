@@ -34,23 +34,14 @@ export function Footer({ site = defaultSite }: FooterProps) {
       <div className="mx-auto max-w-[1440px]">
         {/* Main Footer Row */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-12 border-b border-cream/10">
-          {/* Brand Luxury Logo Mark */}
+          {/* Text-only brand lockup */}
           <button
             onClick={scrollToTop}
-            className="flex items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
+            className="flex flex-col leading-none text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
             aria-label="Back to top"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold text-plum-950 font-display text-xl font-bold tracking-tighter shadow-md">
-              M
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-display text-[1.45rem] font-bold tracking-[0.16em] text-cream">
-                MKAN
-              </span>
-              <span className="text-[0.52rem] font-sans font-bold tracking-[0.35em] uppercase text-gold">
-                CONCEPT
-              </span>
-            </div>
+            <span className="font-display text-[1.45rem] font-medium tracking-[0.16em] text-cream">MKAN</span>
+            <span className="mt-1 text-[0.52rem] font-sans font-semibold tracking-[0.35em] uppercase text-gold">CONCEPT</span>
           </button>
 
           {/* Navigation Links with Smooth Upward/Downward Scroll */}

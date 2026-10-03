@@ -69,7 +69,6 @@ async function runSeed() {
     { sectionKey: "about", data: homeContent.about },
     { sectionKey: "expertise", data: homeContent.expertise },
     { sectionKey: "method", data: homeContent.method },
-    { sectionKey: "philosophy", data: homeContent.philosophy },
     { sectionKey: "experiences", data: homeContent.experiences },
     { sectionKey: "builtForBrands", data: homeContent.builtForBrands },
     { sectionKey: "trustedBy", data: homeContent.trustedBy },

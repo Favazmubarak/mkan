@@ -8,7 +8,6 @@ import { Hero } from "@/components/sections/Hero";
 import { About } from "@/components/sections/About";
 import { Expertise } from "@/components/sections/Expertise";
 import { Method } from "@/components/sections/Method";
-import { PhilosophyBanner } from "@/components/sections/PhilosophyBanner";
 import { Experiences } from "@/components/sections/Experiences";
 import { BuiltForBrands } from "@/components/sections/BuiltForBrands";
 import { Clients } from "@/components/sections/Clients";
@@ -79,13 +78,18 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd) }}
       />
+      <a
+        href="#main-content"
+        className="fixed left-4 top-4 z-[100] -translate-y-24 bg-gold px-4 py-3 font-sans text-sm font-medium text-plum-950 transition-transform focus:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream"
+      >
+        Skip to main content
+      </a>
       <Navbar site={site} />
-      <main className="min-h-screen">
+      <main id="main-content" tabIndex={-1} className="min-h-screen">
         <Hero data={home.hero} assets={assets} />
         <About data={home.about} assets={assets} />
         <Expertise data={home.expertise} assets={assets} />
         <Method data={home.method} assets={assets} />
-        <PhilosophyBanner data={home.philosophy} assets={assets} />
         <Experiences data={home.experiences} assets={assets} />
         <BuiltForBrands data={home.builtForBrands} assets={assets} />
         <Clients data={home.trustedBy} />

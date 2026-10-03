@@ -8,6 +8,7 @@ export interface IContactMessage extends Document {
   service?: string;
   message: string;
   status: "unread" | "read" | "archived";
+  replied: boolean;
   ipAddress?: string;
   createdAt: Date;
   expiresAt: Date;
@@ -48,6 +49,11 @@ const ContactMessageSchema = new Schema<IContactMessage>(
       type: String,
       enum: ["unread", "read", "archived"],
       default: "unread",
+      index: true,
+    },
+    replied: {
+      type: Boolean,
+      default: false,
       index: true,
     },
     ipAddress: {

@@ -33,16 +33,16 @@ export function Hero({ data = homeContent.hero, assets = defaultAssets }: HeroPr
       <div className="absolute inset-0 bg-gradient-to-t from-plum-950/70 via-transparent to-plum-950/40" />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-screen flex-col justify-between px-8 pb-8 pt-36 lg:px-12 lg:pt-44 lg:pb-10">
+      <div className="relative z-10 flex min-h-screen flex-col justify-between px-6 pb-8 pt-36 sm:px-8 lg:px-12 lg:pt-44 lg:pb-10">
         {/* Main hero text */}
         <div className="max-w-3xl">
           {/* Eyebrow */}
-          <p className="mb-5 font-sans text-[0.7rem] tracking-[0.3em] uppercase text-gold lg:text-[0.75rem]">
+          <p className="mb-5 max-w-[32rem] font-sans text-[0.62rem] tracking-[0.16em] uppercase text-gold sm:text-[0.7rem] sm:tracking-[0.3em] lg:text-[0.75rem]">
             {hero.eyebrow}
           </p>
 
           {/* Main heading */}
-          <h1 className="font-display text-[2.8rem] leading-[1.05] font-normal text-cream sm:text-[3.5rem] lg:text-[4.5rem]">
+          <h1 className="max-w-full break-words font-display text-[clamp(1.75rem,8vw,3.5rem)] leading-[0.98] font-normal text-cream text-balance sm:text-[3.5rem] lg:text-[4.5rem]">
             {(Array.isArray(hero.headingLines) ? hero.headingLines : [hero.headingLines]).map((line, i, arr) => (
               <span key={i}>
                 {line}

@@ -10,6 +10,10 @@ interface ExpertiseProps {
 
 export function Expertise({ data = homeContent.expertise, assets = defaultAssets }: ExpertiseProps) {
   const expertise = data;
+  const repeatedEyebrow = expertise.eyebrow.trim().toLocaleLowerCase() === expertise.title.trim().toLocaleLowerCase();
+  const viewAllIsSelfLink = String(expertise.viewAllCta?.href) === "#services";
+  const viewAllHref = viewAllIsSelfLink ? "#contact" : expertise.viewAllCta?.href || "#contact";
+  const viewAllLabel = viewAllIsSelfLink ? "Discuss a Service" : expertise.viewAllCta?.label || "Discuss a Service";
 
   const getImageSrc = (key: string) => {
     switch (key) {
@@ -37,20 +41,22 @@ export function Expertise({ data = homeContent.expertise, assets = defaultAssets
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 pb-12">
           <div>
-            <p className="font-sans text-[0.7rem] sm:text-[0.75rem] font-medium tracking-[0.3em] uppercase text-gold/80 mb-2">
-              {expertise.eyebrow}
-            </p>
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal text-cream tracking-tight">
+            {!repeatedEyebrow && (
+              <p className="mb-2 font-sans text-[0.7rem] font-medium tracking-[0.3em] uppercase text-gold/80 sm:text-[0.75rem]">
+                {expertise.eyebrow}
+              </p>
+            )}
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal text-cream tracking-normal">
               {expertise.title}
             </h2>
           </div>
 
           <Link
-            href={expertise.viewAllCta?.href || "#services"}
+            href={viewAllHref}
             className="group inline-flex items-center gap-2 text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase text-cream/80 transition-colors duration-300 hover:text-gold"
           >
             <span className="relative">
-              {expertise.viewAllCta?.label || "View All Services"}
+              {viewAllLabel}
               <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-gold origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
             </span>
             <span
@@ -96,7 +102,7 @@ export function Expertise({ data = homeContent.expertise, assets = defaultAssets
                 </h3>
 
                 {/* Description */}
-                <p className="font-sans text-xs font-light leading-relaxed text-cream/75 mb-6 line-clamp-3">
+                <p className="font-sans text-xs font-normal leading-relaxed text-cream/75 mb-6 line-clamp-3">
                   {card.description}
                 </p>
 

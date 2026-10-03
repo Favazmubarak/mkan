@@ -16,7 +16,7 @@ const ALLOWED_MIME_TYPES = [
   "image/avif",
   "image/tiff",
 ];
-const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 MB limit
+const MAX_FILE_SIZE = 4 * 1024 * 1024; // Leave room for Server Action multipart overhead under Vercel's 4.5 MB request cap.
 const SLOT_KEY_PATTERN = /^[a-zA-Z0-9_.-]{1,120}$/;
 
 function isValidSlotKey(value: unknown): value is string {
@@ -38,7 +38,7 @@ export interface MediaActionResponse {
 
 /**
  * Handles image upload with high-fidelity Sharp compression:
- * - Accepts images up to 15MB
+ * - Accepts optimized images up to 4MB after browser-side compression
  * - Automatically auto-orients based on camera EXIF
  * - If image exceeds 4K dimensions (>2880px), scales proportionally with lanczos3 interpolation
  * - Encodes to optimized WebP at quality 90 with smart subsampling for pristine luxury quality
@@ -90,7 +90,7 @@ export async function uploadMediaAction(
     if (file.size > MAX_FILE_SIZE) {
       return {
         success: false,
-        message: `File size exceeds the 15MB limit (${(file.size / (1024 * 1024)).toFixed(1)}MB).`,
+        message: `Optimized image exceeds the 4MB upload limit (${(file.size / (1024 * 1024)).toFixed(1)}MB). Compress it and try again.`,
       };
     }
 

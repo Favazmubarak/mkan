@@ -10,6 +10,9 @@ interface AboutProps {
 
 export function About({ data = homeContent.about, assets = defaultAssets }: AboutProps) {
   const about = data;
+  const storyIsSelfLink = String(about.cta?.href) === "#about";
+  const aboutCtaHref = storyIsSelfLink ? "#method" : about.cta?.href || "#method";
+  const aboutCtaLabel = storyIsSelfLink ? "Our Approach" : about.cta?.label || "Our Approach";
   const aboutInterior = assets.aboutInterior;
 
   return (
@@ -25,7 +28,7 @@ export function About({ data = homeContent.about, assets = defaultAssets }: Abou
               </p>
 
               {/* Main Heading H2 */}
-              <h2 className="font-display text-3xl sm:text-4xl lg:text-[2.75rem] font-normal leading-[1.1] tracking-tight text-plum-900">
+              <h2 className="max-w-[18ch] font-display text-3xl sm:text-4xl lg:text-[2.75rem] font-normal leading-[1.05] tracking-normal text-plum-900 text-balance">
                 {about.heading}
               </h2>
 
@@ -35,18 +38,18 @@ export function About({ data = homeContent.about, assets = defaultAssets }: Abou
               </h3>
 
               {/* Body Paragraph */}
-              <p className="mt-6 text-sm sm:text-base font-sans font-light leading-relaxed text-plum-950/80 max-w-xl">
+              <p className="mt-6 text-sm sm:text-base font-sans font-normal leading-relaxed text-plum-950/80 max-w-xl">
                 {Array.isArray(about.paragraphs) ? about.paragraphs[0] : about.paragraphs}
               </p>
 
               {/* CTA Link */}
               <div className="mt-8">
                 <Link
-                  href={about.cta?.href || "#about"}
+                  href={aboutCtaHref}
                   className="group inline-flex items-center gap-2 text-xs font-sans font-medium tracking-[0.2em] uppercase text-plum-900 transition-colors duration-300 hover:text-gold-dark"
                 >
                   <span className="relative">
-                    {about.cta?.label || "Our Story"}
+                    {aboutCtaLabel}
                     <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-plum-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 group-hover:bg-gold-dark" />
                   </span>
                   <span

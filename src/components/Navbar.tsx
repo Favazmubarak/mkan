@@ -124,24 +124,15 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
         aria-label="Main Navigation"
         className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-6 py-6 sm:px-8 lg:px-12 lg:py-7"
       >
-        {/* Brand Luxury Logo Mark — Left */}
+        {/* Text-only brand lockup */}
         <a
           href="#home"
           onClick={(e) => handleScrollTo(e, "#home")}
-          className="flex items-center gap-3 shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          className="flex shrink-0 flex-col leading-none rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
           aria-label="MKAN Concept Home"
         >
-          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gold text-plum-950 font-display text-xl sm:text-2xl font-bold tracking-tighter shadow-md">
-            M
-          </div>
-          <div className="flex flex-col leading-none">
-            <span className="font-display text-[1.45rem] sm:text-[1.7rem] font-bold tracking-[0.16em] text-cream">
-              MKAN
-            </span>
-            <span className="text-[0.52rem] sm:text-[0.58rem] font-sans font-bold tracking-[0.35em] uppercase text-gold">
-              CONCEPT
-            </span>
-          </div>
+          <span className="font-display text-[1.45rem] sm:text-[1.7rem] font-medium tracking-[0.16em] text-cream">MKAN</span>
+          <span className="mt-1 text-[0.52rem] sm:text-[0.58rem] font-sans font-semibold tracking-[0.35em] uppercase text-gold">CONCEPT</span>
         </a>
 
         {/* Desktop Navigation Links — Centered */}

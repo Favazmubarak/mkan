@@ -29,6 +29,7 @@ type AdminMessage = {
   company?: string;
   message: string;
   status: string;
+  replied: boolean;
   createdAt: string;
   [key: string]: unknown;
 };
@@ -46,7 +47,6 @@ export default async function AdminDashboardPage() {
     about: { draftData: homeContent.about, status: "published" },
     expertise: { draftData: homeContent.expertise, status: "published" },
     method: { draftData: homeContent.method, status: "published" },
-    philosophy: { draftData: homeContent.philosophy, status: "published" },
     builtForBrands: { draftData: homeContent.builtForBrands, status: "published" },
     impactBanner: { draftData: homeContent.impactBanner, status: "published" },
     trustedBy: { draftData: homeContent.trustedBy, status: "published" },
@@ -76,7 +76,7 @@ export default async function AdminDashboardPage() {
 
       if (sec.sectionKey === "site") {
         siteData = sectionData;
-      } else {
+      } else if (sec.sectionKey in sectionsMap) {
         sectionsMap[sec.sectionKey] = {
           draftData: sectionData,
           status: sec.status || "published",
@@ -96,6 +96,7 @@ export default async function AdminDashboardPage() {
     messages = dbMessages.map((message) => ({
       ...message,
       _id: message._id.toString(),
+      replied: Boolean(message.replied),
       createdAt: message.createdAt
         ? new Date(message.createdAt).toISOString()
         : new Date().toISOString(),

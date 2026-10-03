@@ -33,7 +33,7 @@ export function ImpactBanner({ data = homeContent.impactBanner, assets = default
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-[1440px] px-6 sm:px-8 lg:px-12">
         <div className="max-w-2xl">
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.1] text-cream tracking-tight">
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.1] text-cream tracking-normal">
             {impactBanner.heading}
           </h2>
 

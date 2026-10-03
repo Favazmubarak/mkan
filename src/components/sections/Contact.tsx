@@ -3,6 +3,7 @@ import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 import { site as defaultSite } from "@/content/site";
 import { ContactForm } from "@/components/ContactForm";
+import { Camera, Mail, MapPin, Phone } from "lucide-react";
 
 interface ContactProps {
   data?: typeof homeContent.contact;
@@ -37,11 +38,11 @@ export function Contact({ data = homeContent.contact, site = defaultSite, assets
               </p>
 
               {/* Main Heading */}
-              <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.1] text-plum-900 tracking-tight">
+              <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.1] text-plum-900 tracking-normal">
                 {contact.heading}
               </h2>
 
-              <p className="mt-4 font-sans text-sm sm:text-base font-light text-plum-950/80 leading-relaxed max-w-md">
+              <p className="mt-4 font-sans text-sm sm:text-base font-normal text-plum-950/80 leading-relaxed max-w-md">
                 {contact.intro}
               </p>
 
@@ -52,8 +53,8 @@ export function Contact({ data = homeContent.contact, site = defaultSite, assets
                   href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
                   className="group flex items-center gap-4 text-xs sm:text-sm font-sans font-normal text-plum-900 transition-colors hover:text-gold-dark"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-plum-900/20 text-plum-900 transition-colors group-hover:border-gold-dark group-hover:text-gold-dark">
-                    📞
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-plum-900/20 text-plum-900 transition-colors group-hover:border-gold-dark group-hover:text-gold-dark">
+                    <Phone aria-hidden="true" size={16} strokeWidth={1.5} />
                   </span>
                   <span>{phone}</span>
                 </a>
@@ -63,8 +64,8 @@ export function Contact({ data = homeContent.contact, site = defaultSite, assets
                   href={`mailto:${email}`}
                   className="group flex items-center gap-4 text-xs sm:text-sm font-sans font-normal text-plum-900 transition-colors hover:text-gold-dark"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-plum-900/20 text-plum-900 transition-colors group-hover:border-gold-dark group-hover:text-gold-dark">
-                    ✉️
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-plum-900/20 text-plum-900 transition-colors group-hover:border-gold-dark group-hover:text-gold-dark">
+                    <Mail aria-hidden="true" size={16} strokeWidth={1.5} />
                   </span>
                   <span>{email}</span>
                 </a>
@@ -76,16 +77,16 @@ export function Contact({ data = homeContent.contact, site = defaultSite, assets
                   rel="noopener noreferrer"
                   className="group flex items-center gap-4 text-xs sm:text-sm font-sans font-normal text-plum-900 transition-colors hover:text-gold-dark"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-plum-900/20 text-plum-900 transition-colors group-hover:border-gold-dark group-hover:text-gold-dark">
-                    📷
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-plum-900/20 text-plum-900 transition-colors group-hover:border-gold-dark group-hover:text-gold-dark">
+                    <Camera aria-hidden="true" size={16} strokeWidth={1.5} />
                   </span>
                   <span>{instagram}</span>
                 </a>
 
                 {/* Address */}
                 <div className="flex items-center gap-4 text-xs sm:text-sm font-sans font-normal text-plum-900">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-plum-900/20 text-plum-900">
-                    📍
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-plum-900/20 text-plum-900">
+                    <MapPin aria-hidden="true" size={16} strokeWidth={1.5} />
                   </span>
                   <span>{address}</span>
                 </div>

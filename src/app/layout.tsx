@@ -13,14 +13,14 @@ const displayFont = Cormorant_Garamond({
 });
 
 const bodyFont = Plus_Jakarta_Sans({
-  variable: "--font-sans",
+  variable: "--font-plus-jakarta",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
   display: "swap",
 });
 
 const adminFont = Inter({
-  variable: "--font-admin",
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",

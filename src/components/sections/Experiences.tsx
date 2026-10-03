@@ -28,6 +28,9 @@ interface ExperiencesProps {
 
 export function Experiences({ data = homeContent.experiences, assets = defaultAssets }: ExperiencesProps) {
   const experiences = data;
+  const viewAllIsSelfLink = String(experiences.viewAllCta?.href) === "#experiences";
+  const viewAllHref = viewAllIsSelfLink ? "#contact" : experiences.viewAllCta?.href || "#contact";
+  const viewAllLabel = viewAllIsSelfLink ? "Start a Project" : experiences.viewAllCta?.label || "Start a Project";
   const [activeFilter, setActiveFilter] = useState("all");
 
   const getImageSrc = (key: string, imageUrl?: string) => {
@@ -65,17 +68,17 @@ export function Experiences({ data = homeContent.experiences, assets = defaultAs
             <p className="font-sans text-[0.7rem] sm:text-[0.75rem] font-medium tracking-[0.3em] uppercase text-gold/80 mb-2">
               {experiences.eyebrow}
             </p>
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal text-cream tracking-tight">
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal text-cream tracking-normal">
               {experiences.title}
             </h2>
           </div>
 
           <Link
-            href={experiences.viewAllCta?.href || "#experiences"}
+            href={viewAllHref}
             className="group inline-flex items-center gap-2 text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase text-cream/80 transition-colors duration-300 hover:text-gold"
           >
             <span className="relative">
-              {experiences.viewAllCta?.label || "View All Projects"}
+              {viewAllLabel}
               <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-gold origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
             </span>
             <span
@@ -110,8 +113,9 @@ export function Experiences({ data = homeContent.experiences, assets = defaultAs
         </div>
 
         {/* 2x2 Interactive Experience Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          {filteredItems.map((item) => (
+        {filteredItems.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
+            {filteredItems.map((item) => (
             <Link
               key={item.id}
               href={item.href || "#contact"}
@@ -136,7 +140,7 @@ export function Experiences({ data = homeContent.experiences, assets = defaultAs
                   <h3 className="font-sans text-base sm:text-lg font-semibold tracking-[0.16em] uppercase text-cream mb-1">
                     {item.title}
                   </h3>
-                  <p className="font-sans text-xs font-light text-cream/75 tracking-wider">
+                  <p className="font-sans text-xs font-normal text-cream/75 tracking-wider">
                     {item.subtitle}
                   </p>
                 </div>
@@ -150,8 +154,24 @@ export function Experiences({ data = homeContent.experiences, assets = defaultAs
                 </span>
               </div>
             </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="border border-cream/15 bg-plum-950/30 px-6 py-10 sm:px-8 sm:py-12">
+            <h3 className="font-display text-2xl font-normal text-cream sm:text-3xl">
+              More experiences are on the way.
+            </h3>
+            <p className="mt-3 max-w-xl font-sans text-sm leading-relaxed text-cream/75">
+              There are no featured projects in this category yet. Tell us what you have in mind and we can shape it together.
+            </p>
+            <Link
+              href="#contact"
+              className="mt-6 inline-flex items-center gap-2 text-xs font-sans font-medium tracking-[0.18em] uppercase text-gold hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+            >
+              Discuss a project <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

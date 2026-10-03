@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface ISiteSection extends Document {
-  sectionKey: string; // e.g., 'site', 'hero', 'about', 'expertise', 'method', 'philosophy', 'builtForBrands', 'trustedBy', 'impactBanner', 'contact'
+  sectionKey: string; // e.g. site, hero, about, expertise, method, experiences, builtForBrands, trustedBy, impactBanner, contact
   locale: string; // 'en' (default), future 'ar'
   draftData: Record<string, unknown>;
   publishedData: Record<string, unknown>;

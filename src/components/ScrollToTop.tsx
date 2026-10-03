@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 export function ScrollToTop() {
   const [visible, setVisible] = useState(false);
+  const [contactVisible, setContactVisible] = useState(false);
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -19,6 +20,18 @@ export function ScrollToTop() {
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
 
+  useEffect(() => {
+    const contact = document.getElementById("contact");
+    if (!contact || !("IntersectionObserver" in window)) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setContactVisible(entry.isIntersecting),
+      { threshold: 0.05 },
+    );
+    observer.observe(contact);
+    return () => observer.disconnect();
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -26,7 +39,7 @@ export function ScrollToTop() {
     });
   };
 
-  if (!visible) return null;
+  if (!visible || contactVisible) return null;
 
   return (
     <button

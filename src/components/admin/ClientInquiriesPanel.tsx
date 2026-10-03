@@ -1,17 +1,18 @@
 "use client";
 
-import { MessageSquare, Send, Trash2 } from "lucide-react";
+import { Check, MessageSquare, Trash2 } from "lucide-react";
 import type { StudioMessage } from "./studio-types";
 
 interface ClientInquiriesPanelProps {
   active: boolean;
   messages: StudioMessage[];
   selectedMessage: StudioMessage | null;
-  filter: "all" | "unread";
+  filter: "all" | "unread" | "replied";
   unreadCount: number;
-  onFilterChange: (filter: "all" | "unread") => void;
+  onFilterChange: (filter: "all" | "unread" | "replied") => void;
   onSelectMessage: (message: StudioMessage) => void;
   onToggleRead: (id: string, status: string) => void;
+  onToggleReplied: (id: string, replied: boolean) => void;
   onDeleteMessage: (id: string) => void;
 }
 
@@ -24,19 +25,22 @@ export function ClientInquiriesPanel({
   onFilterChange,
   onSelectMessage,
   onToggleRead,
+  onToggleReplied,
   onDeleteMessage,
 }: ClientInquiriesPanelProps) {
   if (!active) return null;
-  const visibleMessages = messages.filter((message) => filter === "all" || message.status === "unread");
+  const visibleMessages = messages.filter((message) =>
+    filter === "all" || (filter === "unread" ? message.status === "unread" : message.replied)
+  );
 
   return (
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <h2 className="text-xl font-bold text-[#111827]">Client Messages</h2>
                     <p className="text-xs text-[#6B7280]">Direct inquiries received from website visitors</p>
                   </div>
-                  <div className="flex items-center gap-1 p-1 rounded-lg bg-[#F3F4F6] border border-[#E5E7EB]">
+                  <div className="flex flex-wrap items-center gap-1 rounded-lg border border-[#E5E7EB] bg-[#F3F4F6] p-1">
                     <button
                       type="button"
                       aria-pressed={filter === "all"}
@@ -57,6 +61,16 @@ export function ClientInquiriesPanel({
                     >
                       Unread ({unreadCount})
                     </button>
+                    <button
+                      type="button"
+                      aria-pressed={filter === "replied"}
+                      onClick={() => onFilterChange("replied")}
+                      className={`px-3 py-1 rounded-md text-xs font-bold ${
+                        filter === "replied" ? "bg-white text-[#111827] shadow-sm" : "text-[#6B7280]"
+                      }`}
+                    >
+                      Replied ({messages.filter((message) => message.replied).length})
+                    </button>
                   </div>
                 </div>
 
@@ -70,9 +84,7 @@ export function ClientInquiriesPanel({
                   <div className="rounded-2xl bg-white border border-[#E5E7EB] overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[500px]">
                     {/* Left Message List */}
                     <div className="lg:col-span-5 border-b lg:border-b-0 lg:border-r border-[#E5E7EB] divide-y divide-[#E5E7EB] overflow-y-auto max-h-[560px]">
-                      {messages
-                        .filter((m) => (filter === "unread" ? m.status === "unread" : true))
-                        .map((m) => {
+                      {visibleMessages.map((m) => {
                           const isSelected = selectedMessage?._id === m._id;
                           return (
                             <button
@@ -92,7 +104,7 @@ export function ClientInquiriesPanel({
                                   : "hover:bg-[#F9FAFB]"
                               }`}
                             >
-                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#111827] text-[#DDB78A] text-xs font-bold">
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#1A060E] text-[#DDB78A] text-xs font-bold">
                                 {m.name.charAt(0).toUpperCase()}
                               </div>
                               <div className="flex-1 min-w-0">
@@ -111,6 +123,9 @@ export function ClientInquiriesPanel({
                               </div>
                               {m.status === "unread" && (
                                 <span className="h-2 w-2 rounded-full bg-amber-500 mt-2 shrink-0 animate-pulse" />
+                              )}
+                              {m.replied && (
+                                <span className="mt-1 shrink-0 rounded-full bg-[#1A060E] px-2 py-1 text-[0.58rem] font-bold text-white">Replied</span>
                               )}
                             </button>
                           );
@@ -146,20 +161,16 @@ export function ClientInquiriesPanel({
                           </div>
 
                           <div className="flex items-center justify-between pt-4">
-                            <a
-                              href={`mailto:${selectedMessage.email}?subject=Re:%20MKAN%20Concept%20Inquiry`}
-                              className="inline-flex items-center gap-2 rounded-xl bg-[#111827] px-4 py-2 text-xs font-bold text-[#DDB78A] hover:bg-[#1F2937]"
-                            >
-                              <Send className="h-3.5 w-3.5" />
-                              <span>Reply via Email</span>
-                            </a>
                             <button
                               type="button"
-                              onClick={() => onToggleRead(selectedMessage._id, selectedMessage.status)}
-                              className="text-xs font-semibold text-[#4B5563] hover:text-[#111827] px-3 py-1.5 rounded-lg border border-[#D1D5DB] bg-white cursor-pointer"
+                              onClick={() => onToggleReplied(selectedMessage._id, Boolean(selectedMessage.replied))}
+                              aria-pressed={Boolean(selectedMessage.replied)}
+                              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-colors ${selectedMessage.replied ? "border border-[#1A060E] bg-white text-[#1A060E] hover:bg-[#FAF1E8]" : "bg-[#1A060E] text-white hover:bg-[#2A0A17]"}`}
                             >
-                              {selectedMessage.status === "unread" ? "Mark as Read" : "Mark as Unread"}
+                              <Check className="h-3.5 w-3.5" />
+                              {selectedMessage.replied ? "Mark as Not Replied" : "Mark as Replied"}
                             </button>
+                            <span className="text-xs font-medium text-[#6B7280]">{selectedMessage.status === "unread" ? "Unread" : "Read"}</span>
                           </div>
                         </div>
                       ) : (
@@ -171,7 +182,9 @@ export function ClientInquiriesPanel({
                   </div>
                 )}
                 {messages.length > 0 && visibleMessages.length === 0 && (
-                  <p className="rounded-xl bg-white p-6 text-sm text-[#6B7280]" role="status">There are no unread inquiries.</p>
+                  <p className="rounded-xl bg-white p-6 text-sm text-[#6B7280]" role="status">
+                    {filter === "replied" ? "There are no replied inquiries." : "There are no unread inquiries."}
+                  </p>
                 )}
               </div>
 

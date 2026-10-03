@@ -13,8 +13,10 @@ import {
   toggleProjectHomeAction,
 } from "@/app/actions/projects";
 import { uploadMediaAction } from "@/app/actions/media";
+import { prepareImageUpload } from "@/lib/prepare-image-upload";
 import {
   toggleMessageReadAction,
+  setMessageRepliedAction,
   deleteMessageAction,
 } from "@/app/actions/messages";
 import { logoutAdminAction } from "@/app/actions/auth";
@@ -63,7 +65,7 @@ export function InstagramStudioClient({
   const [messages, setMessages] = useState(initialMessages);
   const [siteData, setSiteData] = useState(initialSite);
   const [selectedMessage, setSelectedMessage] = useState<StudioMessage | null>(initialMessages[0] || null);
-  const [inboxFilter, setInboxFilter] = useState<"all" | "unread">("all");
+  const [inboxFilter, setInboxFilter] = useState<"all" | "unread" | "replied">("all");
 
   // Action States
   const [isPublishing, setIsPublishing] = useState(false);
@@ -165,27 +167,52 @@ export function InstagramStudioClient({
   };
 
   /* ------------------------------------------------------------------ */
-  /*  Photo Upload Handler (15MB Limit)                                 */
+  /*  Photo Upload Handler                                               */
   /* ------------------------------------------------------------------ */
   const handleUpload = async (slotKey: string, file: File) => {
     setUploadingSlot(slotKey);
-    const tempUrl = URL.createObjectURL(file);
-    setUploadedPreviews((prev) => ({ ...prev, [slotKey]: tempUrl }));
+    const previousUrl = uploadedPreviews[slotKey];
+    let previewUrl: string | null = null;
 
     try {
+      const uploadFile = await prepareImageUpload(file);
+      const currentPreviewUrl = URL.createObjectURL(uploadFile);
+      previewUrl = currentPreviewUrl;
+      setUploadedPreviews((prev) => ({ ...prev, [slotKey]: currentPreviewUrl }));
+
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", uploadFile);
       formData.append("slotKey", slotKey);
       formData.append("altText", "MKAN Luxury Visual");
 
       const res = await uploadMediaAction(formData);
       if (res.success) {
-        showToast("Photo uploaded & optimized.");
+        if (previousUrl?.startsWith("blob:")) URL.revokeObjectURL(previousUrl);
+        const imageUrl = res.asset?.url;
+        if (previewUrl && imageUrl) {
+          URL.revokeObjectURL(previewUrl);
+          setUploadedPreviews((prev) => ({ ...prev, [slotKey]: imageUrl }));
+        }
+        showToast(uploadFile !== file ? "Photo compressed and uploaded." : "Photo uploaded & optimized.");
       } else {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        setUploadedPreviews((prev) => {
+          if (previousUrl) return { ...prev, [slotKey]: previousUrl };
+          const next = { ...prev };
+          delete next[slotKey];
+          return next;
+        });
         showToast(res.message || "Upload failed.", "error");
       }
-    } catch {
-      showToast("Image upload failed.", "error");
+    } catch (error) {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setUploadedPreviews((prev) => {
+        if (previousUrl) return { ...prev, [slotKey]: previousUrl };
+        const next = { ...prev };
+        delete next[slotKey];
+        return next;
+      });
+      showToast(error instanceof Error ? error.message : "Image upload failed.", "error");
     } finally {
       setUploadingSlot(null);
     }
@@ -270,6 +297,25 @@ export function InstagramStudioClient({
     }
   };
 
+  const handleToggleReplied = async (id: string, replied: boolean) => {
+    try {
+      const result = await setMessageRepliedAction(id, !replied);
+      if (!result.success) {
+        showToast(result.message || "Could not update reply status.", "error");
+        return;
+      }
+      setMessages((prev) => prev.map((message) => message._id === id
+        ? { ...message, replied: !replied, status: replied ? message.status : "read" }
+        : message));
+      setSelectedMessage((prev) => prev?._id === id
+        ? { ...prev, replied: !replied, status: replied ? prev.status : "read" }
+        : prev);
+      showToast(replied ? "Reply status removed." : "Inquiry marked as replied.");
+    } catch {
+      showToast("Could not update reply status.", "error");
+    }
+  };
+
   const handleDeleteMessage = async (id: string) => {
     if (!confirm("Delete this message?")) return;
     try {
@@ -312,7 +358,6 @@ export function InstagramStudioClient({
     (sections[key]?.draftData ?? sections[key]?.data ?? homeContent[key]) as Editable<(typeof homeContent)[Key]>;
   const hero = sectionData("hero");
   const about = sectionData("about");
-  const philosophy = sectionData("philosophy");
   const impact = sectionData("impactBanner");
 
   return (
@@ -322,11 +367,8 @@ export function InstagramStudioClient({
       {/* ──────────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white px-6 lg:px-10 py-3.5 shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
-          {/* Logo */}
+          {/* Text-only brand lockup */}
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#111827] text-[#DDB78A] font-bold text-lg shadow-sm">
-              M
-            </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-base font-extrabold tracking-tight text-[#111827]">
@@ -358,7 +400,7 @@ export function InstagramStudioClient({
               type="button"
               onClick={handlePublishAll}
               disabled={isPublishing}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#111827] px-5 py-2 text-xs font-bold text-[#DDB78A] hover:bg-[#1F2937] active:scale-95 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#1A060E] px-5 py-2 text-xs font-bold text-[#DDB78A] hover:bg-[#2A0A17] active:scale-95 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
             >
               {isPublishing ? (
                 <>
@@ -410,7 +452,7 @@ export function InstagramStudioClient({
                     aria-pressed={isActive}
                     className={`w-full flex items-center justify-between p-3.5 rounded-xl text-left transition-all cursor-pointer ${
                       isActive
-                        ? "bg-[#111827] text-white shadow-sm"
+                        ? "bg-[#1A060E] text-white shadow-sm"
                         : "hover:bg-[#F9FAFB] text-[#374151]"
                     }`}
                   >
@@ -441,7 +483,7 @@ export function InstagramStudioClient({
                 type="button"
                 onClick={handlePublishAll}
                 disabled={isPublishing}
-                className="w-full py-2.5 rounded-xl bg-[#DDB78A] hover:bg-[#E5C7A3] text-[#111827] text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                className="w-full py-2.5 rounded-xl bg-[#1A060E] hover:bg-[#2A0A17] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 <span>Publish All Changes</span>
@@ -458,7 +500,6 @@ export function InstagramStudioClient({
               active={activeTab === "content"}
               hero={hero}
               about={about}
-              philosophy={philosophy}
               impact={impact}
               savingSection={savingSection}
               uploadingSlot={uploadingSlot}
@@ -485,7 +526,7 @@ export function InstagramStudioClient({
                       setProjectError(null);
                       setIsProjectModalOpen(true);
                     }}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#111827] px-4 py-2.5 text-xs font-bold text-[#DDB78A] hover:bg-[#1F2937] transition-all cursor-pointer shadow-sm"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#1A060E] px-4 py-2.5 text-xs font-bold text-[#DDB78A] hover:bg-[#2A0A17] transition-all cursor-pointer shadow-sm"
                   >
                     <Plus className="h-4 w-4" />
                     <span>Add Experience</span>
@@ -523,6 +564,7 @@ export function InstagramStudioClient({
               onFilterChange={setInboxFilter}
               onSelectMessage={setSelectedMessage}
               onToggleRead={handleToggleRead}
+              onToggleReplied={handleToggleReplied}
               onDeleteMessage={handleDeleteMessage}
             />
 
@@ -546,7 +588,7 @@ export function InstagramStudioClient({
         <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-3 duration-200" role={toast.type === "error" ? "alert" : "status"} aria-live={toast.type === "error" ? "assertive" : "polite"}>
           <div className={`px-4 py-3 rounded-xl shadow-lg border flex items-center gap-3 ${
             toast.type === "success"
-              ? "bg-[#111827] text-white border-white/15"
+              ? "bg-[#1A060E] text-white border-white/15"
               : "bg-rose-900 text-white border-rose-700"
           }`}>
             <span className="text-xs font-bold">{toast.text}</span>

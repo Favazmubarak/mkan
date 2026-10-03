@@ -9,7 +9,6 @@ interface WebsiteContentPanelProps {
   active: boolean;
   hero: Editable<typeof homeContent.hero>;
   about: Editable<typeof homeContent.about>;
-  philosophy: Editable<typeof homeContent.philosophy>;
   impact: Editable<typeof homeContent.impactBanner>;
   savingSection: string | null;
   uploadingSlot: string | null;
@@ -23,7 +22,6 @@ export function WebsiteContentPanel({
   active,
   hero,
   about,
-  philosophy,
   impact,
   savingSection,
   uploadingSlot,
@@ -46,7 +44,7 @@ export function WebsiteContentPanel({
                       type="button"
                       onClick={() => handleSaveSection("hero", "Hero Banner")}
                       disabled={savingSection === "hero"}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#111827] text-[#DDB78A] text-xs font-bold hover:bg-[#1F2937] transition-all cursor-pointer shadow-sm"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1A060E] text-[#DDB78A] text-xs font-bold hover:bg-[#2A0A17] transition-all cursor-pointer shadow-sm"
                     >
                       {savingSection === "hero" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                       <span>Save Section</span>
@@ -56,7 +54,7 @@ export function WebsiteContentPanel({
                   {/* Photo Dropzone */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
                     <div className="flex items-center gap-3.5">
-                      <div className="relative h-14 w-14 rounded-xl overflow-hidden bg-[#111827] border border-[#D1D5DB] shrink-0">
+                      <div className="relative h-14 w-14 rounded-xl overflow-hidden bg-[#1A060E] border border-[#D1D5DB] shrink-0">
                         <Image
                           src={uploadedPreviews["heroBg"] || "/images/hero-bg.jpg"}
                           alt="Hero"
@@ -67,13 +65,13 @@ export function WebsiteContentPanel({
                       </div>
                       <div>
                         <p className="text-xs font-bold text-[#111827]">Hero Background Image</p>
-                        <p className="text-[0.68rem] text-[#6B7280]">Full HD / 4K Landscape Photo (Max 15MB)</p>
+                        <p className="text-[0.68rem] text-[#6B7280]">Landscape photo up to 15MB; images over 4MB are compressed before upload.</p>
                       </div>
                     </div>
 
-                    <label className="inline-flex items-center gap-2 rounded-lg border border-[#D1D5DB] bg-white px-4 py-2 text-xs font-bold text-[#111827] shadow-sm transition-all hover:border-[#111827] focus-within:ring-2 focus-within:ring-[#B8860B] cursor-pointer">
+                    <label className="inline-flex items-center gap-2 rounded-lg border border-[#D1D5DB] bg-white px-4 py-2 text-xs font-bold text-[#111827] shadow-sm transition-all hover:border-[#1A060E] focus-within:ring-2 focus-within:ring-[#B8860B] cursor-pointer">
                       <Upload className="h-3.5 w-3.5 text-[#B8860B]" />
-                      <span>{uploadingSlot === "heroBg" ? "Uploading..." : "Replace Image"}</span>
+                      <span>{uploadingSlot === "heroBg" ? "Preparing & uploading..." : "Replace Image"}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -140,7 +138,7 @@ export function WebsiteContentPanel({
                       type="button"
                       onClick={() => handleSaveSection("about", "Brand Story")}
                       disabled={savingSection === "about"}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#111827] text-[#DDB78A] text-xs font-bold hover:bg-[#1F2937] transition-all cursor-pointer shadow-sm"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1A060E] text-[#DDB78A] text-xs font-bold hover:bg-[#2A0A17] transition-all cursor-pointer shadow-sm"
                     >
                       {savingSection === "about" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                       <span>Save Section</span>
@@ -149,7 +147,7 @@ export function WebsiteContentPanel({
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
                     <div className="flex items-center gap-3.5">
-                      <div className="relative h-14 w-14 rounded-xl overflow-hidden bg-[#111827] border border-[#D1D5DB] shrink-0">
+                      <div className="relative h-14 w-14 rounded-xl overflow-hidden bg-[#1A060E] border border-[#D1D5DB] shrink-0">
                         <Image
                           src={uploadedPreviews["aboutInterior"] || "/images/about-interior.jpg"}
                           alt="About"
@@ -164,9 +162,9 @@ export function WebsiteContentPanel({
                       </div>
                     </div>
 
-                    <label className="inline-flex items-center gap-2 rounded-lg border border-[#D1D5DB] bg-white px-4 py-2 text-xs font-bold text-[#111827] shadow-sm transition-all hover:border-[#111827] focus-within:ring-2 focus-within:ring-[#B8860B] cursor-pointer">
+                    <label className="inline-flex items-center gap-2 rounded-lg border border-[#D1D5DB] bg-white px-4 py-2 text-xs font-bold text-[#111827] shadow-sm transition-all hover:border-[#1A060E] focus-within:ring-2 focus-within:ring-[#B8860B] cursor-pointer">
                       <Upload className="h-3.5 w-3.5 text-[#B8860B]" />
-                      <span>{uploadingSlot === "aboutInterior" ? "Uploading..." : "Replace Portrait"}</span>
+                      <span>{uploadingSlot === "aboutInterior" ? "Preparing & uploading..." : "Replace Portrait"}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -237,48 +235,15 @@ export function WebsiteContentPanel({
                   </div>
                 </div>
 
-                {/* 3. PHILOSOPHY & IMPACT */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-6 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm space-y-4">
-                    <div className="flex items-center justify-between border-b border-[#F3F4F6] pb-3">
-                      <h3 className="text-base font-bold text-[#111827]">Philosophy Quote</h3>
-                      <button
-                        type="button"
-                        onClick={() => handleSaveSection("philosophy", "Philosophy Quote")}
-                        className="rounded-lg bg-[#111827] px-3 py-1 text-xs font-bold text-[#DDB78A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8860B]"
-                      >
-                        Save
-                      </button>
-                    </div>
-                    <div>
-                      <label htmlFor="philosophy-heading" className="block text-xs font-bold uppercase text-[#6B7280] mb-1">Quote Statement</label>
-                      <input
-                        id="philosophy-heading"
-                        type="text"
-                        value={philosophy.heading || ""}
-                        onChange={(e) => updateSection("philosophy", "heading", e.target.value)}
-                        className="w-full rounded-xl bg-white border border-[#D1D5DB] px-3.5 py-2 text-sm font-semibold text-[#111827]"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="philosophy-subheading" className="block text-xs font-bold uppercase text-[#6B7280] mb-1">Subheading</label>
-                      <input
-                        id="philosophy-subheading"
-                        type="text"
-                        value={philosophy.subheading || ""}
-                        onChange={(e) => updateSection("philosophy", "subheading", e.target.value)}
-                        className="w-full rounded-xl bg-white border border-[#D1D5DB] px-3.5 py-2 text-xs text-[#4B5563]"
-                      />
-                    </div>
-                  </div>
-
+                {/* 3. IMPACT */}
+                <div className="grid grid-cols-1 gap-6">
                   <div className="p-6 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm space-y-4">
                     <div className="flex items-center justify-between border-b border-[#F3F4F6] pb-3">
                       <h3 className="text-base font-bold text-[#111827]">Impact Banner</h3>
                       <button
                         type="button"
                         onClick={() => handleSaveSection("impactBanner", "Impact Banner")}
-                        className="rounded-lg bg-[#111827] px-3 py-1 text-xs font-bold text-[#DDB78A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8860B]"
+                        className="rounded-lg bg-[#1A060E] px-3 py-1 text-xs font-bold text-[#DDB78A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8860B]"
                       >
                         Save
                       </button>

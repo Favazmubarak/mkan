@@ -10,6 +10,9 @@ interface MethodProps {
 
 export function Method({ data = homeContent.method, assets = defaultAssets }: MethodProps) {
   const method = data;
+  const approachIsSelfLink = String(method.cta?.href) === "#method";
+  const methodCtaHref = approachIsSelfLink ? "#contact" : method.cta?.href || "#contact";
+  const methodCtaLabel = approachIsSelfLink ? "Plan a Project" : method.cta?.label || "Plan a Project";
 
   const getStepImage = (key: string) => {
     switch (key) {
@@ -40,7 +43,7 @@ export function Method({ data = homeContent.method, assets = defaultAssets }: Me
             <p className="font-sans text-[0.7rem] sm:text-[0.75rem] font-medium tracking-[0.3em] uppercase text-gold-dark mb-2">
               {method.eyebrow}
             </p>
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal text-plum-900 tracking-tight">
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-normal text-plum-900 tracking-normal">
               {method.title}
             </h2>
             <p className="mt-2 text-xs sm:text-sm font-sans font-medium tracking-[0.15em] uppercase text-plum-900/80">
@@ -49,11 +52,11 @@ export function Method({ data = homeContent.method, assets = defaultAssets }: Me
           </div>
 
           <Link
-            href={method.cta?.href || "#method"}
+            href={methodCtaHref}
             className="group inline-flex items-center gap-2 text-[0.72rem] font-sans font-medium tracking-[0.2em] uppercase text-plum-900 transition-colors duration-300 hover:text-gold-dark"
           >
             <span className="relative">
-              {method.cta?.label || "Our Approach"}
+              {methodCtaLabel}
               <span className="absolute -bottom-1 left-0 h-[1px] w-full bg-plum-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 group-hover:bg-gold-dark" />
             </span>
             <span
@@ -68,25 +71,25 @@ export function Method({ data = homeContent.method, assets = defaultAssets }: Me
         {/* 5 Sequential Framework Stages */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-6 relative">
           {(method.steps || []).map((step, index, arr) => (
-            <div key={step.number} className="flex flex-col relative group">
-              {/* Top Step Header with Circular Number and Connecting Line */}
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-plum-900/25 bg-cream text-plum-900 font-sans text-xs font-semibold tracking-wider transition-colors duration-300 group-hover:border-gold-dark group-hover:text-gold-dark">
+            <div key={step.number} className="group flex flex-col">
+              <div className="mb-3 flex items-center gap-4">
+                <span className="shrink-0 font-display text-2xl font-light leading-none text-plum-900">
                   {step.number}
-                </div>
-
-                {/* Connecting Line-Arrow on Desktop */}
+                </span>
                 {index < arr.length - 1 && (
-                  <div className="hidden lg:flex items-center flex-1 h-[1px] bg-plum-900/20 relative">
-                    <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] text-plum-900/40">
+                  <div className="relative hidden h-px flex-1 bg-plum-900/20 lg:flex">
+                    <span aria-hidden="true" className="absolute -right-0.5 -top-[0.55rem] text-xs text-plum-900/45">
                       →
                     </span>
                   </div>
                 )}
               </div>
 
-              {/* Step Thumbnail Photo */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden mb-5 bg-plum-900/5">
+              <h3 className="mb-4 font-sans text-xs font-semibold tracking-[0.16em] uppercase text-plum-900 sm:text-sm">
+                {step.name}
+              </h3>
+
+              <div className="relative mb-4 aspect-[4/3] w-full overflow-hidden bg-plum-900/5">
                 <Image
                   src={getStepImage(step.imageKey)}
                   alt={step.name}
@@ -96,13 +99,7 @@ export function Method({ data = homeContent.method, assets = defaultAssets }: Me
                 />
               </div>
 
-              {/* Step Title — noticeably heavier / semi-bold per reference */}
-              <h3 className="font-sans text-sm font-semibold tracking-[0.18em] uppercase text-plum-900 mb-2">
-                {step.name}
-              </h3>
-
-              {/* Step Description */}
-              <p className="font-sans text-xs font-light leading-relaxed text-plum-900/75">
+              <p className="font-sans text-xs font-normal leading-relaxed text-plum-900/75 sm:text-[0.82rem]">
                 {step.description}
               </p>
             </div>

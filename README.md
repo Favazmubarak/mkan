@@ -28,7 +28,7 @@ CONTACT_EMAIL_FROM=
 # Optional stable secret for keyed rate-limit identities; otherwise MONGODB_URI is used.
 RATE_LIMIT_HASH_SECRET=
 
-# Required for uploads in production; local uploads are development-only.
+# Required only if the production Studio will upload or replace images.
 R2_BUCKET_NAME=
 R2_ACCESS_KEY_ID=
 R2_SECRET_ACCESS_KEY=
@@ -36,7 +36,7 @@ R2_ENDPOINT=
 R2_PUBLIC_DOMAIN=
 ```
 
-`ADMIN_DEFAULT_PASSWORD` must be at least 12 characters and no more than 72 UTF-8 bytes. Keep `.env.local` private and use separate production secrets. The public homepage can render seed content without MongoDB, but admin access and CMS operations require a working database.
+`ADMIN_DEFAULT_PASSWORD` must be at least 12 characters and no more than 72 UTF-8 bytes. Keep `.env.local` private and use separate production secrets. The public homepage can render seed content without MongoDB, but admin access and CMS operations require a working database. The Studio accepts original images up to 15 MB, compresses images larger than 4 MB in the browser, and submits the optimized file under Vercel's request limit.
 
 ## Commands
 
@@ -49,7 +49,7 @@ R2_PUBLIC_DOMAIN=
 
 ## Production notes
 
-- Configure MongoDB, a Resend sender/recipient, and all five R2 values before deployment. Image uploads fail closed in production when R2 is not configured.
+- Configure MongoDB before deployment. Configure Resend if the team needs email notifications. Configure all five R2 values before using image uploads in the production Studio; those uploads fail closed without R2.
 - The admin route group verifies sessions on the server; each mutation also checks authorization in its server action.
 - Contact records are configured for automatic deletion after 30 days. A privacy notice is available at `/privacy`.
 - Set `RATE_LIMIT_HASH_SECRET` to a stable secret across instances if you do not want rate-limit hashes derived from the MongoDB connection string.

@@ -15,8 +15,8 @@
   --color-ink: #220811;
 
   --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-admin: var(--font-admin), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-admin: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
