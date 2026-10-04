@@ -151,7 +151,7 @@ export const homeContent = {
     subtitle: "FROM STRATEGY TO EXTRAORDINARY EXPERIENCES.",
     cta: {
       label: "OUR APPROACH",
-      href: "#contact",
+      href: "/approach",
     },
     steps: [
       {
@@ -198,7 +198,7 @@ export const homeContent = {
     title: "SELECTED EXPERIENCES",
     viewAllCta: {
       label: "VIEW ALL PROJECTS",
-      href: "#contact",
+      href: "/experiences",
     },
     items: [
       {
@@ -207,7 +207,7 @@ export const homeContent = {
         subtitle: "Flagship Exhibition Platform",
         category: "exhibitions",
         imageKey: "ramadanFair",
-        href: "#contact",
+        href: "/experiences",
       },
       {
         id: "luxury-brand-activation",
@@ -215,7 +215,7 @@ export const homeContent = {
         subtitle: "Retail & Experiential",
         category: "activations",
         imageKey: "luxuryActivation",
-        href: "#contact",
+        href: "/experiences",
       },
       {
         id: "corporate-engagement",
@@ -223,7 +223,7 @@ export const homeContent = {
         subtitle: "Private Event Experience",
         category: "events",
         imageKey: "corporateEvents",
-        href: "#contact",
+        href: "/experiences",
       },
       {
         id: "private-engagement",
@@ -231,7 +231,7 @@ export const homeContent = {
         subtitle: "Curated VIP Protocol",
         category: "events",
         imageKey: "privateEngagement",
-        href: "#contact",
+        href: "/experiences",
       },
       {
         id: "cultural-pavilion",
@@ -239,7 +239,7 @@ export const homeContent = {
         subtitle: "Architectural Public Platform",
         category: "exhibitions",
         imageKey: "ramadanFair",
-        href: "#contact",
+        href: "/experiences",
       },
       {
         id: "institutional-summit",
@@ -247,7 +247,7 @@ export const homeContent = {
         subtitle: "High-Level Executive Forum",
         category: "events",
         imageKey: "corporateEvents",
-        href: "#contact",
+        href: "/experiences",
       },
     ],
   },
@@ -259,7 +259,7 @@ export const homeContent = {
       "From corporate programs and government events to brand activations and cultural experiences, we create meaningful platforms that connect people, brands and opportunities.",
     cta: {
       label: "OUR CLIENTS",
-      href: "#clients",
+      href: "/experiences#clients",
     },
   },
 

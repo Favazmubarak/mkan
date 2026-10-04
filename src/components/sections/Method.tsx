@@ -18,8 +18,7 @@ export function Method({
   const method = data;
   const steps = method.steps || [];
 
-  const approachIsSelfLink = String(method.cta?.href) === "#method";
-  const methodCtaHref = approachIsSelfLink ? "#contact" : method.cta?.href || "#contact";
+  const methodCtaHref = "/approach";
   const methodCtaLabel = method.cta?.label || "OUR APPROACH";
 
   // Active step: -1 means resting at zero (no lines filled)

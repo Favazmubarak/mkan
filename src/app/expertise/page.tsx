@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { getLiveSiteContent } from "@/lib/content";
 import { site as defaultSite } from "@/content/site";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { ExpertisePageClient } from "@/components/expertise/ExpertisePageClient";
 
@@ -86,7 +85,6 @@ export default async function ExpertisePage() {
         <ExpertisePageClient site={site} assets={assets} />
       </main>
       <ScrollToTop />
-      <Footer site={site} />
     </>
   );
 }

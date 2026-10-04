@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 
@@ -30,9 +31,10 @@ export function Experiences({
   data = homeContent.experiences,
   assets = defaultAssets,
 }: ExperiencesProps) {
+  const router = useRouter();
   const experiences = data;
 
-  const viewAllHref = experiences.viewAllCta?.href || "#contact";
+  const viewAllHref = "/experiences";
   const viewAllLabel = experiences.viewAllCta?.label || "VIEW ALL PROJECTS";
 
   const getImageSrc = (key: string, imageUrl?: string) => {
@@ -188,9 +190,12 @@ export function Experiences({
           <div className="flex items-center gap-5 sm:gap-7 self-end sm:self-auto">
             <Link
               href={viewAllHref}
-              className="group inline-flex items-center gap-2.5 text-[0.72rem] sm:text-[0.78rem] font-sans font-bold tracking-[0.22em] uppercase text-[#EAD0B3] transition-colors duration-300 hover:text-[#DDB78A]"
+              className="group inline-flex items-center gap-2.5 text-[0.72rem] sm:text-[0.78rem] font-sans font-bold tracking-[0.22em] uppercase text-[#EAD0B3] transition-colors duration-300 hover:text-[#DDB78A] cursor-pointer"
             >
-              <span>{viewAllLabel}</span>
+              <span className="relative">
+                {viewAllLabel}
+                <span className="absolute -bottom-0.5 left-0 h-[1px] w-0 bg-[#DDB78A] transition-all duration-300 group-hover:w-full" />
+              </span>
               <span
                 aria-hidden="true"
                 className="inline-block transition-transform duration-300 group-hover:translate-x-1.5 font-bold"
@@ -277,7 +282,7 @@ export function Experiences({
               >
                 {/* Main Panoramic Card Link: High-FPS Hardware Accelerated Smooth Motion */}
                 <Link
-                  href={item.href || "#contact"}
+                  href={item.href && !item.href.startsWith("#") ? item.href : "/experiences"}
                   onClick={(e) => {
                     if (dragDistance.current > 12) {
                       e.preventDefault();

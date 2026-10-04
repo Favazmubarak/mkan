@@ -32,10 +32,10 @@ export const site = {
   // Primary Single-Page Navigation (Matches final source of truth reference)
   nav: [
     { label: "About", href: "#about" },
-    { label: "Services", href: "#services" },
-    { label: "Experiences", href: "#experiences" },
-    { label: "Approach", href: "#method" },
-    { label: "Clients", href: "#clients" },
+    { label: "Services", href: "/expertise" },
+    { label: "Experiences", href: "/experiences" },
+    { label: "Approach", href: "/approach" },
+    { label: "Clients", href: "/experiences#clients" },
     { label: "Contact", href: "#contact" },
   ],
 
@@ -51,10 +51,10 @@ export const site = {
     locationTag: "DUBAI | UAE",
     links: [
       { label: "About", href: "#about" },
-      { label: "Services", href: "#services" },
-      { label: "Experiences", href: "#experiences" },
-      { label: "Approach", href: "#method" },
-      { label: "Clients", href: "#clients" },
+      { label: "Services", href: "/expertise" },
+      { label: "Experiences", href: "/experiences" },
+      { label: "Approach", href: "/approach" },
+      { label: "Clients", href: "/experiences#clients" },
       { label: "Contact", href: "#contact" },
     ],
   },

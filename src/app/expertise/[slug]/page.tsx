@@ -3,9 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { getLiveSiteContent } from "@/lib/content";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { ScrollToTop } from "@/components/ScrollToTop";
-import { Contact } from "@/components/sections/Contact";
+import { InnerContact } from "@/components/common/InnerContact";
+import { BackButton } from "@/components/common/BackButton";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface ExpertisePageProps {
@@ -74,16 +74,10 @@ export default async function ExpertiseDetailsPage({ params }: ExpertisePageProp
           <div className="absolute inset-x-0 bottom-0 h-[75%] bg-gradient-to-t from-[#16030C] via-[#16030C]/85 to-transparent" />
           
           <div className="absolute inset-x-0 bottom-0 p-8 lg:p-16 max-w-[1440px] mx-auto z-10 flex flex-col justify-end h-full">
-            <div className="flex items-center gap-4 mb-6">
-              <Link
-                href="/expertise"
-                className="inline-flex items-center gap-2 text-[#DDB78A] text-[0.7rem] font-bold tracking-[0.2em] uppercase hover:text-white transition-colors"
-              >
-                <ArrowLeft size={13} />
-                <span>ALL CAPABILITIES</span>
-              </Link>
+            <div className="flex flex-wrap items-center gap-4 mb-6">
+              <BackButton fallbackHref="/expertise" label="ALL CAPABILITIES" />
               <span className="text-[#DDB78A]/40">/</span>
-              <span className="text-[#EAD0B3]/70 text-[0.7rem] tracking-[0.2em] uppercase">
+              <span className="text-[#EAD0B3]/70 text-[0.7rem] font-sans tracking-[0.2em] uppercase font-semibold">
                 {card.title}
               </span>
             </div>
@@ -198,11 +192,10 @@ export default async function ExpertiseDetailsPage({ params }: ExpertisePageProp
 
         {/* Contact Section at the Bottom */}
         <div className="border-t border-[#DDB78A]/20">
-          <Contact data={home.contact} site={site} assets={assets} />
+          <InnerContact data={home.contact} site={site} assets={assets} />
         </div>
       </main>
       <ScrollToTop />
-      <Footer site={site} />
     </>
   );
 }

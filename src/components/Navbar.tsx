@@ -102,6 +102,11 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
     e.preventDefault();
     setMobileOpen(false);
 
+    if (href.startsWith("/")) {
+      router.push(href);
+      return;
+    }
+
     if (pathname === "/" || pathname === "") {
       scrollToElementCenter(href, 1400, href);
     } else {
@@ -138,8 +143,11 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
         {/* Desktop Navigation Links — Centered */}
         <ul className="hidden items-center gap-7 lg:flex xl:gap-9">
           {site.nav.map((item) => {
-            const targetSection = item.href.replace("#", "");
-            const isActive = activeSection === targetSection;
+            const targetSection = item.href.replace("#", "").replace("/", "");
+            const isActive =
+              pathname === item.href ||
+              (item.href.startsWith("/") && pathname.startsWith(item.href)) ||
+              (pathname === "/" && activeSection === targetSection);
 
             return (
               <li key={item.label}>

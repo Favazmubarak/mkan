@@ -298,18 +298,13 @@ export function Expertise({
   assets = defaultAssets,
 }: ExpertiseProps) {
   const router = useRouter();
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const expertise = data;
 
   const viewAllHref = "/expertise";
   const viewAllLabel = expertise.viewAllCta?.label || "VIEW ALL SERVICES";
 
   const handlePageTransition = (targetHref: string) => {
-    setIsTransitioning(true);
-    // Smooth cinematic veil transition duration (~800ms)
-    setTimeout(() => {
-      router.push(targetHref);
-    }, 750);
+    router.push(targetHref);
   };
 
   const getImageSrc = (key: string) => {
@@ -330,24 +325,6 @@ export function Expertise({
       id="services"
       className="relative bg-[#1A040E] text-cream px-4 sm:px-6 lg:px-10 xl:px-14 py-14 sm:py-16 lg:py-12 xl:py-16 lg:min-h-screen lg:flex lg:flex-col lg:justify-center overflow-hidden"
     >
-      {/* Cinematic Page Veil Transition Overlay */}
-      {isTransitioning && (
-        <div
-          className="fixed inset-0 z-[999] bg-[#16030C] flex flex-col items-center justify-center animate-in fade-in duration-700 pointer-events-auto"
-          aria-hidden="true"
-        >
-          <div className="flex flex-col items-center gap-4">
-            <span className="font-display text-2xl sm:text-3xl text-[#FAF1E8] tracking-[0.2em] uppercase animate-pulse">
-              MKAN CONCEPT
-            </span>
-            <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#DDB78A] to-transparent" />
-            <span className="text-[0.65rem] font-sans font-medium tracking-[0.3em] uppercase text-[#DDB78A]">
-              OPENING EXPERTISE CHAPTER
-            </span>
-          </div>
-        </div>
-      )}
-
       <div className="mx-auto w-full max-w-[1600px] flex flex-col justify-center">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 pb-6 sm:pb-8 lg:pb-7 xl:pb-9 border-b border-cream/10">
@@ -357,9 +334,8 @@ export function Expertise({
             </h2>
           </div>
 
-          <button
-            type="button"
-            onClick={() => handlePageTransition(viewAllHref)}
+          <Link
+            href={viewAllHref}
             className="group inline-flex items-center gap-2 text-[0.68rem] sm:text-[0.74rem] font-sans font-bold tracking-[0.22em] uppercase text-[#DDB78A]/80 transition-colors duration-300 hover:text-[#DDB78A] cursor-pointer"
           >
             <span className="relative">
@@ -372,7 +348,7 @@ export function Expertise({
             >
               →
             </span>
-          </button>
+          </Link>
         </div>
 
         {/* 5 Full-Box Horizontal Cards */}

@@ -96,7 +96,7 @@ export const getLiveSiteContent = cache(async (locale: string = "en") => {
           imageKey: project.imageKey || "ramadanFair",
           imageUrl: project.imageUrl || undefined,
           altText: project.altText || project.title,
-          href: "#contact",
+          href: "/experiences",
         }));
     }
 
