@@ -3,6 +3,7 @@
 import { useRef, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 
@@ -31,9 +32,11 @@ interface CardItem {
 function ExpertiseCardItem({
   card,
   imageSrc,
+  onNavigate,
 }: {
   card: CardItem;
   imageSrc: string;
+  onNavigate?: (href: string) => void;
 }) {
   const cardRef = useRef<HTMLAnchorElement>(null);
   const imgRef = useRef<HTMLDivElement>(null);
@@ -65,7 +68,7 @@ function ExpertiseCardItem({
       : card.description.split("\n").filter(Boolean);
 
   const slug = card.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const innerHref = `/expertise/${slug}`;
+  const innerHref = `/expertise#${slug}`;
 
   // Continuous spring loop: smoothly drives physics to target with damped harmonic motion
   const startSpringLoop = useCallback(() => {
@@ -175,6 +178,13 @@ function ExpertiseCardItem({
     startSpringLoop();
   }, [startSpringLoop]);
 
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (onNavigate) {
+      e.preventDefault();
+      onNavigate(innerHref);
+    }
+  };
+
   useEffect(() => {
     const p = physics.current;
     return () => {
@@ -186,10 +196,11 @@ function ExpertiseCardItem({
     <Link
       ref={cardRef}
       href={innerHref}
+      onClick={handleClick}
       onPointerEnter={handlePointerEnter}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className="group relative flex flex-col justify-end h-[480px] sm:h-[520px] lg:h-[calc(100vh-210px)] lg:min-h-[460px] lg:max-h-[580px] xl:max-h-[640px] overflow-hidden rounded-sm border bg-[#16030c] select-none will-change-transform focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
+      className="group relative flex flex-col justify-end h-[480px] sm:h-[520px] lg:h-[calc(100vh-210px)] lg:min-h-[460px] lg:max-h-[580px] xl:max-h-[640px] overflow-hidden rounded-sm border bg-[#16030c] select-none will-change-transform focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer"
       style={{
         transformStyle: "preserve-3d",
         borderColor: isHovered ? "rgba(221, 183, 138, 0.75)" : "rgba(221, 183, 138, 0.2)",
@@ -286,11 +297,20 @@ export function Expertise({
   data = homeContent.expertise,
   assets = defaultAssets,
 }: ExpertiseProps) {
+  const router = useRouter();
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const expertise = data;
 
-  const viewAllIsSelfLink = String(expertise.viewAllCta?.href) === "#services";
-  const viewAllHref = viewAllIsSelfLink ? "#contact" : expertise.viewAllCta?.href || "#contact";
-  const viewAllLabel = viewAllIsSelfLink ? "VIEW ALL SERVICES" : expertise.viewAllCta?.label || "VIEW ALL SERVICES";
+  const viewAllHref = "/expertise";
+  const viewAllLabel = expertise.viewAllCta?.label || "VIEW ALL SERVICES";
+
+  const handlePageTransition = (targetHref: string) => {
+    setIsTransitioning(true);
+    // Smooth cinematic veil transition duration (~800ms)
+    setTimeout(() => {
+      router.push(targetHref);
+    }, 750);
+  };
 
   const getImageSrc = (key: string) => {
     switch (key) {
@@ -308,8 +328,26 @@ export function Expertise({
   return (
     <section
       id="services"
-      className="relative bg-[#1A040E] text-cream px-4 sm:px-6 lg:px-10 xl:px-14 py-14 sm:py-16 lg:py-12 xl:py-16 lg:min-h-screen lg:flex lg:flex-col lg:justify-center"
+      className="relative bg-[#1A040E] text-cream px-4 sm:px-6 lg:px-10 xl:px-14 py-14 sm:py-16 lg:py-12 xl:py-16 lg:min-h-screen lg:flex lg:flex-col lg:justify-center overflow-hidden"
     >
+      {/* Cinematic Page Veil Transition Overlay */}
+      {isTransitioning && (
+        <div
+          className="fixed inset-0 z-[999] bg-[#16030C] flex flex-col items-center justify-center animate-in fade-in duration-700 pointer-events-auto"
+          aria-hidden="true"
+        >
+          <div className="flex flex-col items-center gap-4">
+            <span className="font-display text-2xl sm:text-3xl text-[#FAF1E8] tracking-[0.2em] uppercase animate-pulse">
+              MKAN CONCEPT
+            </span>
+            <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#DDB78A] to-transparent" />
+            <span className="text-[0.65rem] font-sans font-medium tracking-[0.3em] uppercase text-[#DDB78A]">
+              OPENING EXPERTISE CHAPTER
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto w-full max-w-[1600px] flex flex-col justify-center">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 pb-6 sm:pb-8 lg:pb-7 xl:pb-9 border-b border-cream/10">
@@ -319,9 +357,10 @@ export function Expertise({
             </h2>
           </div>
 
-          <Link
-            href={viewAllHref}
-            className="group inline-flex items-center gap-2 text-[0.68rem] sm:text-[0.74rem] font-sans font-bold tracking-[0.22em] uppercase text-[#DDB78A]/80 transition-colors duration-300 hover:text-[#DDB78A]"
+          <button
+            type="button"
+            onClick={() => handlePageTransition(viewAllHref)}
+            className="group inline-flex items-center gap-2 text-[0.68rem] sm:text-[0.74rem] font-sans font-bold tracking-[0.22em] uppercase text-[#DDB78A]/80 transition-colors duration-300 hover:text-[#DDB78A] cursor-pointer"
           >
             <span className="relative">
               {viewAllLabel}
@@ -333,7 +372,7 @@ export function Expertise({
             >
               →
             </span>
-          </Link>
+          </button>
         </div>
 
         {/* 5 Full-Box Horizontal Cards */}
@@ -343,6 +382,7 @@ export function Expertise({
               key={card.number}
               card={card}
               imageSrc={getImageSrc(card.imageKey)}
+              onNavigate={handlePageTransition}
             />
           ))}
         </div>

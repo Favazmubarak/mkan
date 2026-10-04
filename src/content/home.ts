@@ -53,7 +53,7 @@ export const homeContent = {
     title: "OUR EXPERTISE",
     viewAllCta: {
       label: "VIEW ALL SERVICES",
-      href: "#contact",
+      href: "/expertise",
     },
     cards: [
       {

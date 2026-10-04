@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { site as defaultSite } from "@/content/site";
 import { Logo } from "@/components/Logo";
 import { scrollToElementCenter, cinematicScrollTo } from "@/lib/cinematic-scroll";
@@ -11,9 +12,26 @@ interface FooterProps {
 }
 
 export function Footer({ site = defaultSite }: FooterProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    scrollToElementCenter(href, 1400, href);
+    if (pathname === "/" || pathname === "") {
+      scrollToElementCenter(href, 1400, href);
+    } else {
+      const targetId = href.replace("#", "");
+      const localEl = targetId ? document.getElementById(targetId) : null;
+      if (localEl) {
+        scrollToElementCenter(href, 1200, href);
+      } else {
+        if (href === "#home" || href === "#") {
+          router.push("/");
+        } else {
+          router.push(`/${href}`);
+        }
+      }
+    }
   };
 
   const scrollToTop = () => {

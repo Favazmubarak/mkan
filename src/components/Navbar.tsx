@@ -2,6 +2,7 @@
 
 import { site as defaultSite } from "@/content/site";
 import { useState, useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { scrollToElementCenter } from "@/lib/cinematic-scroll";
 
@@ -10,6 +11,8 @@ interface NavbarProps {
 }
 
 export function Navbar({ site = defaultSite }: NavbarProps) {
+  const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
@@ -98,7 +101,22 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     setMobileOpen(false);
-    scrollToElementCenter(href, 1400, href);
+
+    if (pathname === "/" || pathname === "") {
+      scrollToElementCenter(href, 1400, href);
+    } else {
+      const targetId = href.replace("#", "");
+      const localEl = targetId ? document.getElementById(targetId) : null;
+      if (localEl) {
+        scrollToElementCenter(href, 1200, href);
+      } else {
+        if (href === "#home" || href === "#") {
+          router.push("/");
+        } else {
+          router.push(`/${href}`);
+        }
+      }
+    }
   };
 
   return (
