@@ -40,15 +40,15 @@ export function Experiences({
 
     switch (key) {
       case "ramadanFair":
-        return assets.experiences?.ramadanFair?.src || assets.heroBg.src;
+        return assets.experiences?.ramadanFair?.src || "/images/2.1.png";
       case "luxuryActivation":
-        return assets.experiences?.luxuryActivation?.src || assets.heroBg.src;
+        return assets.experiences?.luxuryActivation?.src || "/images/2.2.png";
       case "corporateEvents":
-        return assets.experiences?.corporateEvents?.src || assets.heroBg.src;
+        return assets.experiences?.corporateEvents?.src || "/images/2.3.png";
       case "privateEngagement":
-        return assets.experiences?.privateEngagement?.src || assets.heroBg.src;
+        return assets.experiences?.privateEngagement?.src || "/images/2.4.png";
       default:
-        return assets.heroBg.src;
+        return assets.heroBg.src || "/images/hero1.png";
     }
   };
 

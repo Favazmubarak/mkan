@@ -16,7 +16,7 @@ export interface AssetMeta {
 export const assets = {
   // Hero & Global
   heroBg: {
-    src: "/images/hero-bg.jpg",
+    src: "/images/Hero1.png",
     alt: "Illuminated luxury architectural grand corridor at dusk with deep plum ambiance",
     width: 1920,
     height: 1080,
@@ -25,7 +25,7 @@ export const assets = {
   },
   // Home Page
   aboutInterior: {
-    src: "/images/about-interior.jpg",
+    src: "/images/aboutsection.png",
     alt: "Refined atmospheric lounge with warm sculptural lighting and curved furniture",
     width: 800,
     height: 600,
@@ -36,7 +36,7 @@ export const assets = {
   // Our Expertise (5 cards)
   expertise: {
     events: {
-      src: "/images/expertise-events.jpg",
+      src: "/images/1.1.png",
       alt: "Corporate and institutional events, gala dinners and engagement platforms",
       width: 800,
       height: 600,
@@ -44,7 +44,7 @@ export const assets = {
       section: "expertise-01",
     },
     exhibitions: {
-      src: "/images/expertise-exhibitions.jpg",
+      src: "/images/1.2.png",
       alt: "Seasonal fairs, cultural exhibitions and architectural pavilions",
       width: 800,
       height: 600,
@@ -52,7 +52,7 @@ export const assets = {
       section: "expertise-02",
     },
     workshops: {
-      src: "/images/expertise-workshops.jpg",
+      src: "/images/1.3.png",
       alt: "Creative masterclasses, interactive workshops and educational platforms",
       width: 800,
       height: 600,
@@ -60,7 +60,7 @@ export const assets = {
       section: "expertise-03",
     },
     activations: {
-      src: "/images/expertise-activations.jpg",
+      src: "/images/1.4.png",
       alt: "Luxury brand activations, pop-ups and experiential retail design",
       width: 800,
       height: 600,
@@ -68,7 +68,7 @@ export const assets = {
       section: "expertise-04",
     },
     consultancy: {
-      src: "/images/expertise-consultancy.jpg",
+      src: "/images/1.5.png",
       alt: "Strategic concept consultancy, brand positioning and experience blueprints",
       width: 800,
       height: 600,
@@ -124,31 +124,31 @@ export const assets = {
   // Selected Experiences (2x2 Grid)
   experiences: {
     ramadanFair: {
-      src: "/images/experience-ramadan-fair.jpg",
+      src: "/images/2.1.png",
       alt: "Ramadan Fair flagship cultural pavilion with grand illuminated terracotta arches",
       width: 800,
       height: 600,
       page: "home & experiences",
       section: "experiences",
     },
-    corporateEvents: {
-      src: "/images/experience-corporate.jpg",
-      alt: "Institutional corporate gala dinner with golden glow and lush olive trees",
-      width: 800,
-      height: 600,
-      page: "home & experiences",
-      section: "experiences",
-    },
     luxuryActivation: {
-      src: "/images/experience-luxury-activation.jpg",
+      src: "/images/2.2.png",
       alt: "High-end luxury brand activation with illuminated geometric columns",
       width: 800,
       height: 600,
       page: "home & experiences",
       section: "experiences",
     },
+    corporateEvents: {
+      src: "/images/2.3.png",
+      alt: "Institutional corporate gala dinner with golden glow and lush olive trees",
+      width: 800,
+      height: 600,
+      page: "home & experiences",
+      section: "experiences",
+    },
     privateEngagement: {
-      src: "/images/experience-private.jpg",
+      src: "/images/2.4.png",
       alt: "Exclusive private VIP engagement with bespoke tablescaping and canopy lighting",
       width: 800,
       height: 600,

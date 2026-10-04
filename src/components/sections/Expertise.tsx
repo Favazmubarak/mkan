@@ -294,12 +294,12 @@ export function Expertise({
 
   const getImageSrc = (key: string) => {
     switch (key) {
-      case "events":        return assets.expertise?.events?.src        || "/images/expertise-events.jpg";
-      case "exhibitions":   return assets.expertise?.exhibitions?.src   || "/images/expertise-exhibitions.jpg";
-      case "workshops":     return assets.expertise?.workshops?.src     || "/images/expertise-workshops.jpg";
-      case "activations":   return assets.expertise?.activations?.src   || "/images/expertise-activations.jpg";
-      case "consultancy":   return assets.expertise?.consultancy?.src   || "/images/expertise-consultancy.jpg";
-      default:              return assets.heroBg.src;
+      case "events":        return assets.expertise?.events?.src        || "/images/1.1.png";
+      case "exhibitions":   return assets.expertise?.exhibitions?.src   || "/images/1.2.png";
+      case "workshops":     return assets.expertise?.workshops?.src     || "/images/1.3.png";
+      case "activations":   return assets.expertise?.activations?.src   || "/images/1.4.png";
+      case "consultancy":   return assets.expertise?.consultancy?.src   || "/images/1.5.png";
+      default:              return assets.heroBg.src || "/images/hero1.png";
     }
   };
 
