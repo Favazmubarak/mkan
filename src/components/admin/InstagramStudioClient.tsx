@@ -74,6 +74,7 @@ export function InstagramStudioClient({
   const [savingSection, setSavingSection] = useState<string | null>(null);
   const [uploadingSlot, setUploadingSlot] = useState<string | null>(null);
   const [uploadedPreviews, setUploadedPreviews] = useState<Record<string, string>>({});
+  const [pendingUploads, setPendingUploads] = useState<Record<string, File>>({});
   const [activeProject, setActiveProject] = useState<StudioProject | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isProjectSaving, setIsProjectSaving] = useState(false);
@@ -150,6 +151,38 @@ export function InstagramStudioClient({
   const handleSaveSection = async (sectionKey: string, label: string) => {
     setSavingSection(sectionKey);
     try {
+      // 1. Upload any pending draft images for this section first
+      const sectionSlots = Object.keys(pendingUploads).filter((slot) => {
+        if (sectionKey === "hero") return slot === "heroBg";
+        if (sectionKey === "about") return slot === "aboutInterior";
+        if (sectionKey === "expertise") return slot.startsWith("expertise");
+        if (sectionKey === "impact" || sectionKey === "impactBanner") return slot === "impactBg";
+        if (sectionKey === "method") return slot.startsWith("method");
+        return slot.startsWith(sectionKey);
+      });
+
+      for (const slotKey of sectionSlots) {
+        const file = pendingUploads[slotKey];
+        if (file) {
+          setUploadingSlot(slotKey);
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("slotKey", slotKey);
+          formData.append("altText", "MKAN Luxury Visual");
+          const uploadRes = await uploadMediaAction(formData);
+          if (uploadRes.success && uploadRes.asset?.url) {
+            setUploadedPreviews((prev) => ({ ...prev, [slotKey]: uploadRes.asset!.url }));
+          }
+        }
+      }
+      setPendingUploads((prev) => {
+        const next = { ...prev };
+        for (const s of sectionSlots) delete next[s];
+        return next;
+      });
+      setUploadingSlot(null);
+
+      // 2. Save & publish section text/structure
       const data = sections[sectionKey]?.draftData || sections[sectionKey]?.data;
       const draftResult = await saveSectionDraftAction(sectionKey, data);
       if (!draftResult.success) {
@@ -167,6 +200,7 @@ export function InstagramStudioClient({
       showToast(err instanceof Error ? err.message : "Action failed.", "error");
     } finally {
       setSavingSection(null);
+      setUploadingSlot(null);
     }
   };
 
@@ -176,6 +210,22 @@ export function InstagramStudioClient({
   const handlePublishAll = async () => {
     setIsPublishing(true);
     try {
+      // 1. Upload all staged pending images
+      for (const [slotKey, file] of Object.entries(pendingUploads)) {
+        setUploadingSlot(slotKey);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("slotKey", slotKey);
+        formData.append("altText", "MKAN Luxury Visual");
+        const uploadRes = await uploadMediaAction(formData);
+        if (uploadRes.success && uploadRes.asset?.url) {
+          setUploadedPreviews((prev) => ({ ...prev, [slotKey]: uploadRes.asset!.url }));
+        }
+      }
+      setPendingUploads({});
+      setUploadingSlot(null);
+
+      // 2. Save & publish all sections
       for (const key of Object.keys(sections)) {
         if (sections[key]?.draftData) {
           const draftResult = await saveSectionDraftAction(key, sections[key].draftData);
@@ -195,7 +245,7 @@ export function InstagramStudioClient({
       const res = await publishAllSectionsAction();
       if (res.success) {
         broadcastLiveSync();
-        showToast("✨ All changes are now live on the public website!");
+        showToast("✨ All changes & images are now live on the public website!");
       } else {
         showToast(res.message || "Failed to publish.", "error");
       }
@@ -203,59 +253,24 @@ export function InstagramStudioClient({
       showToast(err instanceof Error ? err.message : "Publishing failed.", "error");
     } finally {
       setIsPublishing(false);
+      setUploadingSlot(null);
     }
   };
 
   /* ------------------------------------------------------------------ */
-  /*  Photo Upload Handler                                               */
+  /*  Photo Draft Staging Handler (Uploads only on Save / Publish)       */
   /* ------------------------------------------------------------------ */
   const handleUpload = async (slotKey: string, file: File) => {
-    setUploadingSlot(slotKey);
     const previousUrl = uploadedPreviews[slotKey];
-    let previewUrl: string | null = null;
-
     try {
       const uploadFile = await prepareImageUpload(file);
       const currentPreviewUrl = URL.createObjectURL(uploadFile);
-      previewUrl = currentPreviewUrl;
+      if (previousUrl?.startsWith("blob:")) URL.revokeObjectURL(previousUrl);
       setUploadedPreviews((prev) => ({ ...prev, [slotKey]: currentPreviewUrl }));
-
-      const formData = new FormData();
-      formData.append("file", uploadFile);
-      formData.append("slotKey", slotKey);
-      formData.append("altText", "MKAN Luxury Visual");
-
-      const res = await uploadMediaAction(formData);
-      if (res.success) {
-        broadcastLiveSync();
-        if (previousUrl?.startsWith("blob:")) URL.revokeObjectURL(previousUrl);
-        const imageUrl = res.asset?.url;
-        if (previewUrl && imageUrl) {
-          URL.revokeObjectURL(previewUrl);
-          setUploadedPreviews((prev) => ({ ...prev, [slotKey]: imageUrl }));
-        }
-        showToast(uploadFile !== file ? "Photo compressed and uploaded." : "Photo uploaded & optimized.");
-      } else {
-        if (previewUrl) URL.revokeObjectURL(previewUrl);
-        setUploadedPreviews((prev) => {
-          if (previousUrl) return { ...prev, [slotKey]: previousUrl };
-          const next = { ...prev };
-          delete next[slotKey];
-          return next;
-        });
-        showToast(res.message || "Upload failed.", "error");
-      }
+      setPendingUploads((prev) => ({ ...prev, [slotKey]: uploadFile }));
+      showToast("Photo staged as draft. Click 'Save Section' or 'Publish All Changes' to save live.");
     } catch (error) {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-      setUploadedPreviews((prev) => {
-        if (previousUrl) return { ...prev, [slotKey]: previousUrl };
-        const next = { ...prev };
-        delete next[slotKey];
-        return next;
-      });
-      showToast(error instanceof Error ? error.message : "Image upload failed.", "error");
-    } finally {
-      setUploadingSlot(null);
+      showToast(error instanceof Error ? error.message : "Image preparation failed.", "error");
     }
   };
 
@@ -494,34 +509,35 @@ export function InstagramStudioClient({
       {/* ──────────────────────────────────────────────────────────── */}
       {/* 1. Header Bar                                                */}
       {/* ──────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white px-6 lg:px-10 py-3.5 shadow-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
+      <header className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white px-4 sm:px-6 lg:px-10 py-3 sm:py-3.5 shadow-sm">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           {/* Text-only brand lockup */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-base font-extrabold tracking-tight text-[#111827]">
+                <span className="text-sm sm:text-base font-extrabold tracking-tight text-[#111827]">
                   MKAN CONCEPT
                 </span>
-                <span className="text-[0.62rem] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#F3F4F6] text-[#4B5563] border border-[#E5E7EB]">
+                <span className="text-[0.58rem] sm:text-[0.62rem] font-bold uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-md bg-[#F3F4F6] text-[#4B5563] border border-[#E5E7EB]">
                   Studio Dashboard
                 </span>
               </div>
-              <p className="text-[0.68rem] text-[#6B7280] font-medium">
+              <p className="hidden sm:block text-[0.68rem] text-[#6B7280] font-medium">
                 Luxury Event Consultancy • Dubai Flagship
               </p>
             </div>
           </div>
 
           {/* Action Bar */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-[#E5E7EB] bg-white text-xs font-bold text-[#4B5563] hover:text-[#111827] hover:border-[#D1D5DB] transition-all shadow-sm"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-[#E5E7EB] bg-white text-xs font-bold text-[#4B5563] hover:text-[#111827] hover:border-[#D1D5DB] transition-all shadow-sm"
             >
-              <span>View Public Website</span>
+              <span className="hidden sm:inline">View Public Website</span>
+              <span className="sm:hidden">View Site</span>
               <ExternalLink className="h-3.5 w-3.5 opacity-60" />
             </Link>
 
@@ -529,7 +545,7 @@ export function InstagramStudioClient({
               type="button"
               onClick={handlePublishAll}
               disabled={isPublishing}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#1A060E] px-5 py-2 text-xs font-bold text-[#DDB78A] hover:bg-[#2A0A17] active:scale-95 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+              className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-[#1A060E] px-3.5 sm:px-5 py-1.5 sm:py-2 text-xs font-bold text-[#DDB78A] hover:bg-[#2A0A17] active:scale-95 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
             >
               {isPublishing ? (
                 <>
@@ -539,7 +555,8 @@ export function InstagramStudioClient({
               ) : (
                 <>
                   <Sparkles className="h-3.5 w-3.5" />
-                  <span>Publish All Changes</span>
+                  <span className="hidden sm:inline">Publish All Changes</span>
+                  <span className="sm:hidden">Publish All</span>
                 </>
               )}
             </button>
@@ -547,7 +564,7 @@ export function InstagramStudioClient({
             <form action={logoutAdminAction}>
               <button
                 type="submit"
-                className="p-2 rounded-xl text-[#9CA3AF] hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                className="p-1.5 sm:p-2 rounded-xl text-[#9CA3AF] hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                 title="Sign out"
               >
                 <LogOut className="h-4 w-4" />
@@ -560,10 +577,10 @@ export function InstagramStudioClient({
       {/* ──────────────────────────────────────────────────────────── */}
       {/* 2. Studio Workspace                                          */}
       {/* ──────────────────────────────────────────────────────────── */}
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 mt-6 sm:mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
           {/* Left Column: Navigation Sidebar */}
-          <aside className="lg:col-span-3 space-y-2 sticky top-[80px]">
+          <aside className="lg:col-span-3 space-y-2 lg:sticky lg:top-[80px] z-10">
             <div className="p-2 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm space-y-1">
               {([
                 { id: "content", label: "Website Content", icon: Layers, desc: "Hero & Story" },
@@ -607,7 +624,7 @@ export function InstagramStudioClient({
               })}
             </div>
 
-            <div className="p-4 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm space-y-3">
+            <div className="hidden lg:block p-4 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm space-y-3">
               <p className="text-xs font-bold text-[#111827]">Quick Publish</p>
               <button
                 type="button"
@@ -634,6 +651,7 @@ export function InstagramStudioClient({
               savingSection={savingSection}
               uploadingSlot={uploadingSlot}
               uploadedPreviews={uploadedPreviews}
+              pendingUploads={pendingUploads}
               updateSection={updateSection}
               handleSaveSection={handleSaveSection}
               handleUpload={handleUpload}
@@ -648,6 +666,7 @@ export function InstagramStudioClient({
               savingSection={savingSection}
               uploadingSlot={uploadingSlot}
               uploadedPreviews={uploadedPreviews}
+              pendingUploads={pendingUploads}
               updateSection={updateSection}
               handleSaveSection={handleSaveSection}
               handleUpload={handleUpload}

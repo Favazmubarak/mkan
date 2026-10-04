@@ -13,6 +13,7 @@ interface WebsiteContentPanelProps {
   savingSection: string | null;
   uploadingSlot: string | null;
   uploadedPreviews: Record<string, string>;
+  pendingUploads?: Record<string, File>;
   updateSection: (sectionKey: string, field: string, value: unknown) => void;
   handleSaveSection: (sectionKey: string, label: string) => void;
   handleUpload: (slotKey: string, file: File) => Promise<void>;
@@ -26,6 +27,7 @@ export function WebsiteContentPanel({
   savingSection,
   uploadingSlot,
   uploadedPreviews,
+  pendingUploads = {},
   updateSection,
   handleSaveSection,
   handleUpload,
@@ -34,17 +36,17 @@ export function WebsiteContentPanel({
   return (
               <div className="space-y-6">
                 {/* 1. HERO SECTION */}
-                <div className="p-6 sm:p-8 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm space-y-6">
-                  <div className="flex items-center justify-between border-b border-[#F3F4F6] pb-4">
+                <div className="p-4 sm:p-6 lg:p-8 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm space-y-6 overflow-hidden">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#F3F4F6] pb-4">
                     <div>
-                      <h2 className="text-lg font-bold text-[#111827]">Hero Landing Banner</h2>
+                      <h2 className="text-base sm:text-lg font-bold text-[#111827]">Hero Landing Banner</h2>
                       <p className="text-xs text-[#6B7280]">Headline, gold tagline, and hero background photo</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleSaveSection("hero", "Hero Banner")}
                       disabled={savingSection === "hero"}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1A060E] text-[#DDB78A] text-xs font-bold hover:bg-[#2A0A17] transition-all cursor-pointer shadow-sm"
+                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[#1A060E] text-[#DDB78A] text-xs font-bold hover:bg-[#2A0A17] transition-all cursor-pointer shadow-sm shrink-0"
                     >
                       {savingSection === "hero" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                       <span>Save Section</span>
@@ -52,8 +54,8 @@ export function WebsiteContentPanel({
                   </div>
 
                   {/* Photo Dropzone */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
-                    <div className="flex items-center gap-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] overflow-hidden">
+                    <div className="flex items-center gap-3.5 min-w-0">
                       <div className="relative h-14 w-14 rounded-xl overflow-hidden bg-[#1A060E] border border-[#D1D5DB] shrink-0">
                         <Image
                           src={uploadedPreviews["heroBg"] || "/images/Hero1.png"}
@@ -63,15 +65,20 @@ export function WebsiteContentPanel({
                           unoptimized
                         />
                       </div>
-                      <div>
-                        <p className="text-xs font-bold text-[#111827]">Hero Background Image</p>
-                        <p className="text-[0.68rem] text-[#6B7280]">Landscape photo up to 15MB; images over 4MB are compressed before upload.</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold text-[#111827] truncate">Hero Background Image</p>
+                        <p className="text-[0.68rem] text-[#6B7280]">Landscape photo up to 15MB</p>
+                        {pendingUploads["heroBg"] && (
+                          <span className="inline-block mt-1 text-[0.62rem] font-bold text-[#B8860B] bg-[#FFF8EE] px-2 py-0.5 rounded border border-[#DDB78A]/40">
+                            ● Draft staged (click Save Section to apply)
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    <label className="inline-flex items-center gap-2 rounded-lg border border-[#D1D5DB] bg-white px-4 py-2 text-xs font-bold text-[#111827] shadow-sm transition-all hover:border-[#1A060E] focus-within:ring-2 focus-within:ring-[#B8860B] cursor-pointer">
+                    <label className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#D1D5DB] bg-white px-4 py-2 text-xs font-bold text-[#111827] shadow-sm transition-all hover:border-[#1A060E] focus-within:ring-2 focus-within:ring-[#B8860B] cursor-pointer shrink-0">
                       <Upload className="h-3.5 w-3.5 text-[#B8860B]" />
-                      <span>{uploadingSlot === "heroBg" ? "Preparing & uploading..." : "Replace Image"}</span>
+                      <span>{uploadingSlot === "heroBg" ? "Uploading..." : "Replace Image"}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -128,25 +135,25 @@ export function WebsiteContentPanel({
                 </div>
 
                 {/* 2. ABOUT STORY */}
-                <div className="p-6 sm:p-8 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm space-y-6">
-                  <div className="flex items-center justify-between border-b border-[#F3F4F6] pb-4">
+                <div className="p-4 sm:p-6 lg:p-8 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm space-y-6 overflow-hidden">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#F3F4F6] pb-4">
                     <div>
-                      <h2 className="text-lg font-bold text-[#111827]">About MKAN Story</h2>
+                      <h2 className="text-base sm:text-lg font-bold text-[#111827]">About MKAN Story</h2>
                       <p className="text-xs text-[#6B7280]">Brand narrative, portrait photo, and 3 heritage numbers</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleSaveSection("about", "Brand Story")}
                       disabled={savingSection === "about"}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1A060E] text-[#DDB78A] text-xs font-bold hover:bg-[#2A0A17] transition-all cursor-pointer shadow-sm"
+                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[#1A060E] text-[#DDB78A] text-xs font-bold hover:bg-[#2A0A17] transition-all cursor-pointer shadow-sm shrink-0"
                     >
                       {savingSection === "about" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                       <span>Save Section</span>
                     </button>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
-                    <div className="flex items-center gap-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] overflow-hidden">
+                    <div className="flex items-center gap-3.5 min-w-0">
                       <div className="relative h-14 w-14 rounded-xl overflow-hidden bg-[#1A060E] border border-[#D1D5DB] shrink-0">
                         <Image
                           src={uploadedPreviews["aboutInterior"] || "/images/aboutsection.png"}
@@ -156,15 +163,20 @@ export function WebsiteContentPanel({
                           unoptimized
                         />
                       </div>
-                      <div>
-                        <p className="text-xs font-bold text-[#111827]">Story Feature Portrait</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold text-[#111827] truncate">Story Feature Portrait</p>
                         <p className="text-[0.68rem] text-[#6B7280]">Vertical 4:5 Aspect Ratio</p>
+                        {pendingUploads["aboutInterior"] && (
+                          <span className="inline-block mt-1 text-[0.62rem] font-bold text-[#B8860B] bg-[#FFF8EE] px-2 py-0.5 rounded border border-[#DDB78A]/40">
+                            ● Draft staged (click Save Section to apply)
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    <label className="inline-flex items-center gap-2 rounded-lg border border-[#D1D5DB] bg-white px-4 py-2 text-xs font-bold text-[#111827] shadow-sm transition-all hover:border-[#1A060E] focus-within:ring-2 focus-within:ring-[#B8860B] cursor-pointer">
+                    <label className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#D1D5DB] bg-white px-4 py-2 text-xs font-bold text-[#111827] shadow-sm transition-all hover:border-[#1A060E] focus-within:ring-2 focus-within:ring-[#B8860B] cursor-pointer shrink-0">
                       <Upload className="h-3.5 w-3.5 text-[#B8860B]" />
-                      <span>{uploadingSlot === "aboutInterior" ? "Preparing & uploading..." : "Replace Portrait"}</span>
+                      <span>{uploadingSlot === "aboutInterior" ? "Uploading..." : "Replace Portrait"}</span>
                       <input
                         type="file"
                         accept="image/*"
