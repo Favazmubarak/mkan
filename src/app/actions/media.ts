@@ -204,7 +204,7 @@ export async function uploadMediaAction(
         }
       }
 
-      finalUrl = `${process.env.R2_PUBLIC_DOMAIN.replace(/\/$/, "")}/uploads/${randomName}`;
+      finalUrl = `/api/media/uploads/${randomName}`;
       storageProvider = "r2";
     } else {
       // Development-only fallback into /public/uploads/

@@ -20,32 +20,32 @@ const PRESET_GALLERY_IMAGES = [
   {
     label: "Ramadan Fair",
     slotKey: "ramadanFair",
-    src: "/images/experience-ramadan-fair.jpg",
+    src: "/images/2.1.png",
   },
   {
     label: "Luxury Activation",
     slotKey: "luxuryActivation",
-    src: "/images/experience-luxury-activation.jpg",
+    src: "/images/2.2.png",
   },
   {
     label: "Corporate Engagement",
     slotKey: "corporateEvents",
-    src: "/images/experience-corporate.jpg",
+    src: "/images/2.3.png",
   },
   {
     label: "Private Engagement",
     slotKey: "privateEngagement",
-    src: "/images/experience-private.jpg",
+    src: "/images/2.4.png",
   },
   {
     label: "Built for Brands",
     slotKey: "builtForBrands",
-    src: "/images/built-for-brands.jpg",
+    src: "/images/1.png",
   },
   {
     label: "Hero Atmosphere",
     slotKey: "heroBg",
-    src: "/images/hero-bg.jpg",
+    src: "/images/Hero1.png",
   },
 ];
 
@@ -64,7 +64,7 @@ export function ProjectEditorDialog({
     project?.imageUrl ||
     (project?.imageKey
       ? PRESET_GALLERY_IMAGES.find((p) => p.slotKey === project.imageKey)?.src || ""
-      : "/images/experience-ramadan-fair.jpg");
+      : "/images/2.1.png");
 
   const [imageUrl, setImageUrl] = useState<string>(initialImageUrl);
   const [imageKey, setImageKey] = useState<string>(project?.imageKey || "ramadanFair");

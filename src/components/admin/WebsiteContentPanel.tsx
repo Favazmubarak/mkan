@@ -56,7 +56,7 @@ export function WebsiteContentPanel({
                     <div className="flex items-center gap-3.5">
                       <div className="relative h-14 w-14 rounded-xl overflow-hidden bg-[#1A060E] border border-[#D1D5DB] shrink-0">
                         <Image
-                          src={uploadedPreviews["heroBg"] || "/images/hero-bg.jpg"}
+                          src={uploadedPreviews["heroBg"] || "/images/Hero1.png"}
                           alt="Hero"
                           fill
                           className="object-cover"
@@ -149,7 +149,7 @@ export function WebsiteContentPanel({
                     <div className="flex items-center gap-3.5">
                       <div className="relative h-14 w-14 rounded-xl overflow-hidden bg-[#1A060E] border border-[#D1D5DB] shrink-0">
                         <Image
-                          src={uploadedPreviews["aboutInterior"] || "/images/about-interior.jpg"}
+                          src={uploadedPreviews["aboutInterior"] || "/images/aboutsection.png"}
                           alt="About"
                           fill
                           className="object-cover"

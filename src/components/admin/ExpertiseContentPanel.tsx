@@ -90,8 +90,15 @@ export function ExpertiseContentPanel({
       <div className="space-y-6">
         {(expertise.cards || []).map((card, idx: number) => {
           const coverSlotKey = `expertise.${card.imageKey}`;
+          const defaultServiceImages: Record<string, string> = {
+            events: "/images/1.1.png",
+            exhibitions: "/images/1.2.png",
+            workshops: "/images/1.3.png",
+            activations: "/images/1.4.png",
+            consultancy: "/images/1.5.png",
+          };
           const coverImageSrc =
-            uploadedPreviews[coverSlotKey] || `/images/expertise-${card.imageKey}.jpg`;
+            uploadedPreviews[coverSlotKey] || defaultServiceImages[card.imageKey] || "/images/1.1.png";
 
           return (
             <div
