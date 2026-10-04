@@ -28,6 +28,18 @@ import { ClientInquiriesPanel } from "./ClientInquiriesPanel";
 import { StudioProfilePanel } from "./StudioProfilePanel";
 import { WebsiteContentPanel } from "./WebsiteContentPanel";
 import { ExpertiseContentPanel } from "./ExpertiseContentPanel";
+import { PortraitGalleryPanel } from "./PortraitGalleryPanel";
+import { PortraitPinEditorDialog } from "./PortraitPinEditorDialog";
+import {
+  type PortraitPin,
+  DEFAULT_PORTRAIT_PINS,
+} from "@/content/portrait-gallery";
+import {
+  upsertPortraitPinAction,
+  deletePortraitPinAction,
+  reorderPortraitPinsAction,
+  resetPortraitPinsToDefaultAction,
+} from "@/app/actions/portrait-gallery";
 import type { Editable, StudioMessage, StudioProject, StudioSection, StudioSite } from "./studio-types";
 import {
   Layers,
@@ -40,6 +52,7 @@ import {
   LogOut,
   ExternalLink,
   Sparkles,
+  GalleryVerticalEnd,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -50,6 +63,7 @@ interface StudioProps {
   initialProjects: StudioProject[];
   initialMessages: StudioMessage[];
   initialSite: StudioSite;
+  initialPortraitPins?: PortraitPin[];
 }
 
 export function InstagramStudioClient({
@@ -57,13 +71,17 @@ export function InstagramStudioClient({
   initialProjects,
   initialMessages,
   initialSite,
+  initialPortraitPins,
 }: StudioProps) {
   // Navigation
-  const [activeTab, setActiveTab] = useState<"content" | "expertise" | "portfolio" | "inbox" | "settings">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "expertise" | "portfolio" | "portrait" | "inbox" | "settings">("content");
 
   // Data State
   const [sections, setSections] = useState(initialSections);
   const [projects, setProjects] = useState(initialProjects);
+  const [portraitPins, setPortraitPins] = useState<PortraitPin[]>(
+    initialPortraitPins && initialPortraitPins.length > 0 ? initialPortraitPins : DEFAULT_PORTRAIT_PINS
+  );
   const [messages, setMessages] = useState(initialMessages);
   const [siteData, setSiteData] = useState(initialSite);
   const [selectedMessage, setSelectedMessage] = useState<StudioMessage | null>(initialMessages[0] || null);
@@ -79,6 +97,13 @@ export function InstagramStudioClient({
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isProjectSaving, setIsProjectSaving] = useState(false);
   const [projectError, setProjectError] = useState<string | null>(null);
+
+  // Portrait Gallery Action States
+  const [activePortraitPin, setActivePortraitPin] = useState<PortraitPin | null>(null);
+  const [isPortraitModalOpen, setIsPortraitModalOpen] = useState(false);
+  const [isPortraitSaving, setIsPortraitSaving] = useState(false);
+  const [portraitError, setPortraitError] = useState<string | null>(null);
+
   const [toast, setToast] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
   const unreadCount = messages.filter((m) => m.status === "unread").length;
@@ -419,6 +444,117 @@ export function InstagramStudioClient({
   };
 
   /* ------------------------------------------------------------------ */
+  /*  Portrait / Pinterest Gallery Handlers                             */
+  /* ------------------------------------------------------------------ */
+  const handleSavePortraitPin = async (formData: FormData) => {
+    setIsPortraitSaving(true);
+    setPortraitError(null);
+    try {
+      const res = await upsertPortraitPinAction(formData);
+      if (res.success && res.pin) {
+        const saved = res.pin;
+        setPortraitPins((prev) => {
+          const idx = prev.findIndex(
+            (p) =>
+              (saved._id && p._id && p._id === saved._id) ||
+              (saved.id && p.id && p.id === saved.id) ||
+              (activePortraitPin &&
+                ((activePortraitPin._id && p._id === activePortraitPin._id) ||
+                  (activePortraitPin.id && p.id === activePortraitPin.id)))
+          );
+          if (idx >= 0) {
+            const copy = [...prev];
+            copy[idx] = saved;
+            return copy;
+          }
+          return [...prev, saved];
+        });
+        broadcastLiveSync();
+        showToast(res.message || "Showcase saved successfully.");
+        setIsPortraitModalOpen(false);
+        setActivePortraitPin(null);
+      } else {
+        setPortraitError(res.message || "Could not save the showcase.");
+      }
+    } catch {
+      setPortraitError("An error occurred while saving the showcase.");
+    } finally {
+      setIsPortraitSaving(false);
+    }
+  };
+
+  const handleDeletePortraitPin = async (idOrMongoId: string) => {
+    if (!confirm("Are you sure you want to delete this portrait gallery showcase?")) {
+      return;
+    }
+    try {
+      const res = await deletePortraitPinAction(idOrMongoId);
+      if (res.success) {
+        setPortraitPins((prev) =>
+          prev.filter((p) => p.id !== idOrMongoId && p._id !== idOrMongoId)
+        );
+        broadcastLiveSync();
+        showToast("Showcase deleted.");
+      } else {
+        showToast(res.message || "Delete failed.", "error");
+      }
+    } catch {
+      showToast("Could not delete showcase.", "error");
+    }
+  };
+
+  const handleMovePortraitPin = async (
+    index: number,
+    direction: "up" | "down"
+  ) => {
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= portraitPins.length) return;
+
+    const copy = [...portraitPins];
+    const [moved] = copy.splice(index, 1);
+    copy.splice(targetIndex, 0, moved);
+    setPortraitPins(copy);
+
+    try {
+      const ids = copy
+        .map((p) => (p._id || p.id || "").toString())
+        .filter(Boolean);
+      const res = await reorderPortraitPinsAction(ids);
+      if (res.success) {
+        broadcastLiveSync();
+        showToast("✨ Showcase sequence updated on experiences page.");
+      } else {
+        showToast(res.message || "Failed to update order.", "error");
+      }
+    } catch {
+      showToast("Failed to reorder showcases.", "error");
+    }
+  };
+
+  const handleResetPortraitPins = async () => {
+    if (
+      !confirm(
+        "Reset all gallery showcases back to the verified default 12 items? Any custom changes will be restored to defaults."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const res = await resetPortraitPinsToDefaultAction();
+      if (res.success && res.pins) {
+        setPortraitPins(res.pins);
+        broadcastLiveSync();
+        showToast("✨ Restored to verified default 12 showcases.");
+      } else {
+        showToast(res.message || "Failed to reset.", "error");
+      }
+    } catch {
+      showToast("Failed to reset showcases.", "error");
+    }
+  };
+
+  /* ------------------------------------------------------------------ */
   /*  Messages                                                          */
   /* ------------------------------------------------------------------ */
   const handleToggleRead = async (id: string, status: string) => {
@@ -586,6 +722,7 @@ export function InstagramStudioClient({
                 { id: "content", label: "Website Content", icon: Layers, desc: "Hero & Story" },
                 { id: "expertise", label: "Expertise Pages", icon: Grid, desc: "Services & inner pages" },
                 { id: "portfolio", label: "Portfolio Grid", icon: Grid, desc: "Experience showcases" },
+                { id: "portrait", label: "Portrait Gallery", icon: GalleryVerticalEnd, desc: "Pinterest visual dossier" },
                 { id: "inbox", label: "Client Inquiries", icon: MessageSquare, badge: unreadCount, desc: "Direct client inquiries" },
                 { id: "settings", label: "Studio Profile", icon: Settings, desc: "Contact & address" },
               ] as const).map((tab) => {
@@ -733,6 +870,26 @@ export function InstagramStudioClient({
               </div>
             )}
 
+            {/* ──────────────────────────────────────────────────── */}
+            {/* TAB 2.5: PORTRAIT & PINTEREST GALLERY                */}
+            {/* ──────────────────────────────────────────────────── */}
+            <PortraitGalleryPanel
+              active={activeTab === "portrait"}
+              pins={portraitPins}
+              onAddPin={() => {
+                setActivePortraitPin(null);
+                setPortraitError(null);
+                setIsPortraitModalOpen(true);
+              }}
+              onEditPin={(pin) => {
+                setActivePortraitPin(pin);
+                setPortraitError(null);
+                setIsPortraitModalOpen(true);
+              }}
+              onDeletePin={handleDeletePortraitPin}
+              onMovePin={handleMovePortraitPin}
+              onResetDefaults={handleResetPortraitPins}
+            />
 
             {/* ──────────────────────────────────────────────────── */}
             {/* TAB 3: CLIENT INQUIRIES                              */}
@@ -793,6 +950,22 @@ export function InstagramStudioClient({
             setProjectError(null);
           }}
           onSubmit={handleSaveProject}
+        />
+      )}
+
+      {isPortraitModalOpen && (
+        <PortraitPinEditorDialog
+          key={activePortraitPin?._id || activePortraitPin?.id || "new-portrait-pin"}
+          pin={activePortraitPin}
+          saving={isPortraitSaving}
+          errorMessage={portraitError}
+          onClose={() => {
+            if (isPortraitSaving) return;
+            setIsPortraitModalOpen(false);
+            setActivePortraitPin(null);
+            setPortraitError(null);
+          }}
+          onSubmit={handleSavePortraitPin}
         />
       )}
     </div>

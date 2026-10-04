@@ -50,10 +50,9 @@ function useSmoothCountUp(delay = 0, triggerKey = 0) {
   const [isTick, setIsTick] = useState(false);
 
   useEffect(() => {
-    setCount("00");
-
     // Deceleration intervals: 110ms -> 150ms -> 210ms -> 290ms -> 400ms
     const steps = [
+      { val: "00", time: 0 },
       { val: "01", time: delay + 110 },
       { val: "02", time: delay + 260 },
       { val: "03", time: delay + 470 },
@@ -64,8 +63,10 @@ function useSmoothCountUp(delay = 0, triggerKey = 0) {
     const timeouts = steps.map(({ val, time }) =>
       setTimeout(() => {
         setCount(val);
-        setIsTick(true);
-        setTimeout(() => setIsTick(false), 140);
+        if (val !== "00") {
+          setIsTick(true);
+          setTimeout(() => setIsTick(false), 140);
+        }
       }, time)
     );
 
@@ -88,9 +89,11 @@ function useYearReveal(triggerKey = 0) {
   const [isTick7, setIsTick7] = useState(false);
 
   useEffect(() => {
-    setShow20(false);
-    setShow1(false);
-    setDigit7("0");
+    const tReset = setTimeout(() => {
+      setShow20(false);
+      setShow1(false);
+      setDigit7("0");
+    }, 0);
 
     const t1 = setTimeout(() => setShow20(true), 60);
     const t2 = setTimeout(() => setShow1(true), 200);
@@ -112,6 +115,7 @@ function useYearReveal(triggerKey = 0) {
     );
 
     return () => {
+      clearTimeout(tReset);
       clearTimeout(t1);
       clearTimeout(t2);
       timeouts7.forEach(clearTimeout);
@@ -128,12 +132,11 @@ function useDubaiReveal(triggerKey = 0) {
   const [text, setText] = useState("");
 
   useEffect(() => {
-    setText("");
-    const sequence = ["D", "DU", "DUB", "DUBA", "DUBAI"];
+    const sequence = ["", "D", "DU", "DUB", "DUBA", "DUBAI"];
     const timeouts = sequence.map((str, i) =>
       setTimeout(() => {
         setText(str);
-      }, 140 + i * 90)
+      }, i === 0 ? 0 : 140 + (i - 1) * 90)
     );
 
     return () => timeouts.forEach(clearTimeout);

@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ArrowDown } from "lucide-react";
 import { BackButton } from "@/components/common/BackButton";

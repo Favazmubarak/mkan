@@ -6,15 +6,20 @@ import { ExperiencePhilosophy } from "./ExperiencePhilosophy";
 import { ExperienceMethodFlow } from "./ExperienceMethodFlow";
 import { ExperienceBeyond } from "./ExperienceBeyond";
 import { InnerContact } from "@/components/common/InnerContact";
+import type { PortraitPin } from "@/content/portrait-gallery";
 
-export function ExperiencesPageClient() {
+interface ExperiencesPageClientProps {
+  initialPins?: PortraitPin[];
+}
+
+export function ExperiencesPageClient({ initialPins }: ExperiencesPageClientProps = {}) {
   return (
     <main className="bg-[#20040D] min-h-screen text-[#FAF3EE] overflow-x-hidden selection:bg-[#DDB78A] selection:text-[#20040D]">
       {/* 01: Single-Page View Cinematic Opening (Unified Hero + Mechanical Numbers Dock) */}
       <ExperienceHero />
 
       {/* 02: Pinterest-Style Masonry Gallery & Visual Dossier */}
-      <ExperiencePinterestGallery />
+      <ExperiencePinterestGallery initialPins={initialPins} />
 
       {/* 03: The MKAN Approach & Philosophy (Purpose, Precision, Strategy) */}
       <ExperiencePhilosophy />

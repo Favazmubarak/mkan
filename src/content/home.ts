@@ -17,7 +17,7 @@ export const homeContent = {
       "Events, exhibitions, workshops, activations and strategic consultancy.",
     ctaPrimary: {
       label: "Explore Our Work",
-      href: "#experiences",
+      href: "/experiences",
     },
     ctaSecondary: {
       label: "Let's Create Together",
@@ -38,7 +38,7 @@ export const homeContent = {
     ],
     cta: {
       label: "Our Approach",
-      href: "#method",
+      href: "/approach",
     },
     stats: [
       { value: "2017", label: "ESTABLISHED" },

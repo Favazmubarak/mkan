@@ -62,7 +62,7 @@ export function ExperienceBeyond() {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
 
-  const startTimeRef = useRef<number>(Date.now());
+  const startTimeRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
 
   const activeIdx = hoveredIdx !== null ? hoveredIdx : currentIdx;
@@ -70,21 +70,22 @@ export function ExperienceBeyond() {
   const nextPillar = useCallback(() => {
     setCurrentIdx((prev) => (prev + 1) % PILLARS.length);
     setProgress(0);
-    startTimeRef.current = Date.now();
+    startTimeRef.current = typeof performance !== "undefined" ? performance.now() : 0;
   }, []);
 
-  const selectPillar = (idx: number) => {
+  const selectPillar = useCallback((idx: number) => {
     setCurrentIdx(idx);
     setProgress(0);
-    startTimeRef.current = Date.now();
-  };
+    startTimeRef.current = typeof performance !== "undefined" ? performance.now() : 0;
+  }, []);
 
-  // High-precision sub-millisecond continuous smooth progress animation (Always runs smoothly)
+  // High-precision continuous smooth progress animation
   useEffect(() => {
-    startTimeRef.current = Date.now() - (progress / 100) * AUTO_INTERVAL_MS;
+    const baseNow = performance.now();
+    startTimeRef.current = baseNow - (progress / 100) * AUTO_INTERVAL_MS;
 
-    const tick = () => {
-      const elapsed = Date.now() - startTimeRef.current;
+    const tick = (now: number) => {
+      const elapsed = now - startTimeRef.current;
       const currentProgress = Math.min(100, (elapsed / AUTO_INTERVAL_MS) * 100);
       setProgress(currentProgress);
 

@@ -35,7 +35,7 @@ export const site = {
     { label: "Services", href: "/expertise" },
     { label: "Experiences", href: "/experiences" },
     { label: "Approach", href: "/approach" },
-    { label: "Clients", href: "/experiences#clients" },
+    { label: "Clients", href: "#clients" },
     { label: "Contact", href: "#contact" },
   ],
 
@@ -54,7 +54,7 @@ export const site = {
       { label: "Services", href: "/expertise" },
       { label: "Experiences", href: "/experiences" },
       { label: "Approach", href: "/approach" },
-      { label: "Clients", href: "/experiences#clients" },
+      { label: "Clients", href: "#clients" },
       { label: "Contact", href: "#contact" },
     ],
   },

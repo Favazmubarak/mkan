@@ -33,7 +33,7 @@ export function ExperienceHero() {
       </div>
 
       {/* Top Header & Navigation Zone */}
-      <div className="relative z-10 px-6 sm:px-10 lg:px-16 pt-20 sm:pt-22 lg:pt-24">
+      <div className="relative z-10 px-6 sm:px-10 lg:px-16 pt-28 sm:pt-32 lg:pt-32">
         <div className="mx-auto w-full max-w-[1400px]">
           <div className="flex flex-wrap items-center gap-3 lux-hero-eyebrow">
             <BackButton fallbackHref="/" />

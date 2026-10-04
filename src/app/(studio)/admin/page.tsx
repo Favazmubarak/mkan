@@ -6,6 +6,8 @@ import { site } from "@/content/site";
 import { homeContent } from "@/content/home";
 import { InstagramStudioClient } from "@/components/admin/InstagramStudioClient";
 import type { StudioSite } from "@/components/admin/studio-types";
+import { getPortraitPinsAction } from "@/app/actions/portrait-gallery";
+import type { PortraitPin as PortraitPinType } from "@/content/portrait-gallery";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +61,13 @@ export default async function AdminDashboardPage() {
     sortOrder: idx,
   }));
   let messages: AdminMessage[] = [];
+  let portraitPins: PortraitPinType[] = [];
+
+  try {
+    portraitPins = await getPortraitPinsAction();
+  } catch (e) {
+    console.warn("[Admin Page Portrait Pins Load]", e);
+  }
 
   try {
     const dbSections = await SiteSection.find({ locale: "en" }).lean();
@@ -111,6 +120,7 @@ export default async function AdminDashboardPage() {
       initialProjects={projects}
       initialMessages={messages}
       initialSite={siteData as unknown as StudioSite}
+      initialPortraitPins={portraitPins}
     />
   );
 }

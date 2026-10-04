@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getLiveSiteContent } from "@/lib/content";
 import { site as defaultSite } from "@/content/site";
 import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { ApproachPageClient } from "@/components/approach/ApproachPageClient";
 
@@ -104,6 +105,7 @@ export default async function ApproachPage() {
         <ApproachPageClient site={site} assets={assets} />
       </main>
       <ScrollToTop />
+      <Footer site={site} />
     </>
   );
 }

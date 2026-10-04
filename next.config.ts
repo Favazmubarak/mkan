@@ -32,6 +32,15 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     remotePatterns: getRemotePatterns(),
   },
+  async redirects() {
+    return [
+      {
+        source: "/services",
+        destination: "/expertise",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

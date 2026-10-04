@@ -271,18 +271,28 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
 
           {/* Navigation Links */}
           <ul className="flex flex-col gap-6 py-8">
-            {site.nav.map((item) => (
-              <li key={item.label}>
-                <a
-                  href={item.href}
-                  aria-current={activeSection === item.href.replace("#", "") ? "location" : undefined}
-                  onClick={(e) => handleScrollTo(e, item.href)}
-                  className="block rounded font-display text-3xl font-light text-cream/90 transition-colors hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
+            {site.nav.map((item) => {
+              const targetSection = item.href.replace("#", "").replace("/", "");
+              const isActive =
+                pathname === item.href ||
+                (item.href.startsWith("/") && pathname.startsWith(item.href)) ||
+                (pathname === "/" && activeSection === targetSection);
+
+              return (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    aria-current={isActive ? "location" : undefined}
+                    onClick={(e) => handleScrollTo(e, item.href)}
+                    className={`block rounded font-display text-3xl font-light transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+                      isActive ? "text-gold font-normal" : "text-cream/90 hover:text-gold"
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
 
           {/* Bottom Drawer CTA & Coordinates */}

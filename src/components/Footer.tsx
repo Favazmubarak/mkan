@@ -17,6 +17,12 @@ export function Footer({ site = defaultSite }: FooterProps) {
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+
+    if (href.startsWith("/")) {
+      router.push(href);
+      return;
+    }
+
     if (pathname === "/" || pathname === "") {
       scrollToElementCenter(href, 1400, href);
     } else {
@@ -68,13 +74,19 @@ export function Footer({ site = defaultSite }: FooterProps) {
           <div className="flex flex-col max-w-lg">
             {/* Logo & Scroll to Top button */}
             <div className="flex items-center justify-between">
-              <button
-                onClick={scrollToTop}
+              <Link
+                href="/"
+                onClick={(e) => {
+                  if (pathname === "/" || pathname === "") {
+                    e.preventDefault();
+                    scrollToTop();
+                  }
+                }}
                 className="group flex items-center text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold cursor-pointer transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
-                aria-label="MKAN Concept - Scroll to top"
+                aria-label="MKAN Concept - Home"
               >
                 <Logo className="h-9 sm:h-10 lg:h-11 w-auto" />
-              </button>
+              </Link>
 
               {/* Mobile Dedicated Elevator Pill (visible on mobile only) */}
               <button

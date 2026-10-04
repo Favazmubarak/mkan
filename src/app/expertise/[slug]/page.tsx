@@ -3,10 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { getLiveSiteContent } from "@/lib/content";
 import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { InnerContact } from "@/components/common/InnerContact";
 import { BackButton } from "@/components/common/BackButton";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 interface ExpertisePageProps {
   params: Promise<{ slug: string }>;
@@ -196,6 +197,7 @@ export default async function ExpertiseDetailsPage({ params }: ExpertisePageProp
         </div>
       </main>
       <ScrollToTop />
+      <Footer site={site} />
     </>
   );
 }

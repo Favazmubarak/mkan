@@ -94,7 +94,7 @@ export function ExperienceMethodFlow() {
   const [isFading, setIsFading] = useState(false);
 
   const activeStage = STAGES[activeIdx];
-  const startTimeRef = useRef<number>(Date.now());
+  const startTimeRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
 
   const transitionTo = useCallback((nextIdx: number) => {
@@ -104,7 +104,7 @@ export function ExperienceMethodFlow() {
       setIsFading(false);
     }, 180);
     setProgress(0);
-    startTimeRef.current = Date.now();
+    startTimeRef.current = typeof performance !== "undefined" ? performance.now() : 0;
   }, []);
 
   const nextStage = useCallback(() => {
@@ -122,12 +122,13 @@ export function ExperienceMethodFlow() {
     transitionTo(idx);
   };
 
-  // High-precision continuous smooth progress bar tick (always running smoothly)
+  // High-precision continuous smooth progress bar tick
   useEffect(() => {
-    startTimeRef.current = Date.now() - (progress / 100) * AUTO_INTERVAL_MS;
+    const baseNow = performance.now();
+    startTimeRef.current = baseNow - (progress / 100) * AUTO_INTERVAL_MS;
 
-    const tick = () => {
-      const elapsed = Date.now() - startTimeRef.current;
+    const tick = (now: number) => {
+      const elapsed = now - startTimeRef.current;
       const currentProgress = Math.min(100, (elapsed / AUTO_INTERVAL_MS) * 100);
       setProgress(currentProgress);
 

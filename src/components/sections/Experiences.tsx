@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { homeContent } from "@/content/home";
 import { assets as defaultAssets } from "@/config/assets";
 
@@ -31,7 +30,6 @@ export function Experiences({
   data = homeContent.experiences,
   assets = defaultAssets,
 }: ExperiencesProps) {
-  const router = useRouter();
   const experiences = data;
 
   const viewAllHref = "/experiences";

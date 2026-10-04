@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ArrowUpRight, CheckCircle2, Sparkles, Layers, ChevronRight } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Layers, ChevronRight } from "lucide-react";
 
 const PHASES = [
   {

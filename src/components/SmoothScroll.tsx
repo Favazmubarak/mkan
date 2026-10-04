@@ -71,6 +71,20 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       }
     };
 
+    // Handle initial URL hash on mount (e.g. arriving from /#clients)
+    if (typeof window !== "undefined" && window.location.hash) {
+      const hash = window.location.hash;
+      const targetId = hash.replace("#", "");
+      if (targetId && targetId !== "home" && targetId !== "top") {
+        setTimeout(() => {
+          const element = document.getElementById(targetId);
+          if (element) {
+            scrollToElementCenter(element, 1400, hash);
+          }
+        }, 350);
+      }
+    }
+
     document.addEventListener("click", handleGlobalClick, { capture: true });
 
     return () => {

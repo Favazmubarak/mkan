@@ -1,310 +1,63 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
-import { ArrowUpRight, X, Sparkles, MapPin, Calendar, Layers, CheckCircle2, SlidersHorizontal, Eye } from "lucide-react";
+import {
+  ArrowUpRight,
+  X,
+  Sparkles,
+  MapPin,
+  Calendar,
+  Layers,
+  CheckCircle2,
+  SlidersHorizontal,
+  Eye,
+} from "lucide-react";
+import {
+  type PortraitPin as PinterestPin,
+  DEFAULT_PORTRAIT_PINS,
+} from "@/content/portrait-gallery";
 
-export type PinterestPin = {
-  id: string;
-  title: string;
-  subtitle: string;
-  category: "exhibitions" | "activations" | "corporate" | "workshops" | "consultancy";
-  categoryLabel: string;
-  aspect: "tall" | "square" | "portrait" | "wide" | "cinema";
-  year: string;
-  location: string;
-  client: string;
-  image: string;
-  tags: string[];
-  summary: string;
-  overview: string;
-  disciplines: string[];
-  deliverables: string[];
-  impact: string;
-};
+export type { PinterestPin };
 
-const PINS: PinterestPin[] = [
-  {
-    id: "ramadan-fair",
-    title: "THE RAMADAN FAIR",
-    subtitle: "Flagship Cultural Retail & Architectural Pavilion",
-    category: "exhibitions",
-    categoryLabel: "Exhibitions",
-    aspect: "tall", // 3:4
-    year: "2024",
-    location: "Dubai, UAE",
-    client: "Curated Cultural Brands & Sovereign Partners",
-    image: "/images/2.1.png",
-    tags: ["Spatial Masterplanning", "Pavilion Design", "45+ Luxury Brands"],
-    summary: "A multi-day sovereign cultural exhibition bringing together elite regional designers, jewelers, and artisanal culinary houses in a bespoke architectural pavilion.",
-    overview: "MKAN conceptualized and produced the flagship Ramadan Fair, transforming a prime Dubai venue into an atmospheric sanctuary of heritage and contemporary luxury. The platform curated 45+ premier regional brands with seamless VIP guest journeys and private hospitality lounges.",
-    disciplines: ["Spatial Masterplanning", "Curation & Brand Vetting", "Architectural Scenography", "VIP Protocol"],
-    deliverables: [
-      "Custom architectural booth frameworks with gold-mesh acoustic treatments",
-      "Private VIP majlis reception for state dignitaries and patron families",
-      "Turnkey vendor management, lighting design, and live acoustic programming",
-      "Full digital guest accreditation and bespoke concierge registration system"
-    ],
-    impact: "Over 8,500 qualified high-net-worth visitors over 5 evenings, achieving 100% vendor satisfaction and extensive regional press coverage."
-  },
-  {
-    id: "luxury-brand-activation",
-    title: "HAUTE PARFUMERIE IMMERSION",
-    subtitle: "Sensory Retail Architecture & Olfactory Pavilions",
-    category: "activations",
-    categoryLabel: "Activations",
-    aspect: "portrait", // 4:5
-    year: "2024",
-    location: "Wasl / Downtown Dubai",
-    client: "Prestige Fragrance Maison",
-    image: "/images/2.2.png",
-    tags: ["Sensory Chambers", "Private VIP Salon", "Olfactory Design"],
-    summary: "An olfactory architectural pavilion featuring sensory tunnels, private fragrance profiling salons, and bespoke brass vitrines.",
-    overview: "Designed as an ephemeral sensory sanctuary, this activation invited collectors and media figures into a private realm of bespoke perfume creation. Every touchpoint, from the velvet-lined acoustic booths to the warm brass vitrines, was engineered for intimate high-value customer engagement.",
-    disciplines: ["Experiential Architecture", "Sensory Lighting Design", "Interactive Soundscapes", "Private VIP Booking"],
-    deliverables: [
-      "Modular acoustic scent chambers with micro-diffused fragrance zones",
-      "Integrated capacitive touch pedestals revealing ingredient provenance",
-      "Bespoke private consultation salon with customized champagne hospitality",
-      "Handcrafted takeaway presentation cases produced with Italian linen"
-    ],
-    impact: "Drove 3.4x average dwell time compared to traditional retail counters and generated record-breaking direct private client reservations."
-  },
-  {
-    id: "corporate-engagement",
-    title: "EXECUTIVE GALA & SUMMIT",
-    subtitle: "Sovereign Industrial Assembly & 8K Panoramic Scenography",
-    category: "corporate",
-    categoryLabel: "Corporate & Gov",
-    aspect: "wide", // 16:10
-    year: "2023",
-    location: "Abu Dhabi, UAE",
-    client: "Emirates Steel & Industrial Leaders",
-    image: "/images/2.3.png",
-    tags: ["Institutional Protocol", "600+ Dignitaries", "Panoramic LED"],
-    summary: "A high-precision corporate summit and gala evening uniting 600+ industrial leaders, government ministers, and international delegations.",
-    overview: "MKAN served as the turnkey lead agency responsible for scenic design, institutional protocol, AV engineering, and stage production. The evening celebrated milestone national industrial achievements within an ultra-refined, monolithic metallic environment.",
-    disciplines: ["Executive Show Direction", "Institutional Protocol", "Ultra-Wide LED Scenography", "Gala Dining Logistics"],
-    deliverables: [
-      "32-meter seamless curved 8K LED panoramic stage with bespoke motion content",
-      "Bespoke sculptural award statuettes crafted in brushed titanium and gold leaf",
-      "Full VVIP royal protocol seating arrangement, motorcade coordination, and security flow",
-      "Multi-camera live broadcast production with real-time multilingual interpretation"
-    ],
-    impact: "Flawless execution with zero protocol delays and 98% positive guest rating among attending sovereign and diplomatic dignitaries."
-  },
-  {
-    id: "private-vip-protocol",
-    title: "SOVEREIGN MAJLIS & RETREAT",
-    subtitle: "Discreet Ministerial Reception & Cultural Gathering",
-    category: "corporate",
-    categoryLabel: "Corporate & Gov",
-    aspect: "square", // 1:1
-    year: "2023",
-    location: "Dubai, UAE",
-    client: "Private Royal Office",
-    image: "/images/2.4.png",
-    tags: ["Royal Majlis", "Discreet Protocol", "Bespoke Hospitality"],
-    summary: "An exclusive private gathering executed under strict non-disclosure, combining traditional Emirati hospitality with contemporary spatial elegance.",
-    overview: "Crafted for an intimate assembly of global dignitaries, this private majlis balanced supreme discretion, cultural authenticity, and contemporary luxury design. Every element, from bespoke calligraphy installations to custom ambient scenting, was tailored to perfection.",
-    disciplines: ["Diplomatic Protocol", "Bespoke Hospitality Curation", "Acoustic Engineering", "Discreet On-Site Production"],
-    deliverables: [
-      "Custom handcrafted furnishings upholstered in natural raw silks and camel wool",
-      "Curated menu co-developed with Michelin-recognized regional culinary masters",
-      "Acoustically isolated private meeting enclaves with secured communications infrastructure",
-      "Turnkey staffing vetted through rigorous security and diplomatic protocol training"
-    ],
-    impact: "Uncompromised confidentiality, seamless hospitality flow, and commendation from the private royal office."
-  },
-  {
-    id: "cultural-pavilion",
-    title: "CONTEMPORARY HERITAGE PAVILION",
-    subtitle: "Public Architectural Canopy & Live Masterclass Atrium",
-    category: "exhibitions",
-    categoryLabel: "Exhibitions",
-    aspect: "tall", // 3:4
-    year: "2024",
-    location: "Al Fahidi / Dubai Creek",
-    client: "Dubai Culture & Arts Authority Partner",
-    image: "/images/1.1.png",
-    tags: ["Parametric Canopy", "Live Artisans", "Heritage Archive"],
-    summary: "An open-air architectural installation exploring Emirati craft through modern geometric arches and interactive craft workshops.",
-    overview: "Built using sustainable regional limestone, weathered brass, and woven palm fronds, this pavilion bridged ancient artisanal traditions with contemporary parametric architecture. The structure hosted live masterclasses led by master Emirati artisans.",
-    disciplines: ["Architectural Design", "Heritage Research", "Live Workshop Production", "Public Flow Management"],
-    deliverables: [
-      "Self-shading parametric wooden canopy designed for natural airflow and desert climate",
-      "Curated showcase vitrines featuring historical weaving and pearl-diving artifacts",
-      "Interactive 20-seat masterclass pavilion with live multi-angle display monitors",
-      "Bilingual publication catalog documenting featured master craftsmen"
-    ],
-    impact: "Welcomed over 14,000 public visitors and 1,200 workshop attendees over a two-week cultural festival."
-  },
-  {
-    id: "exhibition-masterplanning",
-    title: "CURATED TRADE & PUBLIC PAVILIONS",
-    subtitle: "Bespoke Spatial Circulation & Modular Architecture",
-    category: "exhibitions",
-    categoryLabel: "Exhibitions",
-    aspect: "wide", // 16:11
-    year: "2023",
-    location: "Dubai World Trade Centre",
-    client: "Regional Exhibition Organizers",
-    image: "/images/1.2.png",
-    tags: ["Booth Scenography", "Visitor Flow", "Modular Build"],
-    summary: "Transforming convention halls into curated sensory walkways with bespoke booth designs and directional lighting.",
-    overview: "MKAN engineers exhibition floors that maximize exhibitor prominence and visitor dwell times. By replacing standard shell-scheme corridors with fluid, architectural avenues, we deliver elevated commercial returns.",
-    disciplines: ["Floorplan Optimization", "Modular Fabrication", "Lighting Choreography", "Exhibitor Brand Guidelines"],
-    deliverables: [
-      "End-to-end master floor layout with wide architectural sightlines",
-      "Bespoke brand booth structures built with sustainable regional timber",
-      "Centralized media registration hub and VIP lounge pavilion",
-      "Comprehensive exhibitor onboarding kit and production oversight"
-    ],
-    impact: "Achieved a 40% increase in average visitor booth dwell time and superior exhibitor satisfaction index."
-  },
-  {
-    id: "creative-workshops",
-    title: "ARTISANAL LEARNING PLATFORMS",
-    subtitle: "Themed Masterclasses & Interactive Cohort Sessions",
-    category: "workshops",
-    categoryLabel: "Workshops",
-    aspect: "portrait", // 4:5
-    year: "2024",
-    location: "Wasl 51 Atelier, Dubai",
-    client: "Creative Institutions & Luxury Brands",
-    image: "/images/1.3.png",
-    tags: ["Hands-On Labs", "Master Craftsmen", "Intimate Cohorts"],
-    summary: "Structured creative platforms connecting master practitioners with aspiring regional designers and corporate teams.",
-    overview: "MKAN curates intimate learning environments designed for high focus and creative breakthroughs. From bespoke leatherworking masterclasses to fragrance formulation workshops, each session is meticulously equipped.",
-    disciplines: ["Curriculum Structuring", "Tooling & Material Procurement", "Studio Scenography", "Cohort Management"],
-    deliverables: [
-      "Customized craftsman workbenches equipped with bespoke tooling kits",
-      "Overhead high-definition multi-angle live demonstration streaming",
-      "Bilingual instructional booklets and certification certificates",
-      "Private catering and artisanal refreshment bar"
-    ],
-    impact: "Over 40 hosted workshop editions maintaining a 100% attendee recommendation rate."
-  },
-  {
-    id: "mall-activations",
-    title: "LUXURY ATRIUM POP-UP",
-    subtitle: "High-Dwell Experiential Architecture in Commercial Spaces",
-    category: "activations",
-    categoryLabel: "Activations",
-    aspect: "tall", // 3:4
-    year: "2024",
-    location: "Mall of the Emirates, Dubai",
-    client: "International Luxury Maison",
-    image: "/images/1.4.png",
-    tags: ["Atrium Installation", "Commercial Impact", "High Footfall"],
-    summary: "A high-visibility circular pop-up pavilion stopping mall foot traffic with interactive displays and private VIP fitting suites.",
-    overview: "Engineered for high-traffic retail environments, this installation balanced open public fascination with discreet, ultra-private VIP salons. High-gloss lacquer finishes and warm micro-spotlighting created an unmistakable beacon of luxury.",
-    disciplines: ["Retail Scenography", "Mall Management Coordination", "Rapid Nighttime Installation", "VIP Customer Capture"],
-    deliverables: [
-      "Zero-ground-anchorage freestanding structural pavilion complying with mall safety",
-      "Interactive digital product configurators with tactile swatch samples",
-      "Concealed private fitting and consultation suite with security access",
-      "Full post-campaign modular dismantling and material recycling"
-    ],
-    impact: "Generated over 45,000 public impressions over 10 days and exceeded quarterly regional boutique targets."
-  },
-  {
-    id: "strategic-consultancy",
-    title: "SPATIAL & BRAND ADVISORY",
-    subtitle: "6 Core Strategic Pillars from Inception to Blueprint",
-    category: "consultancy",
-    categoryLabel: "Consultancy",
-    aspect: "square", // 1:1
-    year: "2023–2024",
-    location: "Dubai & Abu Dhabi",
-    client: "Institutional & Private Enterprise Clients",
-    image: "/images/1.5.png",
-    tags: ["Concept Ideation", "Spatial Strategy", "Feasibility Studies"],
-    summary: "Strategic advisory services guiding government bodies, cultural foundations, and luxury brands from initial vision to operational blueprints.",
-    overview: "MKAN provides high-level consultancy before a single physical hammer is swung. We structure the business case, artistic vision, spatial floorplans, and vendor procurement frameworks for landmark projects.",
-    disciplines: ["Concept Ideation", "Thematic Narrative Planning", "Floor & Circulation Blueprints", "Operational Masterplanning"],
-    deliverables: [
-      "Comprehensive Experiential Masterplan Document (100+ pages)",
-      "3D volumetric massing models and circulation heatmaps",
-      "Vendor RFP packages, technical specifications, and budget models",
-      "Executive stakeholder alignment presentations"
-    ],
-    impact: "Successfully guided multi-million dirham public and private experiential developments across the UAE."
-  },
-  {
-    id: "method-concept-stage",
-    title: "STAGE 01 · STRATEGIC THESIS",
-    subtitle: "Concept Validation, Audience Psychology & Market Alignment",
-    category: "consultancy",
-    categoryLabel: "Consultancy",
-    aspect: "wide",
-    year: "2024",
-    location: "Wasl 51, Dubai",
-    client: "MKAN Proprietary Framework",
-    image: "/images/method-concept.jpg",
-    tags: ["MKAN Method", "Strategic Thesis", "Cultural Context"],
-    summary: "The foundational phase of every MKAN project, defining core brand narrative and preliminary spatial feasibility.",
-    overview: "We believe memorable experiences require strategic depth. Before designing aesthetics, we dissect client objectives, cultural resonance, and guest psychology to formulate an unshakeable experiential thesis.",
-    disciplines: ["Strategic Analysis", "Narrative Architecture", "Audience Profiling", "Feasibility Mapping"],
-    deliverables: [
-      "Experiential Objective Matrix",
-      "Core Thematic Narrative Document",
-      "Audience Persona Journey Maps",
-      "Budget & Timeline Framework"
-    ],
-    impact: "Establishes total alignment across executive leadership and creative stakeholders."
-  },
-  {
-    id: "method-development-stage",
-    title: "STAGE 02 · 3D SCENOGRAPHY",
-    subtitle: "Spatial Blueprints, Tactile Palettes & Sensory Lighting",
-    category: "exhibitions",
-    categoryLabel: "Exhibitions",
-    aspect: "tall",
-    year: "2024",
-    location: "MKAN Design Studio, Dubai",
-    client: "MKAN Atelier Production",
-    image: "/images/method-development.jpg",
-    tags: ["3D Blueprints", "Lighting Moods", "Circulation Flow"],
-    summary: "Translating narrative strategy into precise 3D architectural renderings, circulation paths, and tactile finishes.",
-    overview: "Every millimetre of guest space is choreographed in full 3D. We test lighting angles, acoustic reflections, and natural human movement pathways to ensure physical reality matches creative vision.",
-    disciplines: ["3D Spatial Modeling", "Sensory Lighting Design", "Material Curation", "Circulation Engineering"],
-    deliverables: [
-      "Photo-realistic 3D walkthrough renderings",
-      "Full architectural construction plans & elevation drawings",
-      "Tactile physical material moodboard samples",
-      "Electrical, AV & lighting schedule blueprints"
-    ],
-    impact: "Eliminates on-site design ambiguity and accelerates engineering compliance approvals."
-  },
-  {
-    id: "method-curation-stage",
-    title: "STAGE 03 · ARTISAN SELECTION",
-    subtitle: "Master Craftsmen, Elite Audio Engineering & Material Sourcing",
-    category: "workshops",
-    categoryLabel: "Workshops",
-    aspect: "portrait",
-    year: "2024",
-    location: "UAE & International Circuit",
-    client: "Vetted Artisan Network",
-    image: "/images/method-curation.jpg",
-    tags: ["Bespoke Procurement", "Master Artisans", "Quality Control"],
-    summary: "Procuring rare materials and commissioning elite fabricators, acoustic engineers, and culinary directors.",
-    overview: "True luxury is born of exceptional craftsmanship. MKAN maintains an exclusive roster of vetted master artisans across the Emirates and international luxury capitals to execute unique bespoke elements.",
-    disciplines: ["Artisan Commissioning", "Material Qualification", "Procurement Governance", "Cost Engineering"],
-    deliverables: [
-      "Vetted contractor and artisan contracts",
-      "Material quality laboratory certificates",
-      "Mock-up review and structural testing sign-offs",
-      "Guaranteed milestone delivery schedules"
-    ],
-    impact: "Guarantees uncompromising quality standards while safeguarding client budgets and deadlines."
-  }
-];
+interface ExperiencePinterestGalleryProps {
+  initialPins?: PinterestPin[];
+}
 
-export function ExperiencePinterestGallery() {
+export function ExperiencePinterestGallery({
+  initialPins,
+}: ExperiencePinterestGalleryProps = {}) {
+  const [pins, setPins] = useState<PinterestPin[]>(
+    initialPins && initialPins.length > 0 ? initialPins : DEFAULT_PORTRAIT_PINS
+  );
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [selectedPin, setSelectedPin] = useState<PinterestPin | null>(null);
+
+  // Live real-time sync with Admin Studio updates
+  useEffect(() => {
+    if (typeof window === "undefined" || !("BroadcastChannel" in window)) return;
+    const channel = new BroadcastChannel("mkan_live_sync");
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.data?.type === "CONTENT_UPDATED") {
+        try {
+          const { getPortraitPinsAction } = await import(
+            "@/app/actions/portrait-gallery"
+          );
+          const freshPins = await getPortraitPinsAction();
+          if (freshPins && freshPins.length > 0) {
+            setPins(freshPins);
+          }
+        } catch {
+          // ignore sync fetch errors
+        }
+      }
+    };
+    channel.addEventListener("message", handleMessage);
+    return () => {
+      channel.removeEventListener("message", handleMessage);
+      channel.close();
+    };
+  }, []);
 
   const categories = [
     { key: "all", label: "ALL WORKS" },
@@ -316,9 +69,9 @@ export function ExperiencePinterestGallery() {
   ];
 
   const filteredPins = useMemo(() => {
-    if (activeCategory === "all") return PINS;
-    return PINS.filter((pin) => pin.category === activeCategory);
-  }, [activeCategory]);
+    if (activeCategory === "all") return pins;
+    return pins.filter((pin) => pin.category === activeCategory);
+  }, [pins, activeCategory]);
 
   const getAspectClass = (aspect: PinterestPin["aspect"]) => {
     switch (aspect) {
@@ -436,7 +189,7 @@ export function ExperiencePinterestGallery() {
               <div className="p-4 sm:p-4.5 bg-white flex flex-col justify-between">
                 {/* Micro Tags */}
                 <div className="flex flex-wrap gap-1.5 mb-3">
-                  {pin.tags.slice(0, 3).map((tag, tIdx) => (
+                  {(pin.tags || []).slice(0, 3).map((tag, tIdx) => (
                     <span
                       key={tIdx}
                       className="px-2.5 py-0.5 rounded-sm bg-[#FAF6F0] border border-[#24040F]/8 text-[0.6rem] font-sans font-medium text-[#24040F]/70 uppercase tracking-wider"
@@ -544,7 +297,7 @@ export function ExperiencePinterestGallery() {
                   KEY SCOPE &amp; DELIVERABLES
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {selectedPin.deliverables.map((item, idx) => (
+                  {(selectedPin.deliverables || []).map((item, idx) => (
                     <div key={idx} className="flex items-start gap-2.5 text-xs font-sans text-[#24040F]/80">
                       <CheckCircle2 size={13} className="text-[#8A1435] shrink-0 mt-0.5" />
                       <span>{item}</span>
