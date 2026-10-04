@@ -148,6 +148,9 @@ export async function uploadMediaAction(
       .toBuffer();
     const blurDataURL = `data:image/webp;base64,${blurBuffer.toString("base64")}`;
 
+    // Check for existing asset on this slot to clean up storage
+    const existingAsset = await MediaAsset.findOne({ slotKey }).lean();
+
     const randomName = `${slotKey.replace(/[^a-zA-Z0-9]/g, "-")}-${crypto.randomBytes(8).toString("hex")}.webp`;
 
     let finalUrl = "";
@@ -161,7 +164,7 @@ export async function uploadMediaAction(
       process.env.R2_ENDPOINT &&
       process.env.R2_PUBLIC_DOMAIN
     ) {
-      const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
+      const { S3Client, PutObjectCommand, DeleteObjectCommand } = await import("@aws-sdk/client-s3");
       const s3 = new S3Client({
         region: "auto",
         endpoint: process.env.R2_ENDPOINT,
@@ -171,6 +174,7 @@ export async function uploadMediaAction(
         },
       });
 
+      // 1. Upload new optimized WebP to R2
       await s3.send(
         new PutObjectCommand({
           Bucket: process.env.R2_BUCKET_NAME,
@@ -181,6 +185,25 @@ export async function uploadMediaAction(
         })
       );
 
+      // 2. Automatically delete the previous R2 object for this slot to save storage space
+      if (
+        existingAsset?.storageProvider === "r2" &&
+        typeof existingAsset?.filename === "string" &&
+        existingAsset.filename &&
+        existingAsset.filename !== randomName
+      ) {
+        try {
+          await s3.send(
+            new DeleteObjectCommand({
+              Bucket: process.env.R2_BUCKET_NAME,
+              Key: `uploads/${existingAsset.filename}`,
+            })
+          );
+        } catch (cleanupErr) {
+          console.warn(`[R2 Storage Cleanup] Could not delete previous asset (${existingAsset.filename}):`, cleanupErr);
+        }
+      }
+
       finalUrl = `${process.env.R2_PUBLIC_DOMAIN.replace(/\/$/, "")}/uploads/${randomName}`;
       storageProvider = "r2";
     } else {
@@ -189,6 +212,18 @@ export async function uploadMediaAction(
       await fs.mkdir(uploadsDir, { recursive: true });
       const filePath = path.join(uploadsDir, randomName);
       await fs.writeFile(filePath, outputBuffer);
+
+      // Clean up previous local file if it exists
+      if (
+        existingAsset?.storageProvider === "local" &&
+        typeof existingAsset?.filename === "string" &&
+        existingAsset.filename &&
+        existingAsset.filename !== randomName
+      ) {
+        const oldPath = path.join(uploadsDir, existingAsset.filename);
+        fs.unlink(oldPath).catch(() => {});
+      }
+
       finalUrl = `/uploads/${randomName}`;
       storageProvider = "local";
     }
@@ -244,7 +279,7 @@ export async function deleteMediaSlotAction(
 }
 
 /**
- * Restores a slot to its default theme seed image asset.
+ * Restores a slot to its default theme seed image asset and deletes custom uploaded files.
  */
 export async function resetSlotToDefaultAction(
   slotKey: string
@@ -256,6 +291,42 @@ export async function resetSlotToDefaultAction(
     }
     const db = await connectToDatabase();
     if (!db) return { success: false, message: "Media storage is temporarily unavailable." };
+
+    const existingAsset = await MediaAsset.findOne({ slotKey }).lean();
+
+    // If existing asset is in R2, delete it to free space
+    if (
+      existingAsset?.storageProvider === "r2" &&
+      typeof existingAsset?.filename === "string" &&
+      existingAsset.filename &&
+      process.env.R2_BUCKET_NAME &&
+      process.env.R2_ACCESS_KEY_ID &&
+      process.env.R2_SECRET_ACCESS_KEY &&
+      process.env.R2_ENDPOINT
+    ) {
+      try {
+        const { S3Client, DeleteObjectCommand } = await import("@aws-sdk/client-s3");
+        const s3 = new S3Client({
+          region: "auto",
+          endpoint: process.env.R2_ENDPOINT,
+          credentials: {
+            accessKeyId: process.env.R2_ACCESS_KEY_ID,
+            secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+          },
+        });
+        await s3.send(
+          new DeleteObjectCommand({
+            Bucket: process.env.R2_BUCKET_NAME,
+            Key: `uploads/${existingAsset.filename}`,
+          })
+        );
+      } catch (cleanupErr) {
+        console.warn(`[R2 Storage Cleanup] Could not delete reset asset:`, cleanupErr);
+      }
+    } else if (existingAsset?.storageProvider === "local" && typeof existingAsset?.filename === "string") {
+      const oldPath = path.join(process.cwd(), "public", "uploads", existingAsset.filename);
+      fs.unlink(oldPath).catch(() => {});
+    }
 
     await MediaAsset.findOneAndDelete({ slotKey });
     touchContentVersion();
