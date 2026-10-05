@@ -8,7 +8,7 @@ import { ExpertisePageClient } from "@/components/expertise/ExpertisePageClient"
 
 export async function generateMetadata(): Promise<Metadata> {
   const { site } = await getLiveSiteContent("en");
-  const title = `Our Expertise | ${site.name} — Luxury Exhibitions & Curated Experiences`;
+  const title = "Our Expertise — Luxury Exhibitions & Curated Experiences";
   const description =
     "Explore MKAN Concept's comprehensive expertise across corporate & institutional events, curated exhibitions, creative workshops, luxury brand activations, and strategic consultancy in Dubai & UAE.";
 

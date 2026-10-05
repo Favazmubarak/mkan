@@ -8,7 +8,7 @@ import { ApproachPageClient } from "@/components/approach/ApproachPageClient";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { site } = await getLiveSiteContent("en");
-  const title = `Our Approach | ${site.name} — The MKAN Execution Method`;
+  const title = "Our Approach — The MKAN Execution Method";
   const description =
     "Explore the proprietary five-stage MKAN Method: from market positioning and 3D architectural scenography to luxury curation, 24/7 turnkey production, and post-event intelligence in Dubai & UAE.";
 

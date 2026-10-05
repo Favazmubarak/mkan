@@ -35,8 +35,8 @@ export async function generateMetadata({ params }: ExpertisePageProps): Promise<
   });
 
   const title = card
-    ? `${card.title} | ${site.name} — Luxury Experiential Design`
-    : `Our Capabilities | ${site.name}`;
+    ? `${card.title} — Luxury Experiential Design`
+    : "Our Capabilities";
   const description =
     card?.description ||
     `Explore bespoke ${slug} solutions curated by MKAN Concept in Dubai and across the UAE.`;

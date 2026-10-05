@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { site } = await getLiveSiteContent("en");
-  const title = `Selected Experiences & Portfolio | ${site.name} Dubai`;
+  const title = "Selected Experiences & Curated Portfolio";
   const description =
     "Explore MKAN Concept's portfolio of curated exhibitions, luxury brand activations, high-level corporate events, and VIP royal protocols in Dubai and the UAE.";
   const canonicalUrl = `${site.domain || defaultSite.domain}/experiences`;
