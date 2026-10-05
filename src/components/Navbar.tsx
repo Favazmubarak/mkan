@@ -1,7 +1,7 @@
 "use client";
 
 import { site as defaultSite } from "@/content/site";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { scrollToElementCenter } from "@/lib/cinematic-scroll";
@@ -17,6 +17,19 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
   const [activeSection, setActiveSection] = useState("home");
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  const closeMobileMenu = useCallback(() => {
+    setMobileOpen(false);
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "";
+    }
+  }, []);
+
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setMobileOpen(false);
+  }
 
   // Prevent background scrolling when mobile menu is open
   useEffect(() => {
@@ -100,20 +113,28 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    setMobileOpen(false);
+    closeMobileMenu();
 
     if (href.startsWith("/")) {
+      if (pathname === href) {
+        scrollToElementCenter("#top", 1000);
+        return;
+      }
       router.push(href);
       return;
     }
 
     if (pathname === "/" || pathname === "") {
-      scrollToElementCenter(href, 1400, href);
+      setTimeout(() => {
+        scrollToElementCenter(href, 1400, href);
+      }, 50);
     } else {
       const targetId = href.replace("#", "");
       const localEl = targetId ? document.getElementById(targetId) : null;
       if (localEl) {
-        scrollToElementCenter(href, 1200, href);
+        setTimeout(() => {
+          scrollToElementCenter(href, 1200, href);
+        }, 50);
       } else {
         if (href === "#home" || href === "#") {
           router.push("/");
@@ -235,20 +256,26 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
           role="dialog"
           aria-modal="true"
           aria-label="Mobile Navigation"
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest("a, button")) {
+              closeMobileMenu();
+            }
+          }}
         >
           {/* Top Bar inside Overlay */}
           <div className="flex items-center justify-between border-b border-cream/10 pb-6">
             <a
               href="#home"
               onClick={(e) => handleScrollTo(e, "#home")}
-              className="flex items-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+              className="flex items-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer"
               aria-label="MKAN Concept Home"
             >
               <Logo className="h-9 w-auto" />
             </a>
             <button
               type="button"
-              onClick={() => setMobileOpen(false)}
+              onClick={closeMobileMenu}
               aria-label="Close menu"
               className="rounded p-2 text-cream hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer"
             >
@@ -284,7 +311,7 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
                     href={item.href}
                     aria-current={isActive ? "location" : undefined}
                     onClick={(e) => handleScrollTo(e, item.href)}
-                    className={`block rounded font-display text-3xl font-light transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+                    className={`block rounded font-display text-3xl font-light transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer ${
                       isActive ? "text-gold font-normal" : "text-cream/90 hover:text-gold"
                     }`}
                   >
@@ -300,7 +327,7 @@ export function Navbar({ site = defaultSite }: NavbarProps) {
             <a
               href={site.cta.href}
               onClick={(e) => handleScrollTo(e, site.cta.href)}
-              className="flex items-center justify-between border border-gold/70 px-6 py-3.5 text-xs font-sans font-medium tracking-[0.2em] uppercase text-cream transition-colors hover:bg-gold/10 hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+              className="flex items-center justify-between border border-gold/70 px-6 py-3.5 text-xs font-sans font-medium tracking-[0.2em] uppercase text-cream transition-colors hover:bg-gold/10 hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold cursor-pointer"
             >
               <span>{site.cta.label}</span>
               <span>→</span>

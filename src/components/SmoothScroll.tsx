@@ -45,6 +45,9 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       const anchor = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[href*="#"]');
       if (!anchor) return;
 
+      // Do not intercept links inside the mobile navigation overlay — Navbar handles closing & scrolling
+      if (anchor.closest("#mkan-mobile-navigation")) return;
+
       const href = anchor.getAttribute("href");
       if (!href) return;
 
@@ -57,7 +60,6 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       const hash = href.slice(hashIdx);
       if (hash === "#" || hash === "#home" || hash === "#top") {
         event.preventDefault();
-        event.stopPropagation();
         scrollToElementCenter("#home", 1400, " ");
         return;
       }
@@ -66,7 +68,6 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       const element = document.getElementById(targetId);
       if (element) {
         event.preventDefault();
-        event.stopPropagation();
         scrollToElementCenter(element, 1400, hash);
       }
     };
@@ -85,10 +86,10 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       }
     }
 
-    document.addEventListener("click", handleGlobalClick, { capture: true });
+    document.addEventListener("click", handleGlobalClick);
 
     return () => {
-      document.removeEventListener("click", handleGlobalClick, { capture: true });
+      document.removeEventListener("click", handleGlobalClick);
       if (rafId) cancelAnimationFrame(rafId);
       if (lenis) {
         lenis.destroy();
