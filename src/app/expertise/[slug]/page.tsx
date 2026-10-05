@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,6 +22,68 @@ export async function generateStaticParams() {
     { slug: "activations" },
     { slug: "consultancy" },
   ];
+}
+
+export async function generateMetadata({ params }: ExpertisePageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const { site, home, assets } = await getLiveSiteContent("en");
+
+  const cards = home.expertise?.cards || [];
+  const card = cards.find((c) => {
+    const cardSlug = c.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    return cardSlug === slug;
+  });
+
+  const title = card
+    ? `${card.title} | ${site.name} — Luxury Experiential Design`
+    : `Our Capabilities | ${site.name}`;
+  const description =
+    card?.description ||
+    `Explore bespoke ${slug} solutions curated by MKAN Concept in Dubai and across the UAE.`;
+  const canonicalUrl = `${site.domain}/expertise/${slug}`;
+
+  const imageMap: Record<string, string> = {
+    events: assets.expertise?.events?.src || "/images/1.1.png",
+    exhibitions: assets.expertise?.exhibitions?.src || "/images/1.2.png",
+    workshops: assets.expertise?.workshops?.src || "/images/1.3.png",
+    activations: assets.expertise?.activations?.src || "/images/1.4.png",
+    consultancy: assets.expertise?.consultancy?.src || "/images/1.5.png",
+  };
+  const imgUrl = `${site.domain}${imageMap[slug] || "/images/Hero1.png"}`;
+
+  return {
+    metadataBase: new URL(site.domain),
+    title,
+    description,
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      siteName: site.name,
+      locale: "en_AE",
+      type: "website",
+      images: [
+        {
+          url: imgUrl,
+          width: 1200,
+          height: 630,
+          alt: card?.title || site.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imgUrl],
+    },
+    robots: { index: true, follow: true },
+  };
+}
+
+function serializeJsonLd(value: Record<string, unknown>): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
 export default async function ExpertiseDetailsPage({ params }: ExpertisePageProps) {
@@ -59,8 +122,57 @@ export default async function ExpertiseDetailsPage({ params }: ExpertisePageProp
     ? card.items
     : card.description.split("\n").filter(Boolean);
 
+  const serviceDetailJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: card.title,
+    description: card.description,
+    provider: {
+      "@type": "Organization",
+      name: site.name,
+      url: site.domain,
+    },
+    areaServed: {
+      "@type": "Country",
+      name: "United Arab Emirates",
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: site.domain,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Our Expertise",
+        item: `${site.domain}/expertise`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: card.title,
+        item: `${site.domain}/expertise/${slug}`,
+      },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(serviceDetailJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
+      />
       <Navbar site={site} />
       <main className="min-h-screen bg-[#16030C] text-[#F5EEE6]">
         {/* Header/Hero Section with Mandatory First Image */}

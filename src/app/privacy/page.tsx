@@ -3,9 +3,18 @@ import Link from "next/link";
 import { site } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Privacy Notice",
+  title: "Privacy Notice | MKAN Concept",
   description: "How MKAN Concept uses and retains information submitted through its inquiry form.",
   alternates: { canonical: "/privacy" },
+  openGraph: {
+    title: "Privacy Notice | MKAN Concept",
+    description: "How MKAN Concept uses and retains information submitted through its inquiry form.",
+    url: `${site.domain}/privacy`,
+    siteName: site.name,
+    locale: "en_AE",
+    type: "website",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function PrivacyPage() {

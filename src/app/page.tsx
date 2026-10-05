@@ -32,13 +32,20 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: site.name,
       locale: "en_AE",
       type: "website",
-      images: [`${site.domain || defaultSite.domain}/images/hero-bg.jpg`],
+      images: [
+        {
+          url: `${site.domain || defaultSite.domain}/images/Hero1.png`,
+          width: 1200,
+          height: 630,
+          alt: `${site.name} — ${site.tagline}`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description: site.description,
-      images: [`${site.domain || defaultSite.domain}/images/hero-bg.jpg`],
+      images: [`${site.domain || defaultSite.domain}/images/Hero1.png`],
     },
     robots: { index: true, follow: true },
   };
@@ -50,20 +57,39 @@ function serializeJsonLd(value: Record<string, unknown>): string {
 
 export default async function HomePage() {
   const { site, home, assets } = await getLiveSiteContent("en");
+
   const organizationJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": ["Organization", "ProfessionalService"],
     name: site.name,
     legalName: site.legalName,
     url: site.domain,
     logo: `${site.domain}/images/mkan-logo.svg`,
+    image: `${site.domain}/images/Hero1.png`,
     description: site.description,
+    priceRange: "$$$$",
+    areaServed: ["United Arab Emirates", "Dubai", "Abu Dhabi", "GCC"],
     address: {
       "@type": "PostalAddress",
       streetAddress: site.contact.location,
       addressLocality: site.contact.city || "Dubai",
-      addressCountry: site.contact.country || "AE",
+      addressRegion: "Dubai",
+      postalCode: "00000",
+      addressCountry: "AE",
     },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 25.2155,
+      longitude: 55.2589,
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "09:00",
+        closes: "18:00",
+      },
+    ],
     contactPoint: {
       "@type": "ContactPoint",
       telephone: site.contact.phone,
@@ -74,12 +100,28 @@ export default async function HomePage() {
     sameAs: [site.contact.instagramUrl, site.contact.linkedinUrl].filter(Boolean),
   };
 
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: site.name,
+    url: site.domain,
+    description: site.description,
+    publisher: {
+      "@type": "Organization",
+      name: site.name,
+    },
+  };
+
   return (
     <>
       <PageLoader />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteJsonLd) }}
       />
       <a
         href="#main-content"

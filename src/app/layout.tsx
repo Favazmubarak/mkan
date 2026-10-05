@@ -42,6 +42,22 @@ export const metadata: Metadata = {
   },
   description: site.description,
   metadataBase: new URL(site.domain),
+  keywords: [
+    "MKAN Concept",
+    "luxury events Dubai",
+    "cultural exhibitions UAE",
+    "brand activations Dubai",
+    "corporate summits UAE",
+    "Ramadan Fair Dubai",
+    "experiential atelier",
+    "curated events",
+    "Wasl 51 Dubai",
+    "VIP protocol management",
+  ],
+  authors: [{ name: site.name, url: site.domain }],
+  creator: site.name,
+  publisher: site.name,
+  category: "Luxury Experiential Design & Cultural Exhibitions",
   alternates: {
     canonical: "/",
   },
@@ -52,15 +68,31 @@ export const metadata: Metadata = {
     siteName: site.name,
     locale: "en_AE",
     type: "website",
+    images: [
+      {
+        url: `${site.domain}/images/Hero1.png`,
+        width: 1200,
+        height: 630,
+        alt: `${site.name} — ${site.tagline}`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: `${site.name} | ${site.tagline}`,
     description: site.description,
+    images: [`${site.domain}/images/Hero1.png`],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
