@@ -208,6 +208,7 @@ export function Experiences({
                 onClick={handlePrev}
                 type="button"
                 aria-label="Previous experiences"
+                suppressHydrationWarning
                 className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center text-white/80 transition-all duration-300 hover:bg-[#DDB78A] hover:border-[#DDB78A] hover:text-[#1A060E] hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#DDB78A]"
               >
                 <svg
@@ -230,6 +231,7 @@ export function Experiences({
                 onClick={handleNext}
                 type="button"
                 aria-label="Next experiences"
+                suppressHydrationWarning
                 className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center text-white/80 transition-all duration-300 hover:bg-[#DDB78A] hover:border-[#DDB78A] hover:text-[#1A060E] hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#DDB78A]"
               >
                 <svg
@@ -359,6 +361,7 @@ export function Experiences({
                 type="button"
                 onClick={() => setCurrentIndex(idx)}
                 aria-label={`Go to slide ${idx + 1}`}
+                suppressHydrationWarning
                 className={`h-1.5 rounded-full transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                   activeIndex === idx
                     ? "w-8 bg-[#DDB78A] shadow-[0_0_14px_rgba(221,183,138,0.65)]"

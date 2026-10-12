@@ -51,7 +51,7 @@ export function ContactForm({ theme = "light" }: ContactFormProps) {
           </p>
         </div>
       ) : (
-        <form action={formAction} className="flex flex-col gap-4 sm:gap-5">
+        <form action={formAction} suppressHydrationWarning className="flex flex-col gap-4 sm:gap-5">
           {/* Card Title & Subtitle */}
           <div className="mb-2">
             <h3
@@ -79,6 +79,7 @@ export function ContactForm({ theme = "light" }: ContactFormProps) {
               name="bot_field"
               tabIndex={-1}
               autoComplete="off"
+              suppressHydrationWarning
             />
           </div>
 
@@ -101,6 +102,7 @@ export function ContactForm({ theme = "light" }: ContactFormProps) {
               maxLength={200}
               aria-invalid={!!state.errors?.name}
               aria-describedby={state.errors?.name ? "name-error" : undefined}
+              suppressHydrationWarning
               className={`w-full border px-4 py-3 text-xs sm:text-sm font-sans transition-all duration-300 rounded-sm focus-visible:outline-none ${
                 isLight
                   ? "border-plum-900/15 bg-white/75 text-plum-950 placeholder:text-plum-950/35 focus:border-[#B88E5E] focus:bg-white focus:ring-1 focus:ring-[#B88E5E]/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]"
@@ -132,6 +134,7 @@ export function ContactForm({ theme = "light" }: ContactFormProps) {
               maxLength={200}
               aria-invalid={!!state.errors?.company}
               aria-describedby={state.errors?.company ? "company-error" : undefined}
+              suppressHydrationWarning
               className={`w-full border px-4 py-3 text-xs sm:text-sm font-sans transition-all duration-300 rounded-sm focus-visible:outline-none ${
                 isLight
                   ? "border-plum-900/15 bg-white/75 text-plum-950 placeholder:text-plum-950/35 focus:border-[#B88E5E] focus:bg-white focus:ring-1 focus:ring-[#B88E5E]/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]"
@@ -164,6 +167,7 @@ export function ContactForm({ theme = "light" }: ContactFormProps) {
               maxLength={320}
               aria-invalid={!!state.errors?.email}
               aria-describedby={state.errors?.email ? "email-error" : undefined}
+              suppressHydrationWarning
               className={`w-full border px-4 py-3 text-xs sm:text-sm font-sans transition-all duration-300 rounded-sm focus-visible:outline-none ${
                 isLight
                   ? "border-plum-900/15 bg-white/75 text-plum-950 placeholder:text-plum-950/35 focus:border-[#B88E5E] focus:bg-white focus:ring-1 focus:ring-[#B88E5E]/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]"
@@ -196,6 +200,7 @@ export function ContactForm({ theme = "light" }: ContactFormProps) {
               placeholder="Tell us about your upcoming event, exhibition, cultural workshop or activation..."
               aria-invalid={!!state.errors?.message}
               aria-describedby={state.errors?.message ? "message-error" : undefined}
+              suppressHydrationWarning
               className={`w-full border px-4 py-3 text-xs sm:text-sm font-sans transition-all duration-300 rounded-sm focus-visible:outline-none resize-none ${
                 isLight
                   ? "border-plum-900/15 bg-white/75 text-plum-950 placeholder:text-plum-950/35 focus:border-[#B88E5E] focus:bg-white focus:ring-1 focus:ring-[#B88E5E]/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]"
@@ -221,6 +226,7 @@ export function ContactForm({ theme = "light" }: ContactFormProps) {
             <button
               type="submit"
               disabled={isPending}
+              suppressHydrationWarning
               className={`group relative w-full inline-flex items-center justify-center gap-3 px-6 py-4 text-xs font-sans font-medium tracking-[0.24em] uppercase transition-all duration-500 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60 cursor-pointer rounded-sm ${
                 isLight
                   ? "bg-plum-950 text-cream hover:bg-plum-900 hover:shadow-[0_12px_28px_rgba(26,6,14,0.2)] active:scale-[0.99] border border-[#DDB78A]/40 hover:border-[#DDB78A]"

@@ -103,6 +103,7 @@ export function Footer({ site = defaultSite }: FooterProps) {
 
             <button
               onClick={scrollToTop}
+              suppressHydrationWarning
               className="group inline-flex items-center gap-2.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full border border-cream/20 bg-cream/[0.04] text-[0.66rem] sm:text-[0.7rem] font-sans font-medium tracking-[0.22em] uppercase text-cream/80 transition-all duration-300 hover:border-[#DDB78A] hover:text-[#DDB78A] hover:bg-[#DDB78A]/10 active:scale-95 cursor-pointer"
               aria-label="Scroll back to top"
             >

@@ -106,8 +106,12 @@ export default function RootLayout({
       lang={site.locale}
       dir={site.dir}
       className={`${displayFont.variable} ${bodyFont.variable} ${adminFont.variable}`}
+      suppressHydrationWarning
     >
-      <body className="bg-plum-950 font-sans text-cream antialiased selection:bg-gold selection:text-plum-950">
+      <body
+        className="bg-plum-950 font-sans text-cream antialiased selection:bg-gold selection:text-plum-950"
+        suppressHydrationWarning
+      >
         <SmoothScroll>
           <MotionProvider>{children}</MotionProvider>
         </SmoothScroll>

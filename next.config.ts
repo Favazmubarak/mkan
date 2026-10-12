@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: getRemotePatterns(),
+    qualities: [75, 90],
   },
   async redirects() {
     return [
