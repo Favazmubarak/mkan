@@ -90,8 +90,8 @@ export const assets = {
     development: {
       src: "/methods/Development method.png",
       alt: "Detailed experiential layout development and materials planning",
-      width: 1774,
-      height: 887,
+      width: 1672,
+      height: 941,
       page: "home & method",
       section: "method-02",
     },

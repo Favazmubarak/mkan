@@ -26,7 +26,7 @@ To replace any visual asset, drop the replacement image in `/public/images/` usi
 | `expertise.activations` | `/public/images/expertise-activations.jpg` | `2:3` | 600×900 | **Expertise 04** | Luxury retail pop-up and experiential pavilion with glowing frames. |
 | `expertise.consultancy` | `/public/images/expertise-consultancy.jpg` | `2:3` | 600×900 | **Expertise 05** | Executive strategy boardroom setting with ambient lighting. |
 | `method.concept` | `/public/methods/Cocept method.png` | `2:1` | 1774×887 | **Method 01** | Strategic sketches, blueprints and ideation material. |
-| `method.development` | `/public/methods/Development method.png` | `2:1` | 1774×887 | **Method 02** | Experiential layout development and materials planning. |
+| `method.development` | `/public/methods/Development method.png` | `16:9` | 1672×941 | **Method 02** | Experiential layout development and materials planning. |
 | `method.curation` | `/public/methods/Curation method.png` | `2:1` | 1774×887 | **Method 03** | Sculptural elements and sensory curation items. |
 | `method.production` | `/public/methods/Prodcution method.png` | `2:1` | 1774×887 | **Method 04** | On-site staging, lighting and logistics execution. |
 | `method.reporting` | `/public/methods/Reporting method.png` | `2:1` | 1774×887 | **Method 05** | Strategic post-event evaluation portfolio. |
