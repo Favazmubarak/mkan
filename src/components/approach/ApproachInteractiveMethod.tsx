@@ -19,7 +19,7 @@ const PHASES = [
       "Commercial feasibility & ROI roadmap",
       "Venue masterplanning & regulatory vetting",
     ],
-    imageSrc: "/images/method-concept.jpg",
+    imageSrc: "/methods/Cocept method.png",
     metrics: "100% Concept Validation",
   },
   {
@@ -36,7 +36,7 @@ const PHASES = [
       "Dynamic guest circulation & VIP protocol flow",
       "Turnkey technical engineering blueprints",
     ],
-    imageSrc: "/images/method-development.jpg",
+    imageSrc: "/methods/Development method.png",
     metrics: "Millimeter-Precision Blueprints",
   },
   {
@@ -53,7 +53,7 @@ const PHASES = [
       "Strict SLA quality & aesthetic compliance",
       "Comprehensive partner timeline governance",
     ],
-    imageSrc: "/images/method-curation.jpg",
+    imageSrc: "/methods/Curation method.png",
     metrics: "Tier-1 Curated Partners",
   },
   {
@@ -70,7 +70,7 @@ const PHASES = [
       "Bilingual VIP protocol & concierge leadership",
       "Real-time contingency & crowd governance",
     ],
-    imageSrc: "/images/method-production.jpg",
+    imageSrc: "/methods/Prodcution method.png",
     metrics: "Zero-Latency On-Site Delivery",
   },
   {
@@ -87,7 +87,7 @@ const PHASES = [
       "Vendor performance assessment index",
       "Future scalability & multi-year roadmap",
     ],
-    imageSrc: "/images/method-reporting.jpg",
+    imageSrc: "/methods/Reporting method.png",
     metrics: "Comprehensive Intelligence",
   },
 ];

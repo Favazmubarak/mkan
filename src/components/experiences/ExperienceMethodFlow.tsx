@@ -20,7 +20,7 @@ const STAGES: MethodStage[] = [
     tagline: "Strategic Vision & Cultural Context",
     description:
       "Every project begins with a deep exploration of purpose, audience psychology, and spatial context. We define the overarching experiential thesis before a single sketch is drawn.",
-    image: "/images/method-concept.jpg",
+    image: "/methods/Cocept method.png",
     deliverables: [
       "Experiential Objective Matrix",
       "Brand & Cultural Alignment",
@@ -34,7 +34,7 @@ const STAGES: MethodStage[] = [
     tagline: "Architectural 3D & Narrative Blueprints",
     description:
       "Translating strategy into concrete spatial experiences. We craft full 3D spatial renderings, circulation pathways, tactile material palettes, and sensory lighting schemes.",
-    image: "/images/method-development.jpg",
+    image: "/methods/Development method.png",
     deliverables: [
       "3D Spatial & Floor Blueprints",
       "Material, Finishes & Lighting Moods",
@@ -48,7 +48,7 @@ const STAGES: MethodStage[] = [
     tagline: "Bespoke Procurement & Master Craftsmen",
     description:
       "Precision sourcing from our vetted network of elite fabricators, artisans, audiovisual engineers, and culinary directors across Dubai and the international luxury circuit.",
-    image: "/images/method-curation.jpg",
+    image: "/methods/Curation method.png",
     deliverables: [
       "Bespoke Artisan & Vendor Selection",
       "Material Quality Verification",
@@ -62,7 +62,7 @@ const STAGES: MethodStage[] = [
     tagline: "On-Site Choreography & Flawless Execution",
     description:
       "Millimeter-accurate installation managed by our senior production leaders. We control structural integrity, lighting calibration, VIP protocol, and operational logistics with military precision.",
-    image: "/images/method-production.jpg",
+    image: "/methods/Prodcution method.png",
     deliverables: [
       "Turnkey On-Site Fitout & Staging",
       "Live Operational Protocol Control",
@@ -76,7 +76,7 @@ const STAGES: MethodStage[] = [
     tagline: "Quantitative Analytics & Enduring Impact",
     description:
       "True luxury demands accountability. We deliver comprehensive debriefs analyzing guest dwell times, institutional resonance, media engagement, and strategic return on objective.",
-    image: "/images/method-reporting.jpg",
+    image: "/methods/Reporting method.png",
     deliverables: [
       "Comprehensive Operational Debrief",
       "Guest Engagement & Recall Insights",

@@ -25,11 +25,11 @@ To replace any visual asset, drop the replacement image in `/public/images/` usi
 | `expertise.workshops` | `/public/images/expertise-workshops.jpg` | `2:3` | 600×900 | **Expertise 03** | Intimate masterclass setting with bespoke centerpiece lighting. |
 | `expertise.activations` | `/public/images/expertise-activations.jpg` | `2:3` | 600×900 | **Expertise 04** | Luxury retail pop-up and experiential pavilion with glowing frames. |
 | `expertise.consultancy` | `/public/images/expertise-consultancy.jpg` | `2:3` | 600×900 | **Expertise 05** | Executive strategy boardroom setting with ambient lighting. |
-| `method.concept` | `/public/images/method-concept.jpg` | `4:3` | 400×300 | **Method 01** | Strategic sketches, blueprints and ideation material. |
-| `method.development` | `/public/images/method-development.jpg` | `4:3` | 400×300 | **Method 02** | Experiential layout development and materials planning. |
-| `method.curation` | `/public/images/method-curation.jpg` | `4:3` | 400×300 | **Method 03** | Sculptural elements and sensory curation items. |
-| `method.production` | `/public/images/method-production.jpg` | `4:3` | 400×300 | **Method 04** | On-site staging, lighting and logistics execution. |
-| `method.reporting` | `/public/images/method-reporting.jpg` | `4:3` | 400×300 | **Method 05** | Strategic post-event evaluation portfolio. |
+| `method.concept` | `/public/methods/Cocept method.png` | `2:1` | 1774×887 | **Method 01** | Strategic sketches, blueprints and ideation material. |
+| `method.development` | `/public/methods/Development method.png` | `2:1` | 1774×887 | **Method 02** | Experiential layout development and materials planning. |
+| `method.curation` | `/public/methods/Curation method.png` | `2:1` | 1774×887 | **Method 03** | Sculptural elements and sensory curation items. |
+| `method.production` | `/public/methods/Prodcution method.png` | `2:1` | 1774×887 | **Method 04** | On-site staging, lighting and logistics execution. |
+| `method.reporting` | `/public/methods/Reporting method.png` | `2:1` | 1774×887 | **Method 05** | Strategic post-event evaluation portfolio. |
 | `experiences.ramadanFair` | `/public/images/experience-ramadan-fair.jpg` | `4:3` | 800×600 | **Selected Experiences** | Ramadan Fair flagship cultural pavilion with terracotta arches. |
 | `experiences.corporateEvents` | `/public/images/experience-corporate.jpg` | `4:3` | 800×600 | **Selected Experiences** | Institutional corporate gala dinner with golden glow. |
 | `experiences.luxuryActivation` | `/public/images/experience-luxury-activation.jpg` | `4:3` | 800×600 | **Selected Experiences** | High-end luxury activation with illuminated geometric columns. |

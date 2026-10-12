@@ -41,6 +41,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/method/:path*",
+        destination: "/methods/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

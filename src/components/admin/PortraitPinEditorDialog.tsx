@@ -45,9 +45,11 @@ const PRESET_GALLERY_IMAGES = [
   { label: "Artisanal Learning", src: "/images/1.3.png" },
   { label: "Luxury Atrium", src: "/images/1.4.png" },
   { label: "Spatial Advisory", src: "/images/1.5.png" },
-  { label: "Method Concept", src: "/images/method-concept.jpg" },
-  { label: "Method Development", src: "/images/method-development.jpg" },
-  { label: "Method Curation", src: "/images/method-curation.jpg" },
+  { label: "Method Concept", src: "/methods/Cocept method.png" },
+  { label: "Method Development", src: "/methods/Development method.png" },
+  { label: "Method Curation", src: "/methods/Curation method.png" },
+  { label: "Method Production", src: "/methods/Prodcution method.png" },
+  { label: "Method Reporting", src: "/methods/Reporting method.png" },
 ];
 
 const LUXURY_SUGGESTED_TAGS = [

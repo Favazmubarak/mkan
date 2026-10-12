@@ -27,12 +27,12 @@ export function Method({
   // Helper to map assets
   const getStepImage = (key: string) => {
     switch (key) {
-      case "concept":     return assets.method?.concept?.src     || "/images/method-concept.jpg";
-      case "development": return assets.method?.development?.src || "/images/method-development.jpg";
-      case "curation":    return assets.method?.curation?.src    || "/images/method-curation.jpg";
-      case "production":  return assets.method?.production?.src  || "/images/method-production.jpg";
-      case "reporting":   return assets.method?.reporting?.src   || "/images/method-reporting.jpg";
-      default:            return "/images/method-concept.jpg";
+      case "concept":     return assets.method?.concept?.src     || "/methods/Cocept method.png";
+      case "development": return assets.method?.development?.src || "/methods/Development method.png";
+      case "curation":    return assets.method?.curation?.src    || "/methods/Curation method.png";
+      case "production":  return assets.method?.production?.src  || "/methods/Prodcution method.png";
+      case "reporting":   return assets.method?.reporting?.src   || "/methods/Reporting method.png";
+      default:            return "/methods/Cocept method.png";
     }
   };
 
