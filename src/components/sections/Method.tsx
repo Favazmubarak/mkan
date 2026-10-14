@@ -26,7 +26,7 @@ function StepIcon({ index }: { index: number }) {
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" fill="currentColor" fillOpacity="0.15" />
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" fill="currentColor" fillOpacity="0.12" />
           <line x1="4" y1="22" x2="4" y2="15" />
         </svg>
       );
@@ -72,7 +72,7 @@ function StepIcon({ index }: { index: number }) {
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <circle cx="12" cy="12" r="3" fill="currentColor" fillOpacity="0.2" />
+          <circle cx="12" cy="12" r="3" fill="currentColor" fillOpacity="0.15" />
           <circle cx="12" cy="12" r="8" />
           <line x1="12" y1="1" x2="12" y2="4" />
           <line x1="12" y1="20" x2="12" y2="23" />
@@ -119,12 +119,12 @@ export function Method({
   const rafId = useRef<number | null>(null);
 
   // =========================================================================
-  // Guaranteed Continuous Progression Bar Animation Loop (requestAnimationFrame)
-  // Runs forever across every browser & OS without reduced-motion CSS override issues
+  // Majestic Continuous Progression Bar Animation Loop (requestAnimationFrame)
+  // Gentle, cinematic timing with soft bloom transitions (zero sudden pops)
   // =========================================================================
   useEffect(() => {
-    const CYCLE_DURATION = 6500; // 6.5s per complete loop
-    const DRAW_DURATION = 4800;  // 4.8s to draw smoothly from 01 to 05
+    const CYCLE_DURATION = 7500; // 7.5s cycle for a relaxed, cinematic pace
+    const DRAW_DURATION = 5600;  // 5.6s to glide smoothly across 01 to 05
 
     let isRunning = true;
 
@@ -148,18 +148,18 @@ export function Method({
           strokeOffset = 100 * (1 - p);
 
           // Synchronized milestone illumination points
-          if (p >= 0.92) currentStage = 4;
-          else if (p >= 0.70) currentStage = 3;
-          else if (p >= 0.48) currentStage = 2;
-          else if (p >= 0.26) currentStage = 1;
+          if (p >= 0.94) currentStage = 4;
+          else if (p >= 0.72) currentStage = 3;
+          else if (p >= 0.50) currentStage = 2;
+          else if (p >= 0.27) currentStage = 1;
           else currentStage = 0;
-        } else if (elapsed <= 5900) {
+        } else if (elapsed <= 6800) {
           // Hold all 5 milestones illuminated in full constellation
           strokeOffset = 0;
           currentStage = 4;
         } else {
-          // Soft 600ms reset
-          const resetProgress = (elapsed - 5900) / (CYCLE_DURATION - 5900);
+          // Soft 700ms reset
+          const resetProgress = (elapsed - 6800) / (CYCLE_DURATION - 6800);
           strokeOffset = 100 * resetProgress;
           currentStage = 4;
         }
@@ -261,9 +261,9 @@ export function Method({
                   <stop offset="100%" stopColor="#4F1C30" />
                 </linearGradient>
 
-                {/* Soft diffused glow filter for the wave path */}
+                {/* Delicate subtle satin glow filter for the wave path */}
                 <filter id="mkanProgressGlow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feGaussianBlur stdDeviation="2" result="blur" />
                   <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
               </defs>
@@ -272,7 +272,7 @@ export function Method({
               <path
                 d="M 20 125 L 120 125 C 220 125, 260 50, 360 50 C 460 50, 500 125, 600 125 C 700 125, 740 50, 840 50 C 940 50, 980 125, 1080 125 L 1180 125"
                 stroke="#4F1C30"
-                strokeOpacity="0.12"
+                strokeOpacity="0.10"
                 strokeWidth="1.2"
                 strokeDasharray="4 6"
               />
@@ -282,7 +282,7 @@ export function Method({
                 ref={pathRef}
                 d="M 20 119 L 120 119 C 220 119, 260 44, 360 44 C 460 44, 500 119, 600 119 C 700 119, 740 44, 840 44 C 940 44, 980 119, 1080 119 L 1180 119"
                 stroke="url(#mkanProgressPlumGradient)"
-                strokeWidth="2.8"
+                strokeWidth="2.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 filter="url(#mkanProgressGlow)"
@@ -307,7 +307,7 @@ export function Method({
                 <div
                   key={step.number}
                   onMouseEnter={() => setHoveredStep(idx)}
-                  className="group relative flex flex-col items-center justify-between h-[240px] px-1 cursor-pointer transition-all duration-300"
+                  className="group relative flex flex-col items-center justify-between h-[240px] px-1 cursor-pointer transition-all duration-500"
                 >
                   {isTopText ? (
                     <>
@@ -315,8 +315,8 @@ export function Method({
                       <div className="h-[95px] w-full flex items-start justify-between gap-3 text-left">
                         <div className="flex-1 min-w-0">
                           <h3
-                            className={`font-sans font-bold text-sm xl:text-[0.95rem] tracking-tight transition-colors duration-300 ${
-                              isHighlighted ? "text-[#4F1C30] font-extrabold" : "text-[#1A060E]"
+                            className={`font-sans font-bold text-sm xl:text-[0.95rem] tracking-tight transition-colors duration-800 ease-out ${
+                              isHighlighted ? "text-[#4F1C30]" : "text-[#1A060E]"
                             }`}
                           >
                             {step.name}
@@ -326,12 +326,12 @@ export function Method({
                           </p>
                         </div>
 
-                        {/* Large, High-Fashion Visible Number to the Right */}
+                        {/* Large, High-Fashion Visible Number to the Right (Smooth, Graceful Bloom) */}
                         <span
-                          className={`font-sans font-extrabold text-4xl xl:text-[2.85rem] leading-none shrink-0 select-none transition-all duration-500 ${
+                          className={`font-sans font-extrabold text-4xl xl:text-[2.85rem] leading-none shrink-0 select-none transition-all duration-1000 ease-out ${
                             isHighlighted
-                              ? "text-[#4F1C30]/75 scale-105"
-                              : "text-[#4F1C30]/20 scale-100"
+                              ? "text-[#4F1C30]/60 scale-[1.03]"
+                              : "text-[#4F1C30]/22 scale-100"
                           }`}
                         >
                           {step.number}
@@ -340,22 +340,20 @@ export function Method({
 
                       {/* Milestone Node (Valley: Y=119px) */}
                       <div className="relative group/node my-auto">
-                        {/* Ambient Velvet Plum Glow Aura */}
+                        {/* Ultra-Minimal Ambient Shadow Whisper (Zero Muddy Smudge) */}
                         <div
-                          className={`absolute -inset-2.5 rounded-2xl bg-[#6A1736]/25 blur-lg pointer-events-none -z-10 transition-all duration-500 ${
-                            isHighlighted
-                              ? "opacity-100 scale-125 bg-[#6A1736]/50 blur-xl"
-                              : "opacity-0 scale-75"
-                          } group-hover:opacity-100 group-hover:scale-130`}
+                          className={`absolute -inset-1.5 rounded-xl bg-[#4F1C30]/8 blur-md pointer-events-none -z-10 transition-opacity duration-1000 ease-out ${
+                            isHighlighted ? "opacity-100" : "opacity-0"
+                          }`}
                         />
 
-                        {/* Node Card Badge */}
+                        {/* Clean Architectural Node Card Badge */}
                         <div
-                          className={`w-11 h-11 xl:w-12 xl:h-12 rounded-xl flex items-center justify-center bg-white border transition-all duration-300 ${
+                          className={`w-11 h-11 xl:w-12 xl:h-12 rounded-xl flex items-center justify-center bg-white border transition-all duration-1000 ease-out ${
                             isHighlighted
-                              ? "border-[#4F1C30] text-[#4F1C30] shadow-[0_8px_24px_rgba(79,28,48,0.35)] -translate-y-1 scale-105"
-                              : "border-[#4F1C30]/20 text-[#4F1C30]/40 shadow-[0_2px_8px_rgba(79,28,48,0.05)]"
-                          } group-hover:-translate-y-1 group-hover:border-[#4F1C30] group-hover:text-[#4F1C30] group-hover:shadow-[0_8px_24px_rgba(79,28,48,0.35)]`}
+                              ? "border-[#4F1C30]/35 text-[#4F1C30] shadow-[0_6px_20px_rgba(79,28,48,0.12)] -translate-y-0.5"
+                              : "border-[#4F1C30]/15 text-[#4F1C30]/35 shadow-[0_2px_8px_rgba(79,28,48,0.04)]"
+                          } group-hover:-translate-y-1 group-hover:border-[#4F1C30]/60 group-hover:text-[#4F1C30] group-hover:shadow-[0_8px_24px_rgba(79,28,48,0.2)]`}
                         >
                           <StepIcon index={idx} />
                         </div>
@@ -371,22 +369,20 @@ export function Method({
 
                       {/* Milestone Node (Peak: Y=44px) */}
                       <div className="relative group/node my-auto">
-                        {/* Ambient Velvet Plum Glow Aura */}
+                        {/* Ultra-Minimal Ambient Shadow Whisper (Zero Muddy Smudge) */}
                         <div
-                          className={`absolute -inset-2.5 rounded-2xl bg-[#6A1736]/25 blur-lg pointer-events-none -z-10 transition-all duration-500 ${
-                            isHighlighted
-                              ? "opacity-100 scale-125 bg-[#6A1736]/50 blur-xl"
-                              : "opacity-0 scale-75"
-                          } group-hover:opacity-100 group-hover:scale-130`}
+                          className={`absolute -inset-1.5 rounded-xl bg-[#4F1C30]/8 blur-md pointer-events-none -z-10 transition-opacity duration-1000 ease-out ${
+                            isHighlighted ? "opacity-100" : "opacity-0"
+                          }`}
                         />
 
-                        {/* Node Card Badge */}
+                        {/* Clean Architectural Node Card Badge */}
                         <div
-                          className={`w-11 h-11 xl:w-12 xl:h-12 rounded-xl flex items-center justify-center bg-white border transition-all duration-300 ${
+                          className={`w-11 h-11 xl:w-12 xl:h-12 rounded-xl flex items-center justify-center bg-white border transition-all duration-1000 ease-out ${
                             isHighlighted
-                              ? "border-[#4F1C30] text-[#4F1C30] shadow-[0_8px_24px_rgba(79,28,48,0.35)] -translate-y-1 scale-105"
-                              : "border-[#4F1C30]/20 text-[#4F1C30]/40 shadow-[0_2px_8px_rgba(79,28,48,0.05)]"
-                          } group-hover:-translate-y-1 group-hover:border-[#4F1C30] group-hover:text-[#4F1C30] group-hover:shadow-[0_8px_24px_rgba(79,28,48,0.35)]`}
+                              ? "border-[#4F1C30]/35 text-[#4F1C30] shadow-[0_6px_20px_rgba(79,28,48,0.12)] -translate-y-0.5"
+                              : "border-[#4F1C30]/15 text-[#4F1C30]/35 shadow-[0_2px_8px_rgba(79,28,48,0.04)]"
+                          } group-hover:-translate-y-1 group-hover:border-[#4F1C30]/60 group-hover:text-[#4F1C30] group-hover:shadow-[0_8px_24px_rgba(79,28,48,0.2)]`}
                         >
                           <StepIcon index={idx} />
                         </div>
@@ -396,8 +392,8 @@ export function Method({
                       <div className="h-[95px] w-full flex items-start justify-between gap-3 text-left pt-2">
                         <div className="flex-1 min-w-0">
                           <h3
-                            className={`font-sans font-bold text-sm xl:text-[0.95rem] tracking-tight transition-colors duration-300 ${
-                              isHighlighted ? "text-[#4F1C30] font-extrabold" : "text-[#1A060E]"
+                            className={`font-sans font-bold text-sm xl:text-[0.95rem] tracking-tight transition-colors duration-800 ease-out ${
+                              isHighlighted ? "text-[#4F1C30]" : "text-[#1A060E]"
                             }`}
                           >
                             {step.name}
@@ -407,12 +403,12 @@ export function Method({
                           </p>
                         </div>
 
-                        {/* Large, High-Fashion Visible Number to the Right */}
+                        {/* Large, High-Fashion Visible Number to the Right (Smooth, Graceful Bloom) */}
                         <span
-                          className={`font-sans font-extrabold text-4xl xl:text-[2.85rem] leading-none shrink-0 select-none transition-all duration-500 ${
+                          className={`font-sans font-extrabold text-4xl xl:text-[2.85rem] leading-none shrink-0 select-none transition-all duration-1000 ease-out ${
                             isHighlighted
-                              ? "text-[#4F1C30]/75 scale-105"
-                              : "text-[#4F1C30]/20 scale-100"
+                              ? "text-[#4F1C30]/60 scale-[1.03]"
+                              : "text-[#4F1C30]/22 scale-100"
                           }`}
                         >
                           {step.number}
@@ -455,15 +451,15 @@ export function Method({
                   {/* Milestone Node on Vertical Spine */}
                   <div className="relative -ml-[21px] sm:-ml-[23px] shrink-0">
                     <div
-                      className={`absolute -inset-1.5 rounded-xl bg-[#6A1736]/25 blur-md pointer-events-none -z-10 transition-opacity duration-300 ${
+                      className={`absolute -inset-1.5 rounded-xl bg-[#4F1C30]/8 blur-md pointer-events-none -z-10 transition-opacity duration-800 ${
                         isHighlighted ? "opacity-100" : "opacity-0"
                       }`}
                     />
                     <div
-                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center bg-white border transition-all duration-300 ${
+                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center bg-white border transition-all duration-800 ${
                         isHighlighted
-                          ? "border-[#4F1C30] text-[#4F1C30] shadow-[0_4px_16px_rgba(79,28,48,0.35)] scale-105"
-                          : "border-[#4F1C30]/20 text-[#4F1C30]/40 shadow-sm"
+                          ? "border-[#4F1C30]/40 text-[#4F1C30] shadow-[0_4px_16px_rgba(79,28,48,0.14)]"
+                          : "border-[#4F1C30]/15 text-[#4F1C30]/35 shadow-sm"
                       }`}
                     >
                       <StepIcon index={idx} />
@@ -474,7 +470,7 @@ export function Method({
                   <div className="flex-1 pt-0.5 flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <h3
-                        className={`font-sans font-bold text-sm sm:text-base tracking-tight transition-colors duration-300 ${
+                        className={`font-sans font-bold text-sm sm:text-base tracking-tight transition-colors duration-800 ${
                           isHighlighted ? "text-[#4F1C30]" : "text-[#1A060E]"
                         }`}
                       >
@@ -486,8 +482,8 @@ export function Method({
                     </div>
 
                     <span
-                      className={`font-sans font-extrabold text-3xl sm:text-4xl leading-none shrink-0 transition-colors duration-300 ${
-                        isHighlighted ? "text-[#4F1C30]/75" : "text-[#4F1C30]/25"
+                      className={`font-sans font-extrabold text-3xl sm:text-4xl leading-none shrink-0 transition-colors duration-1000 ${
+                        isHighlighted ? "text-[#4F1C30]/60" : "text-[#4F1C30]/22"
                       }`}
                     >
                       {step.number}
